@@ -11,29 +11,29 @@ using System;
 namespace CRM.Server
 {
 #pragma warning disable CS8603 // Possible null reference return.
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-	public class AppDbContext : ApiAuthorizationDbContext<ApplicationUser>
+	public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
 	{
-		public DbSet<Address> Addresses { get; set; }
-		public DbSet<Budget> Budgets { get; set; }
-		public DbSet<BudgetStatus> BudgetStatuses { get; set; }
-		public DbSet<ClientType> ClientTypes { get; set; }
-		public DbSet<Company> Companies { get; set; }
-		public DbSet<Person> People { get; set; }
-		public DbSet<Product> Products { get; set; }
-		public DbSet<ProductBrand> ProductBrands { get; set; }
-		public DbSet<ProductCategory> ProductCategories { get; set; }
-		public DbSet<ProductGroup> ProductGroups { get; set; }
-		public DbSet<ProductUnit> ProductUnits { get; set; }
-		public DbSet<ProfitMargin> ProfitMargins { get; set; }
-		public DbSet<Supplier> Suppliers { get; set; }
+		public DbSet<Address> Addresses { get; set; } = null!;
+		public DbSet<Budget> Budgets { get; set; } = null!;
+		public DbSet<BudgetStatus> BudgetStatuses { get; set; } = null!;
+		public DbSet<ClientType> ClientTypes { get; set; } = null!;
+		public DbSet<Company> Companies { get; set; } = null!;
+		public DbSet<Person> People { get; set; } = null!;
+		public DbSet<Product> Products { get; set; } = null!;
+		public DbSet<ProductBrand> ProductBrands { get; set; } = null!;
+		public DbSet<ProductCategory> ProductCategories { get; set; } = null!;
+		public DbSet<ProductGroup> ProductGroups { get; set; } = null!;
+		public DbSet<ProductUnit> ProductUnits { get; set; } = null!;
+		public DbSet<ProfitMargin> ProfitMargins { get; set; } = null!;
+		public DbSet<Supplier> Suppliers { get; set; } = null!;
 
-		public AppDbContext(DbContextOptions<AppDbContext> options,
+		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
 			IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions) { }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			if (modelBuilder is null) throw new ArgumentNullException(nameof(modelBuilder));
+			base.OnModelCreating(modelBuilder);
 			modelBuilder.HasSequence<int>("BudgetSequence", schema: "dbo").StartsAt(10000).IncrementsBy(1);
 
 			modelBuilder.Entity<ApplicationUser>(user =>
@@ -139,8 +139,6 @@ namespace CRM.Server
 				budgetStatus.ToTable("BudgetStatus");
 				budgetStatus.HasIndex(x => x.Status).IsUnique();
 			});
-
-			base.OnModelCreating(modelBuilder);
 		}
 	}
 }

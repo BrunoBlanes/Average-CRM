@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRM.Client", "Client\CRM.Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRM.Shared", "Shared\CRM.Shared.csproj", "{AE7717AB-EFF6-4917-A4B1-E34F09B147C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.Test", "CRM.Test\CRM.Test.csproj", "{21FBA77E-47CD-479E-ADD1-833F9084D42B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRM.Test", "Test\CRM.Test.csproj", "{21FBA77E-47CD-479E-ADD1-833F9084D42B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

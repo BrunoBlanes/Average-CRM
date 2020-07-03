@@ -1,9 +1,11 @@
+using CRM.Server.Services;
 using CRM.Shared.Models;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -20,18 +22,18 @@ namespace CRM.Server
 {
 	public class Startup
 	{
-		private readonly IConfiguration configuration;
+		public IConfiguration Configuration { get; }
 
 		public Startup(IConfiguration configuration)
 		{
-			this.configuration = configuration;
+			Configuration = configuration;
 		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddDbContext<AppDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+			services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
 			services.AddDefaultIdentity<ApplicationUser>(options =>
 			{
@@ -40,9 +42,9 @@ namespace CRM.Server
 				options.SignIn.RequireConfirmedAccount = true;
 				options.Password.RequireNonAlphanumeric = false;
 				options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-			}).AddEntityFrameworkStores<AppDbContext>();
+			}).AddEntityFrameworkStores<ApplicationDbContext>();
 
-			services.AddIdentityServer().AddApiAuthorization<ApplicationUser, AppDbContext>();
+			services.AddIdentityServer().AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 			services.AddAuthentication().AddIdentityServerJwt();
 
 			services.AddMvc().AddJsonOptions(options =>
@@ -50,7 +52,7 @@ namespace CRM.Server
 				options.JsonSerializerOptions.WriteIndented = true;
 				options.JsonSerializerOptions.IgnoreNullValues = true;
 				options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-				options.JsonSerializerOptions.ReferenceHandling = ReferenceHandling.Preserve;
+				options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 				options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 			});
 
@@ -75,12 +77,11 @@ namespace CRM.Server
 				options.HttpsPort = 5001;
 			});
 
-			//services.Configure<AuthMessageSenderOptions>(configuration);
-			//services.AddTransient<EmailSender>();
+			services.Configure<AuthMessageSenderOptions>(Configuration);
+			services.AddTransient<IEmailSender, EmailSender>();
 			services.AddControllersWithViews();
 			services.AddRazorPages();
 		}
-
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		[SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
@@ -92,22 +93,23 @@ namespace CRM.Server
 				app.UseDatabaseErrorPage();
 				app.UseWebAssemblyDebugging();
 			}
+
 			else
 			{
 				app.UseExceptionHandler("/Error");
-				app.UseHttpsRedirection();
 
 				// TODO: The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
 
 			app.UseStaticFiles();
+			app.UseHttpsRedirection();
 			app.UseBlazorFrameworkFiles();
 
 			app.UseRouting();
 
-			app.UseAuthentication();
 			app.UseIdentityServer();
+			app.UseAuthentication();
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>

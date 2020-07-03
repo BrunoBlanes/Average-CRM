@@ -14,9 +14,9 @@ namespace CRM.Server.Controllers
 	[Route("api/[controller]")]
 	public class AddressesController : Controller
 	{
-		private readonly AppDbContext context;
+		private readonly ApplicationDbContext context;
 
-		public AddressesController(AppDbContext context)
+		public AddressesController(ApplicationDbContext context)
 		{
 			this.context = context;
 		}

@@ -15,8 +15,8 @@ namespace CRM.Server.Controllers
 	[Route("[controller]")]
 	public class PeopleController : Controller
 	{
-		private readonly AppDbContext context;
-		public PeopleController(AppDbContext context)
+		private readonly ApplicationDbContext context;
+		public PeopleController(ApplicationDbContext context)
 		{
 			this.context = context;
 		}
