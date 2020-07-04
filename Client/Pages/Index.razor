@@ -1,7 +1,35 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
-Welcome to your new app.
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
+@inject IJSRuntime JSRuntime;
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<div>
+	<Button />
+</div>
+@*<AuthorizeView>
+		<Authorized>
+			<a href="authentication/profile">Hello, @context.User.Identity!.Name!</a>
+			<button class="nav-link btn btn-link" @onclick="SignOutAsync">Log out</button>
+		</Authorized>
+		<NotAuthorized>
+			<a href="authentication/register">Register</a>
+			<a href="authentication/login">Log in</a>
+		</NotAuthorized>
+	</AuthorizeView>*@
+
+@code{
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await JSRuntime.InvokeVoidAsync("Fluent.LoadTheme");
+	}
+
+	private async Task SignOutAsync(MouseEventArgs args)
+	{
+		await SignOutManager.SetSignOutState().ConfigureAwait(false);
+		Navigation.NavigateTo("authentication/logout");
+	}
+}
