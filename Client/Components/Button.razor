@@ -1,8 +1,40 @@
 ﻿@inject IJSRuntime JSRuntime;
 
+<div id="@Name" @onclick="OnClickCallback" style="display: inline-block" />
+
 @code {
+	[Parameter]
+	public string Name { get; set; } = null!;
+
+	[Parameter]
+	public string? Content { get; set; }
+
+	[Parameter]
+	public bool Disabled { get; set; }
+
+	[Parameter]
+	public bool AllowDisabledFocus { get; set; }
+
+	[Parameter]
+	public bool Checked { get; set; }
+
+	[Parameter]
+	public bool Primary { get; set; }
+
+	[Parameter]
+	public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
+
+	protected override void OnInitialized()
+	{
+		if (string.IsNullOrEmpty(Name))
+		{
+			throw new ArgumentNullException(nameof(Name));
+		}
+	}
+
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		await JSRuntime.InvokeVoidAsync("Fluent.CreateButton");
+		if (Primary) await JSRuntime.InvokeVoidAsync("renderPrimaryButton", Content, Disabled, AllowDisabledFocus, Checked, Name);
+		else await JSRuntime.InvokeVoidAsync("renderDefaultButton", Content, Disabled, AllowDisabledFocus, Checked, Name);
 	}
 }

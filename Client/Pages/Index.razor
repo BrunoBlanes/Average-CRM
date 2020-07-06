@@ -3,33 +3,36 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
+@inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 @inject SignOutSessionStateManager SignOutManager
-@inject IJSRuntime JSRuntime;
 
+
+<h3>First Page (Index)</h3>
 <div>
-	<Button />
+	<Button Name="LoginButton" Primary="true" Content="Login" OnClickCallback="@LoginButtonClick" />
 </div>
-@*<AuthorizeView>
-		<Authorized>
-			<a href="authentication/profile">Hello, @context.User.Identity!.Name!</a>
-			<button class="nav-link btn btn-link" @onclick="SignOutAsync">Log out</button>
-		</Authorized>
-		<NotAuthorized>
-			<a href="authentication/register">Register</a>
-			<a href="authentication/login">Log in</a>
-		</NotAuthorized>
-	</AuthorizeView>*@
+<AuthorizeView>
+	<Authorized>
+		@if (context.User.Identity.IsAuthenticated)
+		{
+			Navigation.NavigateTo("home");
+		}
+	</Authorized>
+
+	<NotAuthorized>
+		<a href="authentication/register">Register</a>
+	</NotAuthorized>
+</AuthorizeView>
 
 @code{
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		await JSRuntime.InvokeVoidAsync("Fluent.LoadTheme");
+		if (firstRender) await JSRuntime.InvokeVoidAsync("loadFluentTheme");
 	}
 
-	private async Task SignOutAsync(MouseEventArgs args)
+	private void LoginButtonClick(MouseEventArgs args)
 	{
-		await SignOutManager.SetSignOutState().ConfigureAwait(false);
-		Navigation.NavigateTo("authentication/logout");
+		Navigation.NavigateTo("authentication/login");
 	}
 }
