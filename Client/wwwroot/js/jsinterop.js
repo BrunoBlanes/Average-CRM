@@ -1,10 +1,13 @@
 ﻿"use strict";
 var _a = window.Fabric,
+	Nav = _a.Nav,
 	Fabric = _a.Fabric,
+	Separator = _a.Separator,
 	createTheme = _a.createTheme,
 	DefaultButton = _a.DefaultButton,
 	PrimaryButton = _a.PrimaryButton,
-	Customizations = _a.Customizations;
+	Customizations = _a.Customizations,
+	initializeIcons = _a.initializeIcons;
 
 const myTheme = createTheme({
 	palette: {
@@ -33,10 +36,14 @@ const myTheme = createTheme({
 	}
 });
 
+
+// THEMES
 window.loadFluentTheme = () => {
 	Customizations.applySettings({ theme: myTheme });
 };
 
+
+// BUTTONS
 window.renderDefaultButton = (content, disabled, allowDisabledFocus, checked, container) => {
 	var Button = function () {
 		return React.createElement(DefaultButton, {
@@ -69,3 +76,57 @@ var RenderButton = function (Button, container) {
 	};
 	ReactDOM.render(React.createElement(ButtonWrapper, null), document.getElementById(container));
 };
+
+
+// NAVIGATION PANE
+window.renderNavigationPane = (title, children, container) => {
+	var navItems = [];
+	var count = 1;
+	for (var c in children) {
+		if (children.hasOwnProperty(c)) {
+			var item = { name: c, url: children[c], key: 'key' + count };
+			navItems.push(item);
+			count++;
+		}
+	};
+
+	var navigationItems = [
+	{
+		name: title,
+		links: navItems
+	}];
+
+	var NavigationPage = function () {
+		return React.createElement(Nav, {
+			onRenderGroupHeader: RenderGroupHeader,
+			ariaLabel: title,
+			groups: navigationItems,
+			initialSelectedKey: 'key1'
+		});
+	};
+
+	function RenderGroupHeader(group) {
+		return React.createElement("h3", null, group.name);
+	}
+
+	var NavigationPaneWrapper = function () {
+		return React.createElement(Fabric, null, React.createElement(NavigationPage, null));
+	};
+
+	ReactDOM.render(React.createElement(NavigationPaneWrapper, null), document.getElementById(container));
+}
+
+// SEPARATOR
+window.renderSeparator = (container) => {
+	var SeparatorItem = function () {
+		return React.createElement(Separator, {
+			vertical: true
+		});
+	};
+
+	var SeparatorItemWrapper = function () {
+		return React.createElement(Fabric, null, React.createElement(SeparatorItem, null));
+	};
+
+	ReactDOM.render(React.createElement(SeparatorItemWrapper, null), document.getElementById(container));
+}

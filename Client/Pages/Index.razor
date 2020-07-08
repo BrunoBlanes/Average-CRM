@@ -1,38 +1,29 @@
 ﻿@page "/"
 
-@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
-@inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 @inject SignOutSessionStateManager SignOutManager
 
-
-<h3>First Page (Index)</h3>
-<div>
-	<Button Name="LoginButton" Primary="true" Content="Login" OnClickCallback="@LoginButtonClick" />
-</div>
 <AuthorizeView>
 	<Authorized>
-		@if (context.User.Identity.IsAuthenticated)
-		{
-			Navigation.NavigateTo("home");
-		}
+		<Button Name="LogoutButton" Content="Logout" OnClickCallback="@LogoutButtonClick" />
 	</Authorized>
 
 	<NotAuthorized>
-		<a href="authentication/register">Register</a>
+		<Button Name="LoginButton" Content="Login" Primary="true" OnClickCallback="@LoginButtonClick" />
 	</NotAuthorized>
 </AuthorizeView>
 
 @code{
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender) await JSRuntime.InvokeVoidAsync("loadFluentTheme");
-	}
-
 	private void LoginButtonClick(MouseEventArgs args)
 	{
 		Navigation.NavigateTo("authentication/login");
+	}
+
+	private async Task LogoutButtonClick(MouseEventArgs args)
+	{
+		await SignOutManager.SetSignOutState();
+		Navigation.NavigateTo("authentication/logout");
 	}
 }

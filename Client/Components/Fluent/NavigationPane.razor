@@ -1,0 +1,28 @@
+﻿@inject IJSRuntime JSRuntime;
+
+<div id="@Name" />
+
+@code {
+	[Parameter]
+	public string? Name { get; set; }
+
+	[Parameter]
+	public string? Title { get; set; }
+
+	[Parameter]
+	public Dictionary<string, object>? NavigationItems { get; set; }
+
+	protected override void OnInitialized()
+	{
+		if (Name is null) throw new ArgumentNullException(nameof(Name));
+		if (NavigationItems is null) throw new ArgumentNullException(nameof(NavigationItems));
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await JSRuntime.InvokeVoidAsync("renderNavigationPane", Title, NavigationItems, Name);
+		}
+	}
+}
