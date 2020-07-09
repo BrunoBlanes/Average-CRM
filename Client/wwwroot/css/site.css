@@ -7,7 +7,10 @@
 .header {
 	height: 100px;
 	position: relative;
-	background: #808080;
+}
+
+.main {
+	margin: 20px;
 }
 
 .aside {

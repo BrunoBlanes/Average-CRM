@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -35,7 +36,7 @@ namespace CRM.Server
 		{
 			services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-			services.AddDefaultIdentity<ApplicationUser>(options =>
+			services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 			{
 				options.Password.RequiredLength = 8;
 				options.User.RequireUniqueEmail = true;
@@ -54,6 +55,17 @@ namespace CRM.Server
 				options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 				options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 				options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+			}).AddRazorPagesOptions(options =>
+			{
+				options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
+				options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
+			});
+
+			services.ConfigureApplicationCookie(options =>
+			{
+				options.LoginPath = $"/Identity/Account/Login";
+				options.LogoutPath = $"/Identity/Account/Logout";
+				options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 			});
 
 			services.AddApiVersioning(options =>
@@ -78,7 +90,7 @@ namespace CRM.Server
 			});
 
 			services.Configure<AuthMessageSenderOptions>(Configuration);
-			services.AddTransient<IEmailSender, EmailSender>();
+			services.AddSingleton<IEmailSender, EmailSender>();
 			services.AddControllersWithViews();
 			services.AddRazorPages();
 		}

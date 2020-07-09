@@ -5,22 +5,21 @@
 @inject NavigationManager Navigation
 @inject SignOutSessionStateManager SignOutManager
 
+@layout MainLayout
+
 <AuthorizeView>
 	<Authorized>
 		<Button Name="LogoutButton" Content="Logout" OnClickCallback="@LogoutButtonClick" />
 	</Authorized>
 
 	<NotAuthorized>
-		<Button Name="LoginButton" Content="Login" Primary="true" OnClickCallback="@LoginButtonClick" />
+		@{
+			Navigation.NavigateTo("authentication/login");
+		}
 	</NotAuthorized>
 </AuthorizeView>
 
 @code{
-	private void LoginButtonClick(MouseEventArgs args)
-	{
-		Navigation.NavigateTo("authentication/login");
-	}
-
 	private async Task LogoutButtonClick(MouseEventArgs args)
 	{
 		await SignOutManager.SetSignOutState();
