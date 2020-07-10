@@ -24,12 +24,12 @@ namespace CRM.Server.Services
 			return ExecuteAsync(Options.SendGridKey, subject, message, email);
 		}
 
-		private Task ExecuteAsync(string apiKey, string subject, string message, string email)
+		private static Task ExecuteAsync(string apiKey, string subject, string message, string email)
 		{
 			var client = new SendGridClient(apiKey);
 			var msg = new SendGridMessage()
 			{
-				From = new EmailAddress("server@crm.brunoblanes.eng.br", Options.SendGridUser),
+				From = new EmailAddress("server@crm.brunoblanes.eng.br", "Average CRM Server"),
 				Subject = subject,
 				PlainTextContent = message,
 				HtmlContent = message
