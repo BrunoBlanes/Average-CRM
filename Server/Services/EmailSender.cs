@@ -29,7 +29,7 @@ namespace CRM.Server.Services
 			var client = new SendGridClient(apiKey);
 			var msg = new SendGridMessage()
 			{
-				From = new EmailAddress("crm.server@brunoblanes.eng.br", Options.SendGridUser),
+				From = new EmailAddress("server@crm.brunoblanes.eng.br", Options.SendGridUser),
 				Subject = subject,
 				PlainTextContent = message,
 				HtmlContent = message

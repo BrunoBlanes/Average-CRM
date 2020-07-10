@@ -43,7 +43,7 @@ namespace CRM.Server
 				options.SignIn.RequireConfirmedAccount = true;
 				options.Password.RequireNonAlphanumeric = false;
 				options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-			}).AddEntityFrameworkStores<ApplicationDbContext>();
+			}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 			services.AddIdentityServer().AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 			services.AddAuthentication().AddIdentityServerJwt();
@@ -90,7 +90,7 @@ namespace CRM.Server
 			});
 
 			services.Configure<AuthMessageSenderOptions>(Configuration);
-			services.AddSingleton<IEmailSender, EmailSender>();
+			services.AddTransient<IEmailSender, EmailSender>();
 			services.AddControllersWithViews();
 			services.AddRazorPages();
 		}

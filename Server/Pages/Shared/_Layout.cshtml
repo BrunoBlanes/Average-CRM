@@ -15,9 +15,13 @@
 <body>
 	<div class="main">
 		<div class="content px-4">
-			@RenderSection("scripts")
+			@if (IsSectionDefined("scripts"))
+			{
+				RenderSection("scripts");
+			}
+
 			@RenderBody()
 		</div>
 	</div>
 </body>
-</html>
+</html>	

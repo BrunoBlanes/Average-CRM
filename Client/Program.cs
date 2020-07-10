@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace CRM.Client
 {
-	[SuppressMessage("Design", "CA1052:Static holder types should be Static or NotInheritable", Justification = "<Pending>")]
 	public class Program
 	{
 		public static async Task Main(string[] args)
@@ -23,7 +22,7 @@ namespace CRM.Client
 			builder.Services.AddTransient(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("CRM.ServerAPI"));
 			builder.Services.AddOptions();
 			builder.Services.AddApiAuthorization();
-			await builder.Build().RunAsync().ConfigureAwait(false);
+			await builder.Build().RunAsync();
 		}
 	}
 }

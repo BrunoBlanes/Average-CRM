@@ -1,22 +1,16 @@
 ﻿using System;
-using CRM.Server;
-using CRM.Shared.Models;
+using CRM.Server.Areas.Identity;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
-[assembly: HostingStartup(typeof(CRM.Server.Areas.Identity.IdentityHostingStartup))]
+[assembly: HostingStartup(typeof(IdentityHostingStartup))]
 namespace CRM.Server.Areas.Identity
 {
     public class IdentityHostingStartup : IHostingStartup
-    {
-        public void Configure(IWebHostBuilder builder)
-        {
-            builder.ConfigureServices((context, services) => {
-            });
-        }
-    }
+	{
+		public void Configure(IWebHostBuilder builder)
+		{
+			if (builder is null) throw new ArgumentNullException(nameof(builder));
+			builder.ConfigureServices((context, services) => { });
+		}
+	}
 }
