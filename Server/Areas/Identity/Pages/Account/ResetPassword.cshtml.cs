@@ -44,8 +44,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 
 		public IActionResult OnGet(string? code = null)
 		{
-			if (code == null)
-				return BadRequest("A code must be supplied for password reset.");
+			if (code is null) return BadRequest("A code must be supplied for password reset.");
 
 			else
 			{
@@ -56,22 +55,23 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 
 		public async Task<IActionResult> OnPostAsync()
 		{
-			if (!ModelState.IsValid)
+			if (ModelState.IsValid)
+			{
+				ApplicationUser? user = await userManager.FindByEmailAsync(Email);
+
+				// Don't reveal that the user does not exist
+				if (user is null) return RedirectToPage("./ResetPasswordConfirmation");
+
+				// Resets the user's password
+				IdentityResult? result = await userManager.ResetPasswordAsync(user, Code, Password);
+				if (result.Succeeded) return RedirectToPage("./ResetPasswordConfirmation");
+
+				// Log errors
+				foreach (IdentityError? error in result.Errors)
+					ModelState.AddModelError(string.Empty, error.Description);
 				return Page();
-			ApplicationUser? user = await userManager.FindByEmailAsync(Email);
+			}
 
-			// Don't reveal that the user does not exist
-			if (user == null)
-				return RedirectToPage("./ResetPasswordConfirmation");
-
-			// Resets the user's password
-			IdentityResult? result = await userManager.ResetPasswordAsync(user, Code, Password);
-			if (result.Succeeded)
-				return RedirectToPage("./ResetPasswordConfirmation");
-
-			// Log errors
-			foreach (IdentityError? error in result.Errors)
-				ModelState.AddModelError(string.Empty, error.Description);
 			return Page();
 		}
 	}

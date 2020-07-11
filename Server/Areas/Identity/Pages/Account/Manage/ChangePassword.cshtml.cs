@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CRM.Shared.Models;
 using Microsoft.AspNetCore.Identity;
@@ -10,92 +7,77 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 {
-    public class ChangePasswordModel : PageModel
-    {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ILogger<ChangePasswordModel> _logger;
+	public class ChangePasswordModel : PageModel
+	{
+		private readonly SignInManager<ApplicationUser> signInManager;
+		private readonly UserManager<ApplicationUser> userManager;
+		private readonly ILogger<ChangePasswordModel> logger;
 
-        public ChangePasswordModel(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            ILogger<ChangePasswordModel> logger)
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _logger = logger;
-        }
+		[Required]
+		[BindProperty]
+		[DataType(DataType.Password)]
+		[Display(Name = "Current password")]
+		public string OldPassword { get; set; }
 
-        [BindProperty]
-        public InputModel Input { get; set; }
+		[Required]
+		[BindProperty]
+		[DataType(DataType.Password)]
+		[Display(Name = "New password")]
+		[StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
+		public string NewPassword { get; set; }
 
-        [TempData]
-        public string StatusMessage { get; set; }
+		[BindProperty]
+		[DataType(DataType.Password)]
+		[Display(Name = "Confirm new password")]
+		[Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+		public string ConfirmPassword { get; set; }
 
-        public class InputModel
-        {
-            [Required]
-            [DataType(DataType.Password)]
-            [Display(Name = "Current password")]
-            public string OldPassword { get; set; }
+		[TempData]
+		public string? StatusMessage { get; set; }
 
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            [DataType(DataType.Password)]
-            [Display(Name = "New password")]
-            public string NewPassword { get; set; }
+		public ChangePasswordModel(
+			SignInManager<ApplicationUser> signInManager,
+			UserManager<ApplicationUser> userManager,
+			ILogger<ChangePasswordModel> logger)
+		{
+			this.logger = logger;
+			this.userManager = userManager;
+			this.signInManager = signInManager;
+			OldPassword = string.Empty;
+			NewPassword = string.Empty;
+			ConfirmPassword = string.Empty;
+		}
 
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm new password")]
-            [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
-        }
+		public async Task<IActionResult> OnGetAsync()
+		{
+			ApplicationUser? user = await userManager.GetUserAsync(User);
+			if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			if (await userManager.HasPasswordAsync(user) is not true) return RedirectToPage("./SetPassword");
+			return Page();
+		}
 
-        public async Task<IActionResult> OnGetAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
+		public async Task<IActionResult> OnPostAsync()
+		{
+			if (ModelState.IsValid)
+			{
+				ApplicationUser? user = await userManager.GetUserAsync(User);
+				if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+				IdentityResult? changePasswordResult = await userManager.ChangePasswordAsync(user, OldPassword, NewPassword);
 
-            var hasPassword = await _userManager.HasPasswordAsync(user);
-            if (!hasPassword)
-            {
-                return RedirectToPage("./SetPassword");
-            }
+				if (changePasswordResult.Succeeded is not true)
+				{
+					foreach (IdentityError? error in changePasswordResult.Errors)
+						ModelState.AddModelError(string.Empty, error.Description);
+					return Page();
+				}
 
-            return Page();
-        }
+				await signInManager.RefreshSignInAsync(user);
+				logger.LogInformation("User changed their password successfully.");
+				StatusMessage = "Your password has been changed.";
+				return RedirectToPage();
+			}
 
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, Input.OldPassword, Input.NewPassword);
-            if (!changePasswordResult.Succeeded)
-            {
-                foreach (var error in changePasswordResult.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-                return Page();
-            }
-
-            await _signInManager.RefreshSignInAsync(user);
-            _logger.LogInformation("User changed their password successfully.");
-            StatusMessage = "Your password has been changed.";
-
-            return RedirectToPage();
-        }
-    }
+			return Page();
+		}
+	}
 }

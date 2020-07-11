@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using System;
+using System.Text.Encodings.Web;
 
 namespace CRM.Server.Areas.Identity.Pages.Account
 {
@@ -15,45 +15,43 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 	public class RegisterConfirmationModel : PageModel
 	{
 		private readonly UserManager<ApplicationUser> userManager;
-		private readonly IEmailSender sender;
+		private readonly IEmailSender emailSender;
+
+		public string? Email { get; set; }
+		public bool DisplayConfirmAccountLink { get; set; }
 
 		public RegisterConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender sender)
 		{
+			this.emailSender = sender;
 			this.userManager = userManager;
-			this.sender = sender;
 		}
 
-		public string? Email { get; set; }
-
-		public bool DisplayConfirmAccountLink { get; set; }
-
-		public Uri? EmailConfirmationUrl { get; set; }
-
-		public async Task<IActionResult> OnGetAsync(string email, Uri? returnUrl = null)
+		public async Task<IActionResult> OnGetAsync(string email, string? returnUrl = null)
 		{
-			if (email == null)
-			{
-				return RedirectToPage("/Index");
-			}
-
+			if (email is null) return RedirectToPage("/Index");
 			ApplicationUser? user = await userManager.FindByEmailAsync(email);
 
-			if (user == null)
+			if (user is not null)
 			{
-				return NotFound($"Unable to load user with email '{email}'.");
+				Email = email;
+				var userId = await userManager.GetUserIdAsync(user);
+
+				// Generates an account confirmation code
+				var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+				code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+				var callbackUrl = Url.Page(
+					"/Account/ConfirmEmail",
+					pageHandler: null,
+					values: new { area = "Identity", userId, code, returnUrl },
+					protocol: Request.Scheme);
+
+				// Sends an email to the user with the account confirmation code
+				await emailSender.SendEmailAsync(Email, "Confirm your email",
+					$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+				return Page();
 			}
 
-			Email = email;
-			var userId = await userManager.GetUserIdAsync(user);
-			var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-			code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-			EmailConfirmationUrl = new Uri(Url.Page(
-				"/Account/ConfirmEmail",
-				pageHandler: null,
-				values: new { area = "Identity", userId, code, returnUrl },
-				protocol: Request.Scheme));
-			await sender.SendEmailAsync(email, "Confirme sua conta.", EmailConfirmationUrl.AbsoluteUri);
-			return Page();
+			return NotFound($"Unable to load user with email '{email}'.");
 		}
 	}
 }

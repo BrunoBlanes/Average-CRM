@@ -39,8 +39,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		public async Task<IActionResult> OnGetAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user == null)
-				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 			await LoadAsync(user);
 			return Page();
 		}
@@ -48,31 +47,30 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		public async Task<IActionResult> OnPostAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user == null)
-				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 
-			if (!ModelState.IsValid)
+			if (ModelState.IsValid)
 			{
-				await LoadAsync(user);
-				return Page();
-			}
+				string? phoneNumber = await userManager.GetPhoneNumberAsync(user);
 
-			string? phoneNumber = await userManager.GetPhoneNumberAsync(user);
-
-			if (PhoneNumber != phoneNumber)
-			{
-				IdentityResult? setPhoneResult = await userManager.SetPhoneNumberAsync(user, PhoneNumber);
-
-				if (!setPhoneResult.Succeeded)
+				if (PhoneNumber != phoneNumber)
 				{
-					StatusMessage = "Unexpected error when trying to set phone number.";
-					return RedirectToPage();
+					IdentityResult? setPhoneResult = await userManager.SetPhoneNumberAsync(user, PhoneNumber);
+
+					if (setPhoneResult.Succeeded is false)
+					{
+						StatusMessage = "Unexpected error when trying to set phone number.";
+						return RedirectToPage();
+					}
 				}
+
+				await signInManager.RefreshSignInAsync(user);
+				StatusMessage = "Your profile has been updated";
+				return RedirectToPage();
 			}
 
-			await signInManager.RefreshSignInAsync(user);
-			StatusMessage = "Your profile has been updated";
-			return RedirectToPage();
+			await LoadAsync(user);
+			return Page();
 		}
 	}
 }

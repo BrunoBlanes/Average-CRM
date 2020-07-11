@@ -99,6 +99,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 						protocol: Request.Scheme);
 
 					// TODO: Generate proper email body
+					// TODO: Move code generation and email sender to two separate functions
 					// Sends a confirmation email to the user
 					await emailSender.SendEmailAsync(Email,
 						"Confirm your email",

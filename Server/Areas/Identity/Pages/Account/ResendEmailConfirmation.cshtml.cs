@@ -38,33 +38,35 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 
 		public async Task<IActionResult> OnPostAsync()
 		{
-			if (!ModelState.IsValid)
+			if (ModelState.IsValid)
 			{
-				return Page();
-			}
+				ApplicationUser? user = await userManager.FindByEmailAsync(Email);
 
-            ApplicationUser? user = await userManager.FindByEmailAsync(Email);
+				if (user is null)
+				{
+					ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+					return Page();
+				}
 
-			if (user == null)
-			{
+				// Generates a new confirmation code and encodes it
+				var userId = await userManager.GetUserIdAsync(user);
+				var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+				code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+				var callbackUrl = Url.Page(
+					"/Account/ConfirmEmail",
+					pageHandler: null,
+					values: new { userId, code },
+					protocol: Request.Scheme);
+
+				// Sends an email to the user with the account confirmation code
+				await emailSender.SendEmailAsync(
+					Email,
+					"Confirm your email",
+					$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 				ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
 				return Page();
 			}
 
-			var userId = await userManager.GetUserIdAsync(user);
-			var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-			code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-			var callbackUrl = Url.Page(
-				"/Account/ConfirmEmail",
-				pageHandler: null,
-				values: new { userId, code },
-				protocol: Request.Scheme);
-			await emailSender.SendEmailAsync(
-				Email,
-				"Confirm your email",
-				$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-			ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
 			return Page();
 		}
 	}

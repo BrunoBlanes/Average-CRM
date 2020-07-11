@@ -51,7 +51,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 
 		public async Task OnGetAsync(string? returnUrl = null)
 		{
-			if (!string.IsNullOrEmpty(ErrorMessage))
+			if (string.IsNullOrEmpty(ErrorMessage) is not true)
 				ModelState.AddModelError(string.Empty, ErrorMessage);
 			returnUrl ??= Url.Content("~/");
 
