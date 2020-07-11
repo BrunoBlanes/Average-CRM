@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +9,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using CRM.Server.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace CRM.Server.Areas.Identity.Pages.Account
 {
@@ -21,17 +19,19 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly IEmailSender emailSender;
 
+		[Required]
+		[EmailAddress]
+		[BindProperty]
+		public string Email { get; set; }
+
 		public ResendEmailConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender emailSender)
 		{
-			Input = new InputModel();
+			Email = string.Empty;
 			this.userManager = userManager;
 			this.emailSender = emailSender;
 		}
 
-		[BindProperty]
-		public InputModel Input { get; set; }
-
-		public void OnGet()
+		public static void OnGet()
 		{
 
 		}
@@ -43,7 +43,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 				return Page();
 			}
 
-            ApplicationUser? user = await userManager.FindByEmailAsync(Input.Email);
+            ApplicationUser? user = await userManager.FindByEmailAsync(Email);
 
 			if (user == null)
 			{
@@ -60,7 +60,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 				values: new { userId, code },
 				protocol: Request.Scheme);
 			await emailSender.SendEmailAsync(
-				Input.Email,
+				Email,
 				"Confirm your email",
 				$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 

@@ -15,7 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -30,24 +29,31 @@ namespace CRM.Server
 			Configuration = configuration;
 		}
 
-		// This method gets called by the runtime. Use this method to add services to the container.
-		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
+			// Sets the database connection string
 			services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+			// Configure identity
 			services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 			{
+				// Password strength settings
 				options.Password.RequiredLength = 8;
 				options.User.RequireUniqueEmail = true;
 				options.SignIn.RequireConfirmedAccount = true;
 				options.Password.RequireNonAlphanumeric = false;
-				options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+
+				// Default Lockout settings
+				options.Lockout.AllowedForNewUsers = false;
+				options.Lockout.MaxFailedAccessAttempts = 3;
+				options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 			}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
+			// Sets identity to use JWT tokens
 			services.AddIdentityServer().AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 			services.AddAuthentication().AddIdentityServerJwt();
 
+			// Configure json and razor pages
 			services.AddMvc().AddJsonOptions(options =>
 			{
 				options.JsonSerializerOptions.WriteIndented = true;
@@ -61,6 +67,7 @@ namespace CRM.Server
 				options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
 			});
 
+			// Configure identity path for cookies
 			services.ConfigureApplicationCookie(options =>
 			{
 				options.LoginPath = $"/Identity/Account/Login";
@@ -68,6 +75,7 @@ namespace CRM.Server
 				options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 			});
 
+			// Configure api versioning
 			services.AddApiVersioning(options =>
 			{
 				options.ReportApiVersions = true;
@@ -83,20 +91,22 @@ namespace CRM.Server
 				options.MaxAge = TimeSpan.FromDays(60);
 			});
 
+			// Sets redirection to https
 			services.AddHttpsRedirection(options =>
 			{
 				options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
 				options.HttpsPort = 5001;
 			});
 
+			// Sets the email service
 			services.Configure<AuthMessageSenderOptions>(Configuration);
 			services.AddTransient<IEmailSender, EmailSender>();
+
+			// Sets the view
 			services.AddControllersWithViews();
 			services.AddRazorPages();
 		}
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		[SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
 			if (env.IsDevelopment())
@@ -110,7 +120,8 @@ namespace CRM.Server
 			{
 				app.UseExceptionHandler("/Error");
 
-				// TODO: The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+				// TODO: The default HSTS value is 30 days.
+				// You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
 
