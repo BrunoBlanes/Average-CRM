@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 [assembly: HostingStartup(typeof(IdentityHostingStartup))]
 namespace CRM.Server.Areas.Identity
 {
-    public class IdentityHostingStartup : IHostingStartup
+	public class IdentityHostingStartup : IHostingStartup
 	{
 		public void Configure(IWebHostBuilder builder)
 		{

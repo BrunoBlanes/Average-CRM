@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using System.Text;
+﻿using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using CRM.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Text.Encodings.Web;
 
 namespace CRM.Server.Areas.Identity.Pages.Account
 {

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using CRM.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -24,15 +24,13 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 
 		public async Task<IActionResult> OnGetAsync(string userId, string code)
 		{
-			if (userId == null || code == null)
-				return RedirectToPage("/Index");
+			if (userId is null || code is null) return RedirectToPage("/Index");
 
 			// Gets the user from the database
 			ApplicationUser? user = await userManager.FindByIdAsync(userId);
 
 			// User id is incorrect
-			if (user == null)
-				return NotFound($"Unable to load user with ID '{userId}'.");
+			if (user is null) return NotFound($"Unable to load user with ID '{userId}'.");
 
 			// Confirm the account
 			code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));

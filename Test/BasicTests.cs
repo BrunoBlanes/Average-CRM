@@ -1,10 +1,7 @@
-﻿using CRM.Server;
-
-using Microsoft.AspNetCore.Mvc.Testing;
-
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
-
+using CRM.Server;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace CRM.Test
