@@ -1,33 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
-namespace CRM.Shared.Models
+namespace CRM.Core.Models
 {
 	[DataContract(IsReference = true)]
-	public class ProductGroup
+	public class ProductBrand
 	{
-		[Column("ProductGroupId")]
+		[DataMember]
+		[Column("ProductBrandId")]
 		public int Id { get; set; }
 
+		[Required]
 		[DataMember]
-		public string Header { get; set; }
+		public string Brand { get; set; }
 
 		[DataMember]
 		public DateTime CreatedOn { get; set; }
 
 		[DataMember]
-		public Budget Budget { get; set; }
-		public int BudgetId { get; set; }
+		public IList<Product>? Products { get; set; }
 
-		[DataMember]
-		public IList<ProductGroupDetail>? Products { get; set; }
-
-		public ProductGroup()
+		public ProductBrand()
 		{
-			Header = string.Empty;
-			Budget = new Budget();
+			Brand = string.Empty;
 			CreatedOn = DateTime.UtcNow;
 		}
 	}

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace CRM.Shared.Models
+namespace CRM.Core.Models
 {
 	[DataContract(IsReference = true)]
 	public class Supplier : Contact

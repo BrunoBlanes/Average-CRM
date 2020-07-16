@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace CRM.Shared.Models
+namespace CRM.Core.Models
 {
 	[DataContract(IsReference = true)]
 	public class Person : Contact

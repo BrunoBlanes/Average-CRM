@@ -1,4 +1,4 @@
-﻿namespace CRM.Shared.Models
+﻿namespace CRM.Core.Models
 {
 	public class ProductGroupDetail
 	{

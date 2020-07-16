@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-using CRM.Shared.Models;
+using CRM.Core.Models;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

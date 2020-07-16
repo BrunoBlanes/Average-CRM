@@ -2,6 +2,7 @@
 <html>
 
 <head>
+	<base href="~/" />
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<title>@ViewBag.Title</title>
@@ -9,8 +10,18 @@
 	<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
 	<link href="~/css/app.css" rel="stylesheet" />
 
+	<!-- Load React -->
+	<script src="@("https://unpkg.com/react@16/umd/react.production.min.js")"></script>
+	<script src="@("https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")"></script>
+
+	<!-- Load FluentUI -->
+	<script src="@("https://unpkg.com/office-ui-fabric-react@7/dist/office-ui-fabric-react.js")"></script>
+	<script src="@("https://unpkg.com/@uifabric/react-hooks@7/dist/react-hooks.js")"></script>
+
+	<!--Load JQuery --> 
 	<script src="~/lib/jquery/dist/jquery.js" type="text/javascript"></script>
 	<script src="~/lib/jquery/plugins/jquery.mask.js" type="text/javascript"></script>
+
 	<script src="~/js/site.js" type="text/javascript"></script>
 </head>
 
@@ -25,5 +36,7 @@
 			@RenderBody()
 		</div>
 	</div>
+
+	<script src="_framework/blazor.server.js"></script>
 </body>
 </html>	

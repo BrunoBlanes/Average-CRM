@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 
 using Microsoft.AspNetCore.Identity;
 
-namespace CRM.Shared.Models
+namespace CRM.Core.Models
 {
 	[DataContract(IsReference = true)]
 	public class ApplicationUser : IdentityUser

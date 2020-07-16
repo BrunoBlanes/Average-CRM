@@ -1,26 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
-namespace CRM.Shared.Models
+namespace CRM.Core.Models
 {
 	[DataContract(IsReference = true)]
-	public class ProfitMargin
+	public class ClientType
 	{
 		[DataMember]
-		[Column("ProfitMarginId")]
+		[Column("ClientTypeId")]
 		public int Id { get; set; }
 
 		[Required]
 		[DataMember]
-		public double Profit { get; set; }
+		public string Type { get; set; }
 
 		[DataMember]
 		public DateTime CreatedOn { get; set; }
 
-		public ProfitMargin()
+		[DataMember]
+		public IList<ProfitMargin>? ProfitMargins { get; }
+
+		public ClientType()
 		{
+			Type = string.Empty;
 			CreatedOn = DateTime.UtcNow;
 		}
 	}

@@ -1,7 +1,7 @@
 ﻿@page
 @model LoginModel
 @using Microsoft.AspNetCore.Authentication;
-
+@using CRM.Client.Components.FluentUI;
 @{
 	ViewData["Title"] = "Log in";
 }
@@ -33,7 +33,8 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<button type="submit" class="btn btn-primary">Log in</button>
+					<component type="typeof(Button)" render-mode="ServerPrerendered" param-Name="@("LogoutButton")" param-Content="@("Log in")" param-Primary="@(true)"/>
+@*					<button type="submit" class="btn btn-primary">Log in</button>*@
 				</div>
 				<div class="form-group">
 					<p>

@@ -5,8 +5,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-using CRM.Shared.Attributes;
-using CRM.Shared.Models;
+using CRM.Core.Attributes;
+using CRM.Core.Models;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;

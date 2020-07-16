@@ -1,6 +1,6 @@
 ﻿using System;
 
-using CRM.Shared.Models;
+using CRM.Core.Models;
 
 using IdentityServer4.EntityFramework.Options;
 

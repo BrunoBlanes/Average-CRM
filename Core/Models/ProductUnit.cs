@@ -4,36 +4,28 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
-namespace CRM.Shared.Models
+namespace CRM.Core.Models
 {
 	[DataContract(IsReference = true)]
-	public class Contact
+	public class ProductUnit
 	{
 		[DataMember]
-		[Column("ContactId")]
+		[Column("ProductUnitId")]
 		public int Id { get; set; }
 
 		[Required]
 		[DataMember]
-		[EmailAddress]
-		public string Email { get; set; }
-
-		[DataMember]
-		public string? Phone { get; set; }
+		public string Unit { get; set; }
 
 		[DataMember]
 		public DateTime CreatedOn { get; set; }
 
 		[DataMember]
-		public Address? Address { get; set; }
-		public int? AddressId { get; set; }
+		public IList<Product>? Products { get; set; }
 
-		[DataMember]
-		public IList<Budget>? Budgets { get; set; }
-
-		public Contact()
+		public ProductUnit()
 		{
-			Email = string.Empty;
+			Unit = string.Empty;
 			CreatedOn = DateTime.UtcNow;
 		}
 	}

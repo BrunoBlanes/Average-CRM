@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace CRM.Shared.Attributes
+namespace CRM.Core.Attributes
 {
 	public class CpfValidationAttribute : ValidationAttribute
 	{

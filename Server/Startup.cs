@@ -2,8 +2,8 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+using CRM.Core.Models;
 using CRM.Server.Services;
-using CRM.Shared.Models;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -104,6 +104,7 @@ namespace CRM.Server
 
 			// Sets the view
 			services.AddControllersWithViews();
+			services.AddServerSideBlazor();
 			services.AddRazorPages();
 		}
 
@@ -137,6 +138,7 @@ namespace CRM.Server
 
 			app.UseEndpoints(endpoints =>
 			{
+				endpoints.MapBlazorHub();
 				endpoints.MapRazorPages();
 				endpoints.MapControllers();
 				endpoints.MapFallbackToFile("index.html");

@@ -4,28 +4,36 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
-namespace CRM.Shared.Models
+namespace CRM.Core.Models
 {
 	[DataContract(IsReference = true)]
-	public class BudgetStatus
+	public class Contact
 	{
 		[DataMember]
-		[Column("BudgetStatusId")]
+		[Column("ContactId")]
 		public int Id { get; set; }
 
 		[Required]
 		[DataMember]
-		public string Status { get; set; }
+		[EmailAddress]
+		public string Email { get; set; }
+
+		[DataMember]
+		public string? Phone { get; set; }
 
 		[DataMember]
 		public DateTime CreatedOn { get; set; }
 
 		[DataMember]
+		public Address? Address { get; set; }
+		public int? AddressId { get; set; }
+
+		[DataMember]
 		public IList<Budget>? Budgets { get; set; }
 
-		public BudgetStatus()
+		public Contact()
 		{
-			Status = string.Empty;
+			Email = string.Empty;
 			CreatedOn = DateTime.UtcNow;
 		}
 	}
