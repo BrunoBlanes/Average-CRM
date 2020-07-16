@@ -5,7 +5,9 @@ using System.Globalization;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+
 using CRM.Shared.Models;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -118,7 +120,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 
 			while (currentPosition + 4 < unformattedKey.Length)
 			{
-				result.Append(unformattedKey.Substring(currentPosition, 4)).Append(" ");
+				result.Append(unformattedKey.Substring(currentPosition, 4)).Append(' ');
 				currentPosition += 4;
 			}
 

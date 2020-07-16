@@ -1,5 +1,7 @@
 ﻿using System;
+
 using CRM.Server.Areas.Identity;
+
 using Microsoft.AspNetCore.Hosting;
 
 [assembly: HostingStartup(typeof(IdentityHostingStartup))]

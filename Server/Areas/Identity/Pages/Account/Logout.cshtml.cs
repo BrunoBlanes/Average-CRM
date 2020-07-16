@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
+
 using CRM.Shared.Models;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -29,8 +31,9 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 		{
 			await signInManager.SignOutAsync();
 			logger.LogInformation("User logged out.");
-			if (returnUrl is not null) return LocalRedirect(returnUrl);
-			else return RedirectToPage();
+			return returnUrl is not null
+				? LocalRedirect(returnUrl)
+				: (IActionResult)RedirectToPage();
 		}
 	}
 }

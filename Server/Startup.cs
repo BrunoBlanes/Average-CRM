@@ -1,8 +1,10 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
 using CRM.Server.Services;
 using CRM.Shared.Models;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
