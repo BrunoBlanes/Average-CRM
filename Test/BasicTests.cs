@@ -27,14 +27,14 @@ namespace CRM.Test
 		public async Task GetEndpointsReturnSuccessAndCorrectContentType(string url)
 		{
 			// Arrange
-			var client = factory.CreateClient();
+			HttpClient? client = factory.CreateClient();
 
 			// Act
-			var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+			HttpResponseMessage? response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
 
 			// Assert
 			response.EnsureSuccessStatusCode(); // Status Code 200-299
-			Assert.Equal("text/html", response.Content.Headers.ContentType.ToString());
+			Assert.Equal("text/html", response.Content.Headers.ContentType?.ToString());
 		}
 	}
 }
