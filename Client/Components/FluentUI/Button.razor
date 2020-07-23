@@ -36,8 +36,8 @@
 	{
 		if (firstRender)
 		{
-			if (Primary) await JSRuntime.InvokeVoidAsync("renderPrimaryButton", Content, Disabled, AllowDisabledFocus, Checked, Name);
-			else await JSRuntime.InvokeVoidAsync("renderDefaultButton", Content, Disabled, AllowDisabledFocus, Checked, Name);
-		}
+@*			if (Primary) await JSRuntime.InvokeVoidAsync("JsFunctions.renderPrimaryButton", Content, Disabled, AllowDisabledFocus, Checked, Name);
+			else await JSRuntime.InvokeVoidAsync("JsFunctions.renderDefaultButton", Content, Disabled, AllowDisabledFocus, Checked, Name);
+*@		}
 	}
 }
