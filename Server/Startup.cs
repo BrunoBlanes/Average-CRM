@@ -98,14 +98,25 @@ namespace CRM.Server
 				options.HttpsPort = 5001;
 			});
 
+			// Add an http client for the Unsplash API
+			services.AddHttpClient("Unsplash", options =>
+			{
+				options.BaseAddress = new Uri("https://api.unsplash.com");
+				options.DefaultRequestHeaders.Add("Authorization", $"Client-ID {Configuration["Unsplash:AccessKey"]}");
+			});
+
 			// Sets the email service
 			services.Configure<AuthMessageSenderOptions>(Configuration);
 			services.AddTransient<IEmailSender, EmailSender>();
+
+			// Adds Unsplash service
+			services.AddHostedService<Unsplash>();
 
 			// Sets the view
 			services.AddControllersWithViews();
 			services.AddServerSideBlazor();
 			services.AddRazorPages();
+			services.AddHttpClient();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

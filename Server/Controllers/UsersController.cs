@@ -21,16 +21,16 @@ namespace CRM.Server.Controllers
 	public class UsersController : ControllerBase
 	{
 		private readonly ILogger logger;
-		private readonly ApplicationDbContext context;
 		private readonly EmailSender emailSender;
+		private readonly ApplicationDbContext context;
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly SignInManager<ApplicationUser> signInManager;
 
 		public UsersController(UserManager<ApplicationUser> userManager,
 			SignInManager<ApplicationUser> signInManager,
 			ILogger<UsersController> logger,
-			EmailSender emailSender,
-			ApplicationDbContext context)
+			ApplicationDbContext context,
+			EmailSender emailSender)
 		{
 			this.logger = logger;
 			this.context = context;

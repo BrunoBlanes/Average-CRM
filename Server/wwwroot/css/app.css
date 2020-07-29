@@ -1,65 +1,42 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\
 for details on configuring this project to bundle and minify static web assets. */
 
-a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+body, html {
+	height: 100%;
 }
 
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  font-size: 14px;
-}
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+/* Content we're putting a blur over */
+.content:before {
+	/* Center and scale the image nicely */
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	touch-action: none;
+	position: fixed;
+	display: block;
+	right: 0;
+	left: 0;
+	/* Full height */
+	height: 100vh;
+	z-index: -1;
+	content: "";
+	width: 100%;
+	/* Applies blur effect */
+/*	-webkit-filter: blur(5px);
+	-moz-filter: blur(5px);
+	-ms-filter: blur(5px);
+	filter: blur(5px);
+*/}
+
+.content {
+	left: 0;
+	right: 0;
+	z-index: 0;
+	position: fixed;
+	margin-left: 20px;
+	margin-right: 20px;
 }
 
-.container {
-  max-width: 960px;
-}
-
-.pricing-header {
-  max-width: 700px;
-}
-
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
-
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
-}
-
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-}
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  overflow: scroll;
-  white-space: nowrap;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  line-height: 60px; /* Vertically center the text there */
+.login-form {
+	position: center;
 }
