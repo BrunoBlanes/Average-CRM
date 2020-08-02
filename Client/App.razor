@@ -3,7 +3,7 @@
 		<Found Context="routeData">
 			<AuthorizeRouteView RouteData="@routeData">
 				<NotAuthorized>
-					@if (!context.User.Identity.IsAuthenticated)
+					@if (context.User.Identity?.IsAuthenticated is not true)
 					{
 						<RedirectToLogin />
 					}

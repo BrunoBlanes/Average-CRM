@@ -1,0 +1,17 @@
+﻿{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"jsx": "react",
+		"target": "ES6",
+		"sourceMap": true,
+		"noEmitOnError": true,
+		"noImplicitAny": true,
+		"removeComments": false,
+		"moduleResolution": "Node",
+		"experimentalDecorators": true,
+		"suppressImplicitAnyIndexErrors": true
+	},
+	"exclude": [
+		"node_modules"
+	]
+}

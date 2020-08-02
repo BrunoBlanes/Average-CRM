@@ -16,13 +16,9 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0-preview.7.20364.11" />
-		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.0.0-beta">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="System.Net.Http.Json" Version="5.0.0-preview.7.20364.11" />
 	</ItemGroup>
-		
+
 	<ItemGroup>
 		<ProjectReference Include="..\Core\CRM.Core.csproj" />
 	</ItemGroup>
