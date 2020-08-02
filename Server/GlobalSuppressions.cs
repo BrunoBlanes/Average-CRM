@@ -20,3 +20,6 @@
 
 // Don't know what type of exceptions would be thrown
 [assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:CRM.Server.Program.Main(System.String[])")]
+
+// Can not make list it private since System.Text.Json doesn't support ObjectCreationHandling = reuse
+[assembly: SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "<Pending>", Scope = "member", Target = "~P:CRM.Server.Models.UnsplashModel.Images")]

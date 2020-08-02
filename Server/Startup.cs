@@ -102,6 +102,7 @@ namespace CRM.Server
 			services.AddHttpClient("Unsplash", options =>
 			{
 				options.BaseAddress = new Uri("https://api.unsplash.com");
+				options.DefaultRequestHeaders.Add("Accept-Version", "v1");
 				options.DefaultRequestHeaders.Add("Authorization", $"Client-ID {Configuration["Unsplash:AccessKey"]}");
 			});
 

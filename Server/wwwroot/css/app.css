@@ -8,6 +8,7 @@ body, html {
 /* Content we're putting a blur over */
 .content:before {
 	/* Center and scale the image nicely */
+	background-image: url(../img/login-bg-image.jpg);
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
@@ -22,11 +23,11 @@ body, html {
 	content: "";
 	width: 100%;
 	/* Applies blur effect */
-/*	-webkit-filter: blur(5px);
-	-moz-filter: blur(5px);
-	-ms-filter: blur(5px);
-	filter: blur(5px);
-*/}
+	-webkit-filter: blur(10px);
+	-moz-filter: blur(10px);
+	-ms-filter: blur(10px);
+	filter: blur(10px);
+}
 
 .content {
 	left: 0;

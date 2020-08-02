@@ -1,6 +1,6 @@
 ﻿@page
-@model LoginModel;
 @using Microsoft.AspNetCore.Authentication;
+@model LoginModel;
 
 @{
 	ViewData["Title"] = "Log in";
@@ -48,14 +48,9 @@
 	</section>
 </div>
 
-<script> window.jsInterop.stopScroll("login-main-div"); </script>
-
-@* Sets the background image *@
-<style type="text/css">
-	.content:before {
-		background-image: url(@Model.Unsplash);
-	}
-</style>
+<script>
+	JsFunctions.StopScroll("login-main-div");
+</script>
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />

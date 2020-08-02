@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using CRM.Core.Models;
-using CRM.Server.Models;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -27,7 +26,6 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 		[TempData]
 		public string? ErrorMessage { get; set; }
 		public string? ReturnUrl { get; set; }
-		public string? Unsplash { get; set; }
 
 		[Required]
 		[EmailAddress]
@@ -51,14 +49,6 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 			this.signInManager = signInManager;
 			Password = string.Empty;
 			Email = string.Empty;
-
-			// Gets the background image from Unsplash
-			Unsplash = UnsplashModel.Unsplash?.Urls?.Raw?.AbsoluteUri +
-				"&amp;w=1920" +
-				"&amp;fm=jpg" +
-				"&amp;auto=compress" +
-				"&amp;q=0" +
-				"&amp;fit=clip";
 		}
 
 		public async Task OnGetAsync(string? returnUrl = null)

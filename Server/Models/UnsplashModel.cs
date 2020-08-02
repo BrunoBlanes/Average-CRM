@@ -5,10 +5,8 @@ namespace CRM.Server.Models
 {
 	public class UnsplashModel
 	{
-		public static UnsplashModel? Unsplash { get; set; }
-
 		[JsonPropertyName("id")]
-		public string? Id { get; set; }
+		public string Id { get; set; } = null!;
 
 		[JsonPropertyName("width")]
 		public int Width { get; set; }
@@ -17,22 +15,25 @@ namespace CRM.Server.Models
 		public int Height { get; set; }
 
 		[JsonPropertyName("color")]
-		public string? Color { get; set; }
+		public string Color { get; set; } = null!;
 
 		[JsonPropertyName("description")]
-		public string? Description { get; set; }
+		public string Description { get; set; } = null!;
 
 		[JsonPropertyName("alt_description")]
-		public string? AltDescription { get; set; }
+		public string AltDescription { get; set; } = null!;
 
 		[JsonPropertyName("urls")]
-		public Urls? Urls { get; set; }
+		public Urls Urls { get; set; } = null!;
+
+		[JsonPropertyName("links")]
+		public Links Links { get; set; } = null!;
 
 		[JsonPropertyName("user")]
-		public User? User { get; set; }
+		public User User { get; set; } = null!;
 
 		[JsonPropertyName("location")]
-		public Location? Location { get; set; }
+		public Location Location { get; set; } = null!;
 	}
 
 	public class Urls
@@ -51,6 +52,21 @@ namespace CRM.Server.Models
 
 		[JsonPropertyName("thumb")]
 		public Uri? Thumb { get; set; }
+	}
+
+	public class Links
+	{
+		[JsonPropertyName("self")]
+		public string? Self { get; set; }
+
+		[JsonPropertyName("html")]
+		public string? Html { get; set; }
+
+		[JsonPropertyName("download")]
+		public string? Download { get; set; }
+
+		[JsonPropertyName("download_location")]
+		public string DownloadLocation { get; set; } = null!;
 	}
 
 	public class User
