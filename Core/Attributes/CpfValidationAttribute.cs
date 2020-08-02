@@ -77,12 +77,7 @@ namespace CRM.Core.Attributes
 		protected override ValidationResult IsValid(object value, ValidationContext validationContext)
 		{
 			if (string.IsNullOrEmpty(value?.ToString())) return new ValidationResult("O campo CPF não pode estar vazio.");
-
-			if (regex.IsMatch(value.ToString()))
-			{
-				return ValidationResult.Success;
-			}
-
+			if (regex.IsMatch(value?.ToString() ?? string.Empty)) return ValidationResult.Success;
 			return new ValidationResult("Apenas são permitidos números.");
 		}
 	}

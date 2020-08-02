@@ -10,13 +10,13 @@ namespace CRM.Server.Controllers
 	{
 		private readonly ILogger<OidcConfigurationController> logger;
 
+		public IClientRequestParametersProvider ClientRequestParametersProvider { get; }
+
 		public OidcConfigurationController(IClientRequestParametersProvider clientRequestParametersProvider, ILogger<OidcConfigurationController> logger)
 		{
 			ClientRequestParametersProvider = clientRequestParametersProvider;
 			this.logger = logger;
 		}
-
-		public IClientRequestParametersProvider ClientRequestParametersProvider { get; }
 
 		[HttpGet("_configuration/{clientId}")]
 		public IActionResult GetClientRequestParameters([FromRoute] string clientId)
