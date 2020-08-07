@@ -2,8 +2,8 @@
 name: Feature request
 about: Suggest an idea for this project
 title: "[FEATURE]: Short description"
-labels: Feature, Triage
-assignees: BrunoBlanes
+labels: Feature
+assignees: ''
 
 ---
 
