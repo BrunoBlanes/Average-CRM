@@ -1,0 +1,37 @@
+﻿@inherits LayoutComponentBase;
+
+@inject IJSRuntime JSRuntime;
+
+<header>
+	
+</header>
+
+<nav class="col-3 col-s-3" style="max-width: 255px">
+	<NavigationPane Name="NavigationPane" NavigationItems="@navigationItems" />
+</nav>
+
+<main class="col-9 col-s-9">
+	@Body
+</main>
+
+<footer>
+	
+</footer>
+
+@code{
+	private Dictionary<string, object> navigationItems = new Dictionary<string, object>()
+	{
+		{ "Home", "/" },
+		{ "Contatos", "contacts" },
+		{ "Produtos", "products" },
+		{ "Clientes", "clients" },
+	};
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await JSRuntime.InvokeVoidAsync("jsInterop.loadFluentTheme");
+		}
+	}
+}

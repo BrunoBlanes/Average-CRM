@@ -1,9 +1,16 @@
-using CRM.Shared.Models;
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+using CRM.Core.Models;
+using CRM.Server.Services;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -11,49 +18,64 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
 namespace CRM.Server
 {
 	public class Startup
 	{
-		private readonly IConfiguration configuration;
+		public IConfiguration Configuration { get; }
 
 		public Startup(IConfiguration configuration)
 		{
-			this.configuration = configuration;
+			Configuration = configuration;
 		}
 
-		// This method gets called by the runtime. Use this method to add services to the container.
-		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddDbContext<AppDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+			// Sets the database connection string
+			services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-			services.AddDefaultIdentity<ApplicationUser>(options =>
+			// Configure identity
+			services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 			{
+				// Password strength settings
 				options.Password.RequiredLength = 8;
 				options.User.RequireUniqueEmail = true;
 				options.SignIn.RequireConfirmedAccount = true;
 				options.Password.RequireNonAlphanumeric = false;
-				options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-			}).AddEntityFrameworkStores<AppDbContext>();
 
-			services.AddIdentityServer().AddApiAuthorization<ApplicationUser, AppDbContext>();
+				// Default Lockout settings
+				options.Lockout.AllowedForNewUsers = false;
+				options.Lockout.MaxFailedAccessAttempts = 3;
+				options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+			}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+			// Sets identity to use JWT tokens
+			services.AddIdentityServer().AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 			services.AddAuthentication().AddIdentityServerJwt();
 
+			// Configure json and razor pages
 			services.AddMvc().AddJsonOptions(options =>
 			{
 				options.JsonSerializerOptions.WriteIndented = true;
 				options.JsonSerializerOptions.IgnoreNullValues = true;
 				options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-				options.JsonSerializerOptions.ReferenceHandling = ReferenceHandling.Preserve;
+				options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 				options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+			}).AddRazorPagesOptions(options =>
+			{
+				options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
+				options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
 			});
 
+			// Configure identity path for cookies
+			services.ConfigureApplicationCookie(options =>
+			{
+				options.LoginPath = $"/Identity/Account/Login";
+				options.LogoutPath = $"/Identity/Account/Logout";
+				options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+			});
+
+			// Configure api versioning
 			services.AddApiVersioning(options =>
 			{
 				options.ReportApiVersions = true;
@@ -69,21 +91,35 @@ namespace CRM.Server
 				options.MaxAge = TimeSpan.FromDays(60);
 			});
 
+			// Sets redirection to https
 			services.AddHttpsRedirection(options =>
 			{
 				options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
 				options.HttpsPort = 5001;
 			});
 
-			//services.Configure<AuthMessageSenderOptions>(configuration);
-			//services.AddTransient<EmailSender>();
+			// Add an http client for the Unsplash API
+			services.AddHttpClient("Unsplash", options =>
+			{
+				options.BaseAddress = new Uri("https://api.unsplash.com");
+				options.DefaultRequestHeaders.Add("Accept-Version", "v1");
+				options.DefaultRequestHeaders.Add("Authorization", $"Client-ID {Configuration["Unsplash:AccessKey"]}");
+			});
+
+			// Sets the email service
+			services.Configure<AuthMessageSenderOptions>(Configuration);
+			services.AddTransient<IEmailSender, EmailSender>();
+
+			// Adds Unsplash service
+			services.AddHostedService<Unsplash>();
+
+			// Sets the view
 			services.AddControllersWithViews();
+			services.AddServerSideBlazor();
 			services.AddRazorPages();
+			services.AddHttpClient();
 		}
 
-
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		[SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
 			if (env.IsDevelopment())
@@ -92,26 +128,29 @@ namespace CRM.Server
 				app.UseDatabaseErrorPage();
 				app.UseWebAssemblyDebugging();
 			}
+
 			else
 			{
 				app.UseExceptionHandler("/Error");
-				app.UseHttpsRedirection();
 
-				// TODO: The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+				// TODO: The default HSTS value is 30 days.
+				// You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
 
 			app.UseStaticFiles();
+			app.UseHttpsRedirection();
 			app.UseBlazorFrameworkFiles();
 
 			app.UseRouting();
 
-			app.UseAuthentication();
 			app.UseIdentityServer();
+			app.UseAuthentication();
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>
 			{
+				endpoints.MapBlazorHub();
 				endpoints.MapRazorPages();
 				endpoints.MapControllers();
 				endpoints.MapFallbackToFile("index.html");

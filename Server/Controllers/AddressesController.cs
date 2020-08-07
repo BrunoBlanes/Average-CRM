@@ -1,12 +1,12 @@
-﻿using CRM.Shared.Models;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using CRM.Core.Models;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Server.Controllers
 {
@@ -14,9 +14,9 @@ namespace CRM.Server.Controllers
 	[Route("api/[controller]")]
 	public class AddressesController : Controller
 	{
-		private readonly AppDbContext context;
+		private readonly ApplicationDbContext context;
 
-		public AddressesController(AppDbContext context)
+		public AddressesController(ApplicationDbContext context)
 		{
 			this.context = context;
 		}

@@ -1,18 +1,18 @@
-﻿using CRM.Server.Services;
-using CRM.Shared.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+
+using CRM.Server.Services;
+using CRM.Core.Models;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 
 namespace CRM.Server.Controllers
 {
@@ -21,16 +21,16 @@ namespace CRM.Server.Controllers
 	public class UsersController : ControllerBase
 	{
 		private readonly ILogger logger;
-		private readonly AppDbContext context;
 		private readonly EmailSender emailSender;
+		private readonly ApplicationDbContext context;
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly SignInManager<ApplicationUser> signInManager;
 
 		public UsersController(UserManager<ApplicationUser> userManager,
 			SignInManager<ApplicationUser> signInManager,
 			ILogger<UsersController> logger,
-			EmailSender emailSender,
-			AppDbContext context)
+			ApplicationDbContext context,
+			EmailSender emailSender)
 		{
 			this.logger = logger;
 			this.context = context;
@@ -78,7 +78,7 @@ namespace CRM.Server.Controllers
 					"Confirm your email", $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 			}
 
-			foreach (var error in result.Errors)
+			foreach (IdentityError? error in result.Errors)
 			{
 				ModelState.AddModelError(string.Empty, error.Description);
 			}
@@ -90,7 +90,7 @@ namespace CRM.Server.Controllers
 		public async Task<ActionResult<UserToken>> LoginAsync([FromBody] ApplicationUser user)
 		{
 			if (!ModelState.IsValid || user is null) return BadRequest(ModelState);
-			var result = await signInManager.PasswordSignInAsync(user.Email, user.Password, true, false);
+			Microsoft.AspNetCore.Identity.SignInResult? result = await signInManager.PasswordSignInAsync(user.Email, user.Password, true, false);
 
 			if (result.Succeeded)
 			{

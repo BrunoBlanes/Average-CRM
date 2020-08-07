@@ -1,34 +1,35 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System;
+using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Options;
 
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-using System;
-using System.Threading.Tasks;
-
 namespace CRM.Server.Services
 {
-	public class EmailSender
+	public class EmailSender : IEmailSender
 	{
-		private readonly AuthMessageSenderOptions options;
+		public AuthMessageSenderOptions Options { get; } //set only via Secret Manager
 
 		public EmailSender(IOptions<AuthMessageSenderOptions> options)
 		{
 			if (options is null) throw new ArgumentNullException(nameof(options));
-			this.options = options.Value;
+			Options = options.Value;
 		}
 
 		public Task SendEmailAsync(string email, string subject, string message)
 		{
-			return ExecuteAsync(options.SendGridKey, subject, message, email);
+			return ExecuteAsync(Options.SendGridKey, subject, message, email);
 		}
 
-		private Task ExecuteAsync(string apiKey, string subject, string message, string email)
+		private static Task ExecuteAsync(string apiKey, string subject, string message, string email)
 		{
 			var client = new SendGridClient(apiKey);
 			var msg = new SendGridMessage()
 			{
-				From = new EmailAddress("crm.server@brunoblanes.eng.br", options.SendGridUser),
+				From = new EmailAddress("server@crm.brunoblanes.eng.br", "Average CRM Server"),
 				Subject = subject,
 				PlainTextContent = message,
 				HtmlContent = message

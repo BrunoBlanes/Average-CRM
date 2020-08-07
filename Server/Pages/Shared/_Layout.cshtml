@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<base href="~/" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>@ViewBag.Title</title>
+
+	<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="~/css/app.css" rel="stylesheet" />
+
+	<!--Load JQuery --> 
+	<script src="~/lib/jquery/dist/jquery.js" type="text/javascript"></script>
+	<script src="~/lib/jquery/plugins/jquery.mask.js" type="text/javascript"></script>
+
+	<script src="~/js/jsInterop.js" type="text/javascript"></script>
+</head>
+
+<body>
+	<div class="main">
+		<div class="content">
+			@if (IsSectionDefined("scripts"))
+			{
+				RenderSection("scripts");
+			}
+
+			@RenderBody()
+		</div>
+	</div>
+
+	<script src="_framework/blazor.server.js"></script>
+</body>
+</html>	

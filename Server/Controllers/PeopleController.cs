@@ -1,12 +1,12 @@
-﻿using CRM.Shared.Models;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using CRM.Core.Models;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Server.Controllers
 {
@@ -15,8 +15,8 @@ namespace CRM.Server.Controllers
 	[Route("[controller]")]
 	public class PeopleController : Controller
 	{
-		private readonly AppDbContext context;
-		public PeopleController(AppDbContext context)
+		private readonly ApplicationDbContext context;
+		public PeopleController(ApplicationDbContext context)
 		{
 			this.context = context;
 		}
