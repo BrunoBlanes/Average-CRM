@@ -16,8 +16,9 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 
 		public IActionResult OnGet()
 		{
-			if (RecoveryCodes is null || RecoveryCodes.Any()) return RedirectToPage("./TwoFactorAuthentication");
-			return Page();
+			return RecoveryCodes is null || RecoveryCodes.Any()
+				? RedirectToPage("./TwoFactorAuthentication")
+				: (IActionResult)Page();
 		}
 	}
 }

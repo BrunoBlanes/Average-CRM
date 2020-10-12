@@ -5,8 +5,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-using CRM.Server.Services;
 using CRM.Core.Models;
+using CRM.Server.Services;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
