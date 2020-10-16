@@ -8,7 +8,7 @@ namespace CRM.Core.Attributes
 	{
 		private readonly Regex regex = new Regex(@"^\d{3}\.\d{3}\.\d{3}\-\d{2}$");
 
-		protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+		protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
 		{
 			string? cpf = value?.ToString();
 			if (string.IsNullOrEmpty(cpf))
@@ -65,7 +65,7 @@ namespace CRM.Core.Attributes
 				}
 			}
 
-			return new ValidationResult("Please insert oly digits.");
+			return new ValidationResult("Please insert only digits.");
 		}
 	}
 
@@ -74,11 +74,13 @@ namespace CRM.Core.Attributes
 	{
 		private readonly Regex regex = new Regex(@"^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$");
 
-		protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+		protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
 		{
-			if (string.IsNullOrEmpty(value?.ToString())) return new ValidationResult("O campo CPF não pode estar vazio.");
-			if (regex.IsMatch(value?.ToString() ?? string.Empty)) return ValidationResult.Success;
-			return new ValidationResult("Apenas são permitidos números.");
+			return string.IsNullOrEmpty(value?.ToString())
+				? new ValidationResult("O campo CPF não pode estar vazio.")
+				: regex.IsMatch(value?.ToString() ?? string.Empty)
+				? ValidationResult.Success
+				: new ValidationResult("Apenas são permitidos números.");
 		}
 	}
 }
