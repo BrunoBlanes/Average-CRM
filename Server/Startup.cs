@@ -110,8 +110,8 @@ namespace CRM.Server
 			services.Configure<AuthMessageSenderOptions>(Configuration);
 			services.AddTransient<IEmailSender, EmailSender>();
 
-			// Adds Unsplash service
-			services.AddHostedService<Unsplash>();
+			// See https://github.com/aspnet/Announcements/issues/432
+			services.AddDatabaseDeveloperPageExceptionFilter();
 
 			// Sets the view
 			services.AddControllersWithViews();
@@ -125,8 +125,8 @@ namespace CRM.Server
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
-				app.UseDatabaseErrorPage();
 				app.UseWebAssemblyDebugging();
+				app.UseMigrationsEndPoint();
 			}
 
 			else

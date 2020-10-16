@@ -12,6 +12,6 @@
 		"suppressImplicitAnyIndexErrors": true
 	},
 	"exclude": [
-		"node_modules"
+		"./Libraries/node_modules"
 	]
 }

@@ -54,7 +54,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 		public async Task OnGetAsync(string? returnUrl = null)
 		{
 			if (string.IsNullOrEmpty(ErrorMessage) is not true)
-				ModelState.AddModelError(string.Empty, ErrorMessage);
+				ModelState.AddModelError(string.Empty, ErrorMessage ?? string.Empty);
 			returnUrl ??= Url.Content("~/");
 
 			// Clear the existing external cookie to ensure a clean login process
