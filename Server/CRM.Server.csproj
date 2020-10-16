@@ -11,7 +11,7 @@
 		<PreserveCompilationContext>true</PreserveCompilationContext>
 		<UserSecretsId>311b3395-91d4-422a-82a7-52ea76f9e066</UserSecretsId>
 		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-		<RuntimeIdentifiers>win-x86;win-x64;win-arm;linux-x86;linux-x64;linux-arm</RuntimeIdentifiers>
+		<RuntimeIdentifiers>win-x86;win-x64;win-arm;linux-x64;linux-arm</RuntimeIdentifiers>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="Migrations\20200301050945_Inital.cs" />
