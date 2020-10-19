@@ -25,6 +25,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <TypeScriptCompile Remove="Libraries\node_modules\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="Libraries\src\functions.tsx" />
 	  <None Remove="tsconfig.json" />
 	</ItemGroup>
