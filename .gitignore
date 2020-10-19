@@ -14,9 +14,8 @@
 *.userprefs
 
 # Automatically generated JavaScript files
-Core/*.js
-Core/*.map
-!webpack.config.js
+Core/**/*.js
+Core/**/*.js.map
 
 # Build results
 [Dd]ebug/
