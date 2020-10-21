@@ -28,9 +28,11 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 
 		public async Task<IActionResult> OnGetAsync(string userId, string email, string code)
 		{
-			if (userId is null || email is null || code is null) return RedirectToPage("/Index");
+			if (userId is null || email is null || code is null)
+				return RedirectToPage("/Index");
 			ApplicationUser? user = await userManager.FindByIdAsync(userId);
-			if (user is null) return NotFound($"Unable to load user with ID '{userId}'.");
+			if (user is null)
+				return NotFound($"Unable to load user with ID '{userId}'.");
 			code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
 			IdentityResult? result = await userManager.ChangeEmailAsync(user, email, code);
 

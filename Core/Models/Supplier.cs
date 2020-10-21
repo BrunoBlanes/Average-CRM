@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRM.Core.Models
 {
-	[DataContract(IsReference = true)]
+	[Table("Suppliers")]
 	public class Supplier : Contact
 	{
-		[DataMember]
-		public IList<ProductSupplierDetail>? Products { get; set; }
+		public ICollection<Product>? Products { get; set; }
 	}
 }

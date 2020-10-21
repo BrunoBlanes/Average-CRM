@@ -4,13 +4,15 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace CRM.Core.Models
 {
-	[DataContract(IsReference = true)]
+	[Table("Contacts")]
+	[Index(nameof(Email), IsUnique = true)]
 	public class Contact
 	{
 		[DataMember]
-		[Column("ContactId")]
 		public int Id { get; set; }
 
 		[Required]
@@ -26,10 +28,9 @@ namespace CRM.Core.Models
 
 		[DataMember]
 		public Address? Address { get; set; }
-		public int? AddressId { get; set; }
 
 		[DataMember]
-		public IList<Budget>? Budgets { get; set; }
+		public ICollection<Budget>? Budgets { get; set; }
 
 		public Contact()
 		{

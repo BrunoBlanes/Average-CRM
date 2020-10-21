@@ -56,7 +56,8 @@ namespace CRM.Server.Controllers
 		[HttpPost]
 		public async Task<ActionResult<Person>> OnPostAsync([FromBody] Person person)
 		{
-			if (!ModelState.IsValid || person is null) return BadRequest(ModelState);
+			if (!ModelState.IsValid || person is null)
+				return BadRequest(ModelState);
 			if (await context.People.FirstOrDefaultAsync(x => x.CPF == person.CPF) is null)
 			{
 				//TODO: Check for issues with inputing the user address

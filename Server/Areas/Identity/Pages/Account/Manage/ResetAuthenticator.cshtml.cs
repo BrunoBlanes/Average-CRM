@@ -11,8 +11,8 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 {
 	public class ResetAuthenticatorModel : PageModel
 	{
-		readonly ILogger<ResetAuthenticatorModel> logger;
-		readonly UserManager<ApplicationUser> userManager;
+		private readonly ILogger<ResetAuthenticatorModel> logger;
+		private readonly UserManager<ApplicationUser> userManager;
 		private readonly SignInManager<ApplicationUser> signInManager;
 
 		[TempData]
@@ -31,14 +31,16 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		public async Task<IActionResult> OnGet()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			if (user is null)
+				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 			return Page();
 		}
 
 		public async Task<IActionResult> OnPostAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			if (user is null)
+				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 			await userManager.SetTwoFactorEnabledAsync(user, false);
 			await userManager.ResetAuthenticatorKeyAsync(user);
 			logger.LogInformation("User with ID '{UserId}' has reset their authentication app key.", user.Id);

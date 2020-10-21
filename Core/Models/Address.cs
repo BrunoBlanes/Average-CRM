@@ -6,35 +6,54 @@ using System.Runtime.Serialization;
 
 namespace CRM.Core.Models
 {
-	[DataContract(IsReference = true)]
 	public class Address
 	{
 		[DataMember]
-		[Column("AddressId")]
 		public int Id { get; set; }
 
 		[Required]
 		[DataMember]
+		[Column(TypeName = "DECIMAL(10,7)")]
 		public decimal Latitude { get; set; }
 
 		[Required]
 		[DataMember]
+		[Column(TypeName = "DECIMAL(10,7)")]
 		public decimal Longitude { get; set; }
 
 		[Required]
 		[DataMember]
-		public string Destination { get; set; }
+		public string Street { get; set; }
+
+		[DataMember]
+		public int Number { get; set; }
+
+		[DataMember]
+		public string Neighbourhood { get; set; }
+
+		[DataMember]
+		public string CEP { get; set; }
+
+		[DataMember]
+		public string City { get; set; }
+
+		[DataMember]
+		public string State { get; set; }
 
 		[DataMember]
 		public DateTime CreatedOn { get; set; }
 
 		[DataMember]
-		public List<Contact>? Contacts { get; set; }
+		public ICollection<Contact>? Contacts { get; set; }
 
 		public Address()
 		{
-			Destination = string.Empty;
+			CEP = string.Empty;
+			City = string.Empty;
+			State = string.Empty;
+			Street = string.Empty;
 			CreatedOn = DateTime.UtcNow;
+			Neighbourhood = string.Empty;
 		}
 	}
 }

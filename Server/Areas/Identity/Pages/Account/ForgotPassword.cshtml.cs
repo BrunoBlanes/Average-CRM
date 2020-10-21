@@ -43,9 +43,9 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 					return RedirectToPage("./ForgotPasswordConfirmation");
 
 				// Generates and encodes the confirmation code
-				var code = await userManager.GeneratePasswordResetTokenAsync(user);
+				string? code = await userManager.GeneratePasswordResetTokenAsync(user);
 				code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-				var callbackUrl = Url.Page(
+				string? callbackUrl = Url.Page(
 					"/Account/ResetPassword",
 					pageHandler: null,
 					values: new { area = "Identity", code },

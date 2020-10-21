@@ -53,8 +53,10 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		public async Task<IActionResult> OnGetAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
-			if (await userManager.HasPasswordAsync(user) is not true) return RedirectToPage("./SetPassword");
+			if (user is null)
+				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			if (await userManager.HasPasswordAsync(user) is not true)
+				return RedirectToPage("./SetPassword");
 			return Page();
 		}
 
@@ -63,7 +65,8 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 			if (ModelState.IsValid)
 			{
 				ApplicationUser? user = await userManager.GetUserAsync(User);
-				if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+				if (user is null)
+					return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 				IdentityResult? changePasswordResult = await userManager.ChangePasswordAsync(user, OldPassword, NewPassword);
 
 				if (changePasswordResult.Succeeded is not true)

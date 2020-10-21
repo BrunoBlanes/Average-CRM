@@ -50,10 +50,10 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 				}
 
 				// Generates a new confirmation code and encodes it
-				var userId = await userManager.GetUserIdAsync(user);
-				var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+				string? userId = await userManager.GetUserIdAsync(user);
+				string? code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 				code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-				var callbackUrl = Url.Page(
+				string? callbackUrl = Url.Page(
 					"/Account/ConfirmEmail",
 					pageHandler: null,
 					values: new { userId, code },

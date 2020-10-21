@@ -92,9 +92,9 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 				{
 					// Generates the user account confirmation code
 					logger.LogInformation($"User {Email} created a new account with password.");
-					var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+					string? code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 					code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-					var callbackUrl = Url.Page(
+					string? callbackUrl = Url.Page(
 						"/Account/ConfirmEmail",
 						pageHandler: null,
 						values: new { area = "Identity", userId = user.Id, code, returnUrl },

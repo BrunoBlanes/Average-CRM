@@ -11,7 +11,8 @@ namespace CRM.Server.Areas.Identity
 	{
 		public void Configure(IWebHostBuilder builder)
 		{
-			if (builder is null) throw new ArgumentNullException(nameof(builder));
+			if (builder is null)
+				throw new ArgumentNullException(nameof(builder));
 			builder.ConfigureServices((context, services) => { });
 		}
 	}

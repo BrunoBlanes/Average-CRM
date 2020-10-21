@@ -52,7 +52,8 @@ namespace CRM.Server.Controllers
 		[HttpPost("Create")]
 		public async Task<ActionResult<UserToken>> CreateUserAsync([FromBody] ApplicationUser user)
 		{
-			if (!ModelState.IsValid || user is null) return BadRequest(ModelState);
+			if (!ModelState.IsValid || user is null)
+				return BadRequest(ModelState);
 			IdentityResult result = await userManager.CreateAsync(user, user.Password);
 
 			if (result.Succeeded)
@@ -67,7 +68,7 @@ namespace CRM.Server.Controllers
 
 			async void SendConfirmationMail(string token)
 			{
-				var callbackUrl = Url.Page("/Account/ConfirmEmail", pageHandler: null, values: new
+				string? callbackUrl = Url.Page("/Account/ConfirmEmail", pageHandler: null, values: new
 				{
 					area = "Identity",
 					userId = user.Id,
@@ -89,7 +90,8 @@ namespace CRM.Server.Controllers
 		[HttpPost("Login")]
 		public async Task<ActionResult<UserToken>> LoginAsync([FromBody] ApplicationUser user)
 		{
-			if (!ModelState.IsValid || user is null) return BadRequest(ModelState);
+			if (!ModelState.IsValid || user is null)
+				return BadRequest(ModelState);
 			Microsoft.AspNetCore.Identity.SignInResult? result = await signInManager.PasswordSignInAsync(user.Email, user.Password, true, false);
 
 			if (result.Succeeded)

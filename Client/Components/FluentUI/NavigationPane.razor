@@ -4,18 +4,13 @@
 
 @code {
 	[Parameter]
-	public string? Name { get; set; } = null!;
+	public string Name { get; set; } = string.Empty;
 
 	[Parameter]
-	public string? Title { get; set; } = null!;
+	public string Title { get; set; } = string.Empty;
 
 	[Parameter]
-	public Dictionary<string, object>? NavigationItems { get; set; } = null!;
-
-	protected override void OnInitialized()
-	{
-
-	}
+	public Dictionary<string, object> NavigationItems { get; set; } = new Dictionary<string, object>();
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{

@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Core.Models
 {
-	[DataContract(IsReference = true)]
+	[Index(nameof(Unit), IsUnique = true)]
 	public class ProductUnit
 	{
 		[DataMember]
-		[Column("ProductUnitId")]
 		public int Id { get; set; }
 
 		[Required]
@@ -21,7 +21,7 @@ namespace CRM.Core.Models
 		public DateTime CreatedOn { get; set; }
 
 		[DataMember]
-		public IList<Product>? Products { get; set; }
+		public ICollection<Product>? Products { get; set; }
 
 		public ProductUnit()
 		{

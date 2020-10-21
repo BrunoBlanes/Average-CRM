@@ -15,7 +15,8 @@ namespace CRM.Server.Services
 
 		public EmailSender(IOptions<AuthMessageSenderOptions> options)
 		{
-			if (options is null) throw new ArgumentNullException(nameof(options));
+			if (options is null)
+				throw new ArgumentNullException(nameof(options));
 			Options = options.Value;
 		}
 

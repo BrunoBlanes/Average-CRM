@@ -39,7 +39,8 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		public async Task<IActionResult> OnPostAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			if (user is null)
+				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 			IdentityResult? disable2faResult = await userManager.SetTwoFactorEnabledAsync(user, false);
 			if (disable2faResult.Succeeded is not true)
 				throw new InvalidOperationException($"Unexpected error occurred disabling 2FA for user with ID '{userManager.GetUserId(User)}'.");

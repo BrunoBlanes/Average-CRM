@@ -26,13 +26,15 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 
 		public async Task<IActionResult> OnGetAsync(string userId, string code)
 		{
-			if (userId is null || code is null) return RedirectToPage("/Index");
+			if (userId is null || code is null)
+				return RedirectToPage("/Index");
 
 			// Gets the user from the database
 			ApplicationUser? user = await userManager.FindByIdAsync(userId);
 
 			// User id is incorrect
-			if (user is null) return NotFound($"Unable to load user with ID '{userId}'.");
+			if (user is null)
+				return NotFound($"Unable to load user with ID '{userId}'.");
 
 			// Confirm the account
 			code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));

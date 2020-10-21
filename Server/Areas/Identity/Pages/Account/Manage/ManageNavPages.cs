@@ -58,8 +58,9 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 
 		private static string? PageNavClass(ViewContext? viewContext, string page)
 		{
-			if (viewContext is null) throw new ArgumentNullException(nameof(viewContext));
-			var activePage = viewContext.ViewData["ActivePage"] as string
+			if (viewContext is null)
+				throw new ArgumentNullException(nameof(viewContext));
+			string? activePage = viewContext.ViewData["ActivePage"] as string
 				?? Path.GetFileNameWithoutExtension(viewContext.ActionDescriptor.DisplayName);
 			return string.Equals(activePage, page, StringComparison.OrdinalIgnoreCase)
 				? "active"

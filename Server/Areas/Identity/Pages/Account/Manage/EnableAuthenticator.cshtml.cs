@@ -51,7 +51,8 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		public async Task<IActionResult> OnGetAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			if (user is null)
+				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 			await LoadSharedKeyAndQrCodeUriAsync(user);
 			return Page();
 		}
@@ -59,15 +60,16 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		public async Task<IActionResult> OnPostAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			if (user is null)
+				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 
 			if (ModelState.IsValid)
 			{
 				// Strip spaces and hypens
-				var verificationCode = Code
+				string? verificationCode = Code
 					.Replace(" ", string.Empty, StringComparison.OrdinalIgnoreCase)
 					.Replace("-", string.Empty, StringComparison.OrdinalIgnoreCase);
-				var is2faTokenValid = await userManager.VerifyTwoFactorTokenAsync(
+				bool is2faTokenValid = await userManager.VerifyTwoFactorTokenAsync(
 					user,
 					userManager.Options.Tokens.AuthenticatorTokenProvider,
 					verificationCode);
@@ -80,7 +82,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 				}
 
 				await userManager.SetTwoFactorEnabledAsync(user, true);
-				var userId = await userManager.GetUserIdAsync(user);
+				string? userId = await userManager.GetUserIdAsync(user);
 				logger.LogInformation("User with ID '{UserId}' has enabled 2FA with an authenticator app.", userId);
 				StatusMessage = "Your authenticator app has been verified.";
 
@@ -90,7 +92,10 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 					return RedirectToPage("./ShowRecoveryCodes");
 				}
 
-				else return RedirectToPage("./TwoFactorAuthentication");
+				else
+				{
+					return RedirectToPage("./TwoFactorAuthentication");
+				}
 			}
 
 			await LoadSharedKeyAndQrCodeUriAsync(user);
@@ -100,7 +105,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		private async Task LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user)
 		{
 			// Load the authenticator key & QR code URI to display on the form
-			var unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
+			string? unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
 
 			if (string.IsNullOrEmpty(unformattedKey))
 			{
@@ -109,7 +114,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 			}
 
 			SharedKey = FormatKey(unformattedKey);
-			var email = await userManager.GetEmailAsync(user);
+			string? email = await userManager.GetEmailAsync(user);
 			AuthenticatorUri = GenerateQrCodeUri(email, unformattedKey);
 		}
 

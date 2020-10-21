@@ -13,6 +13,10 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Automatically generated JavaScript files
+Core/**/*.js
+Core/**/*.js.map
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

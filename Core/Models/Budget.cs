@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
 namespace CRM.Core.Models
 {
-	[DataContract(IsReference = true)]
 	public class Budget
 	{
 		[DataMember]
-		[Column("BudgetId")]
 		public int Id { get; set; }
 
 		[DataMember]
@@ -26,31 +24,23 @@ namespace CRM.Core.Models
 
 		[DataMember]
 		public BudgetStatus Status { get; set; }
-		public int StatusId { get; set; }
 
 		[DataMember]
 		public Contact Client { get; set; }
-		public int ClientId { get; set; }
 
 		[DataMember]
-		public ApplicationUser SalesRep { get; set; }
-		public string SalesRepId { get; set; }
+		public ICollection<ApplicationUser> Users { get; set; }
 
 		[DataMember]
-		public ApplicationUser? PricingRep { get; set; }
-		public string? PricingRepId { get; set; }
-
-		[DataMember]
-		public IList<ProductGroup>? Groups { get; set; }
+		public ICollection<ProductGroup>? Groups { get; set; }
 
 		public Budget()
 		{
 			Name = string.Empty;
-			SalesRepId = string.Empty;
-			CreatedOn = DateTime.UtcNow;
 			Client = new Contact();
 			Status = new BudgetStatus();
-			SalesRep = new ApplicationUser();
+			CreatedOn = DateTime.UtcNow;
+			Users = new Collection<ApplicationUser>();
 		}
 	}
 }
