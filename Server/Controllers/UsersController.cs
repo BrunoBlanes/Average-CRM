@@ -21,7 +21,7 @@ namespace CRM.Server.Controllers
 	public class UsersController : ControllerBase
 	{
 		private readonly ILogger logger;
-		private readonly EmailSender emailSender;
+		private readonly EmailService emailService;
 		private readonly ApplicationDbContext context;
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly SignInManager<ApplicationUser> signInManager;
@@ -30,21 +30,21 @@ namespace CRM.Server.Controllers
 			SignInManager<ApplicationUser> signInManager,
 			ILogger<UsersController> logger,
 			ApplicationDbContext context,
-			EmailSender emailSender)
+			EmailService emailService)
 		{
 			this.logger = logger;
 			this.context = context;
-			this.emailSender = emailSender;
 			this.userManager = userManager;
+			this.emailService = emailService;
 			this.signInManager = signInManager;
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IList<ApplicationUser>>> OnGetAsync()
+		public async Task<ActionResult<ICollection<ApplicationUser>>> OnGetAsync()
 		{
 			return await context.Users.ToListAsync() is List<ApplicationUser> addresses && addresses.Any()
 				? addresses
-				: (ActionResult<IList<ApplicationUser>>)NoContent();
+				: (ActionResult<ICollection<ApplicationUser>>)NoContent();
 		}
 
 
@@ -75,7 +75,7 @@ namespace CRM.Server.Controllers
 					token
 				}, protocol: Request.Scheme);
 
-				await emailSender.SendEmailAsync(user.Email,
+				await emailService.SendEmailAsync(user.Email,
 					"Confirm your email", $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 			}
 

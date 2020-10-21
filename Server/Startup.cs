@@ -98,17 +98,8 @@ namespace CRM.Server
 				options.HttpsPort = 5001;
 			});
 
-			// Add an http client for the Unsplash API
-			services.AddHttpClient("Unsplash", options =>
-			{
-				options.BaseAddress = new Uri("https://api.unsplash.com");
-				options.DefaultRequestHeaders.Add("Accept-Version", "v1");
-				options.DefaultRequestHeaders.Add("Authorization", $"Client-ID {Configuration["Unsplash:AccessKey"]}");
-			});
-
 			// Sets the email service
-			services.Configure<AuthMessageSenderOptions>(Configuration);
-			services.AddTransient<IEmailSender, EmailSender>();
+			services.AddTransient<IEmailSender, EmailService>();
 
 			// See https://github.com/aspnet/Announcements/issues/432
 			services.AddDatabaseDeveloperPageExceptionFilter();
