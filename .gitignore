@@ -14,7 +14,7 @@
 *.userprefs
 
 # Automatically generated JavaScript files
-wwwroot/**/*.js
+jsInterop.js
 Core/**/*.js
 Core/**/*.js.map
 
