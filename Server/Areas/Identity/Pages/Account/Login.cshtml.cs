@@ -18,10 +18,11 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 	public class LoginModel : PageModel
 	{
 		private readonly SignInManager<ApplicationUser> signInManager;
+		private readonly ApplicationDbContext context;
 		private readonly ILogger<LoginModel> logger;
 
 		[BindProperty]
-		public IList<AuthenticationScheme>? ExternalLogins { get; private set; }
+		public ICollection<AuthenticationScheme>? ExternalLogins { get; private set; }
 
 		[TempData]
 		public string? ErrorMessage { get; set; }
@@ -43,24 +44,36 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 		public bool RememberMe { get; set; }
 
 		public LoginModel(SignInManager<ApplicationUser> signInManager,
+			ApplicationDbContext context,
 			ILogger<LoginModel> logger)
 		{
 			this.logger = logger;
+			this.context = context;
 			this.signInManager = signInManager;
 			Password = string.Empty;
 			Email = string.Empty;
 		}
 
-		public async Task OnGetAsync(string? returnUrl = null)
+		public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
 		{
 			if (string.IsNullOrEmpty(ErrorMessage) is not true)
+			{
 				ModelState.AddModelError(string.Empty, ErrorMessage ?? string.Empty);
+			}
+
+			Setting settings = await context.Settings.FindAsync(1);
+			if (settings is null || settings.FirstRun is true)
+			{
+				return LocalRedirect("~/Setup");
+			}
+
 			returnUrl ??= Url.Content("~/");
 
 			// Clear the existing external cookie to ensure a clean login process
 			await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 			ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 			ReturnUrl = returnUrl;
+			return Page();
 		}
 
 		public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
