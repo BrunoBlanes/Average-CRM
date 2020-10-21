@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Core.Models
 {
-	[DataContract(IsReference = true)]
+	[Index(nameof(Header), IsUnique = true)]
 	public class ProductGroup
 	{
-		[Column("ProductGroupId")]
 		public int Id { get; set; }
 
 		[DataMember]
@@ -18,16 +18,11 @@ namespace CRM.Core.Models
 		public DateTime CreatedOn { get; set; }
 
 		[DataMember]
-		public Budget Budget { get; set; }
-		public int BudgetId { get; set; }
-
-		[DataMember]
-		public IList<ProductGroupDetail>? Products { get; set; }
+		public ICollection<Product>? Products { get; set; }
 
 		public ProductGroup()
 		{
 			Header = string.Empty;
-			Budget = new Budget();
 			CreatedOn = DateTime.UtcNow;
 		}
 	}

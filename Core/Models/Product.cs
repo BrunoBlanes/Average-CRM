@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Core.Models
 {
-	[DataContract(IsReference = true)]
+	[Index(nameof(Model), IsUnique = true)]
 	public class Product
 	{
 		[DataMember]
-		[Column("ProductId")]
 		public int Id { get; set; }
 
 		[DataMember]
@@ -27,26 +27,23 @@ namespace CRM.Core.Models
 		[Required]
 		[DataMember]
 		public ProductBrand Brand { get; set; }
-		public int BrandId { get; set; }
 
 		[Required]
 		[DataMember]
 		public ProductUnit Unit { get; set; }
-		public int UnitId { get; set; }
 
 		[Required]
 		[DataMember]
 		public ProductCategory Category { get; set; }
-		public int CategoryId { get; set; }
 
 		[DataMember]
 		public DateTime CreatedOn { get; set; }
 
 		[DataMember]
-		public IList<ProductGroupDetail>? Groups { get; set; }
+		public ICollection<ProductGroup>? ProductGroups { get; set; }
 
 		[DataMember]
-		public IList<ProductSupplierDetail>? Suppliers { get; set; }
+		public ICollection<Supplier>? Suppliers { get; set; }
 
 		public Product()
 		{

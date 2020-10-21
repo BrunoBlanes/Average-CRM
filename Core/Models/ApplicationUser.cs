@@ -5,10 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Core.Models
 {
-	[DataContract(IsReference = true)]
+	[Index(nameof(CPF), IsUnique = true)]
 	public class ApplicationUser : IdentityUser
 	{
 		[Required]
@@ -20,10 +21,7 @@ namespace CRM.Core.Models
 		public string Password { get; set; }
 
 		[DataMember]
-		public IList<Budget>? SalesRepBudgets { get; set; }
-
-		[DataMember]
-		public IList<Budget>? PricingRepBudgets { get; set; }
+		public ICollection<Budget>? Budgets { get; set; }
 
 		public ApplicationUser()
 		{

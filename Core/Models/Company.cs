@@ -2,9 +2,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace CRM.Core.Models
 {
-	[DataContract(IsReference = true)]
+	[Index(nameof(IE), nameof(Email), nameof(CNPJ), IsUnique = true)]
 	public class Company : Contact
 	{
 		[Required]

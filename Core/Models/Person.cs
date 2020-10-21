@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace CRM.Core.Models
 {
-	[DataContract(IsReference = true)]
+	[Index(nameof(RG), nameof(CPF), IsUnique = true)]
 	public class Person : Contact
 	{
 		[Required]
