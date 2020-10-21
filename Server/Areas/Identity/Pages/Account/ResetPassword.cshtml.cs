@@ -46,8 +46,10 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 
 		public IActionResult OnGet(string? code = null)
 		{
-			if (code is null) return BadRequest("A code must be supplied for password reset.");
-
+			if (code is null)
+			{
+				return BadRequest("A code must be supplied for password reset.");
+			}
 			else
 			{
 				Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
@@ -62,11 +64,13 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 				ApplicationUser? user = await userManager.FindByEmailAsync(Email);
 
 				// Don't reveal that the user does not exist
-				if (user is null) return RedirectToPage("./ResetPasswordConfirmation");
+				if (user is null)
+					return RedirectToPage("./ResetPasswordConfirmation");
 
 				// Resets the user's password
 				IdentityResult? result = await userManager.ResetPasswordAsync(user, Code, Password);
-				if (result.Succeeded) return RedirectToPage("./ResetPasswordConfirmation");
+				if (result.Succeeded)
+					return RedirectToPage("./ResetPasswordConfirmation");
 
 				// Log errors
 				foreach (IdentityError? error in result.Errors)

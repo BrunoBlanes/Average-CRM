@@ -56,7 +56,8 @@ namespace CRM.Core.Attributes
 				static void DigitCheck(ref double product)
 				{
 					product = product * 10 % 11;
-					if (product == 10) product = 0;
+					if (product == 10)
+						product = 0;
 				}
 
 				static ValidationResult InvalidCPF()

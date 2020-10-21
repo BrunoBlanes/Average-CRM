@@ -34,7 +34,8 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		public async Task<IActionResult> OnGetAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user is null) return NotFound($"Unable to load user with ID 'user.Id'.");
+			if (user is null)
+				return NotFound($"Unable to load user with ID 'user.Id'.");
 			CurrentLogins = await userManager.GetLoginsAsync(user);
 			OtherLogins = (await signInManager.GetExternalAuthenticationSchemesAsync())
 				.Where(auth => CurrentLogins.All(ul => auth.Name != ul.LoginProvider))
@@ -46,7 +47,8 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		public async Task<IActionResult> OnPostRemoveLoginAsync(string loginProvider, string providerKey)
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user == null) return NotFound($"Unable to load user with ID 'user.Id'.");
+			if (user == null)
+				return NotFound($"Unable to load user with ID 'user.Id'.");
 			IdentityResult? result = await userManager.RemoveLoginAsync(user, loginProvider, providerKey);
 
 			if (result.Succeeded is not true)
@@ -66,7 +68,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 			await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
 			// Request a redirect to the external login provider to link a login for the current user
-			var redirectUrl = Url.Page("./ExternalLogins", pageHandler: "LinkLoginCallback");
+			string? redirectUrl = Url.Page("./ExternalLogins", pageHandler: "LinkLoginCallback");
 			AuthenticationProperties? properties = signInManager.ConfigureExternalAuthenticationProperties(
 				provider,
 				redirectUrl,
@@ -77,7 +79,8 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		public async Task<IActionResult> OnGetLinkLoginCallbackAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user is null) return NotFound($"Unable to load user with ID 'user.Id'.");
+			if (user is null)
+				return NotFound($"Unable to load user with ID 'user.Id'.");
 			ExternalLoginInfo? info = await signInManager.GetExternalLoginInfoAsync(user.Id);
 			if (info is null)
 				throw new InvalidOperationException($"Unexpected error occurred loading external login info for user with ID '{user.Id}'.");

@@ -40,7 +40,8 @@ namespace CRM.Server.Controllers
 		[HttpPost]
 		public async Task<ActionResult> OnPostAsync([FromBody] Address address)
 		{
-			if (!ModelState.IsValid || address is null) return BadRequest(ModelState);
+			if (!ModelState.IsValid || address is null)
+				return BadRequest(ModelState);
 			context.Addresses.Add(address);
 			await context.SaveChangesAsync();
 			return Created(new Uri(@$"{Request.Scheme}://{Request.Host}{Request.Path}/{address.Id}"), address);

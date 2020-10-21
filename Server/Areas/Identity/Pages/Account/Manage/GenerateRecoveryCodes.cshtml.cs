@@ -35,11 +35,11 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 			ApplicationUser? user = await userManager.GetUserAsync(User);
 			if (user is null)
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
-			var isTwoFactorEnabled = await userManager.GetTwoFactorEnabledAsync(user);
+			bool isTwoFactorEnabled = await userManager.GetTwoFactorEnabledAsync(user);
 
 			if (isTwoFactorEnabled is not true)
 			{
-				var userId = await userManager.GetUserIdAsync(user);
+				string? userId = await userManager.GetUserIdAsync(user);
 				throw new InvalidOperationException($"Cannot generate recovery codes for user with ID '{userId}' because they do not have 2FA enabled.");
 			}
 
@@ -51,8 +51,8 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 			ApplicationUser? user = await userManager.GetUserAsync(User);
 			if (user is null)
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
-			var isTwoFactorEnabled = await userManager.GetTwoFactorEnabledAsync(user);
-			var userId = await userManager.GetUserIdAsync(user);
+			bool isTwoFactorEnabled = await userManager.GetTwoFactorEnabledAsync(user);
+			string? userId = await userManager.GetUserIdAsync(user);
 			if (isTwoFactorEnabled is not true)
 				throw new InvalidOperationException($"Cannot generate recovery codes for user with ID '{userId}' as they do not have 2FA enabled.");
 			RecoveryCodes = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);

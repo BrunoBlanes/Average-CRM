@@ -49,7 +49,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 		public IActionResult OnPost(string provider, string? returnUrl = null)
 		{
 			// Request a redirect to the external login provider.
-			var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+			string? redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
 			AuthenticationProperties? properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
 			return new ChallengeResult(provider, properties);
 		}
@@ -85,8 +85,10 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 				return LocalRedirect(returnUrl);
 			}
 
-			if (result.IsLockedOut) return RedirectToPage("./Lockout");
-
+			if (result.IsLockedOut)
+			{
+				return RedirectToPage("./Lockout");
+			}
 			else
 			{
 				// If the user does not have an account, then ask the user to create an account.

@@ -14,26 +14,6 @@
 		<RuntimeIdentifiers>win-x86;win-x64;win-arm;linux-x64;linux-arm</RuntimeIdentifiers>
 	</PropertyGroup>
 	<ItemGroup>
-		<Compile Remove="Migrations\20200301050945_Inital.cs" />
-		<Compile Remove="Migrations\20200301050945_Inital.Designer.cs" />
-		<Compile Remove="Migrations\20200301052428_NamingConvetions.cs" />
-		<Compile Remove="Migrations\20200301052428_NamingConvetions.Designer.cs" />
-		<Compile Remove="Migrations\20200301163554_Iniitial.cs" />
-		<Compile Remove="Migrations\20200301163554_Iniitial.Designer.cs" />
-		<Compile Remove="Migrations\20200301175946_Iniitial.cs" />
-		<Compile Remove="Migrations\20200301175946_Iniitial.Designer.cs" />
-		<Compile Remove="Migrations\20200301183509_Iniitial.cs" />
-		<Compile Remove="Migrations\20200301183509_Iniitial.Designer.cs" />
-		<Compile Remove="Migrations\20200301184007_Iniitial.cs" />
-		<Compile Remove="Migrations\20200301184007_Iniitial.Designer.cs" />
-		<Compile Remove="Migrations\20200301211219_Iniitial.cs" />
-		<Compile Remove="Migrations\20200301211219_Iniitial.Designer.cs" />
-		<Compile Remove="Migrations\20200301211743_Iniitial.cs" />
-		<Compile Remove="Migrations\20200301211743_Iniitial.Designer.cs" />
-		<Compile Remove="Migrations\20200303023520_IncludedCPF.cs" />
-		<Compile Remove="Migrations\20200303023520_IncludedCPF.Designer.cs" />
-	</ItemGroup>
-	<ItemGroup>
 		<None Include="Areas\Identity\Pages\Shared\_LoginPartial.cshtml" />
 	</ItemGroup>
 	<ItemGroup>
@@ -56,7 +36,6 @@
 		<ProjectReference Include="..\Core\CRM.Core.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Migrations\" />
 	  <Folder Include="wwwroot\img\" />
 	</ItemGroup>
 	<ProjectExtensions>

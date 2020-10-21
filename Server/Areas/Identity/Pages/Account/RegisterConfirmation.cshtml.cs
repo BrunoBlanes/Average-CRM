@@ -24,24 +24,25 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 
 		public RegisterConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender sender)
 		{
-			this.emailSender = sender;
+			emailSender = sender;
 			this.userManager = userManager;
 		}
 
 		public async Task<IActionResult> OnGetAsync(string email, string? returnUrl = null)
 		{
-			if (email is null) return RedirectToPage("/Index");
+			if (email is null)
+				return RedirectToPage("/Index");
 			ApplicationUser? user = await userManager.FindByEmailAsync(email);
 
 			if (user is not null)
 			{
 				Email = email;
-				var userId = await userManager.GetUserIdAsync(user);
+				string? userId = await userManager.GetUserIdAsync(user);
 
 				// Generates an account confirmation code
-				var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+				string? code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 				code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-				var callbackUrl = Url.Page(
+				string? callbackUrl = Url.Page(
 					"/Account/ConfirmEmail",
 					pageHandler: null,
 					values: new { area = "Identity", userId, code, returnUrl },

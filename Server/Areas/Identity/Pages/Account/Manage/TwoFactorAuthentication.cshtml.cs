@@ -33,7 +33,8 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		public async Task<IActionResult> OnGet()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			if (user is null)
+				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 			HasAuthenticator = await userManager.GetAuthenticatorKeyAsync(user) is not null;
 			Is2faEnabled = await userManager.GetTwoFactorEnabledAsync(user);
 			IsMachineRemembered = await signInManager.IsTwoFactorClientRememberedAsync(user);
@@ -44,7 +45,8 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 		public async Task<IActionResult> OnPost()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user is null) return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			if (user is null)
+				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 			await signInManager.ForgetTwoFactorClientAsync();
 			StatusMessage = "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.";
 			return RedirectToPage();
