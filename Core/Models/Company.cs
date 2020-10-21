@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Core.Models
 {
-	[Index(nameof(IE), nameof(Email), nameof(CNPJ), IsUnique = true)]
+	[Table("Companies")]
+	[Index(nameof(IE), nameof(IM), nameof(CNPJ), IsUnique = true)]
 	public class Company : Contact
 	{
 		[Required]
