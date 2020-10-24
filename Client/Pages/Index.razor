@@ -1,15 +1,15 @@
 ﻿@page "/"
 
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
-@inject NavigationManager Navigation;
-@inject SignOutSessionStateManager SignOutManager;
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
 
 @layout MainLayout
 
 <AuthorizeView>
 	<Authorized>
-		<Button Name="LogoutButton" Content="Logout" OnClickCallback="@LogoutButtonClick" />
+		<fluent-button appearance="accent" @onclick="@LogoutButtonClick">Logout</fluent-button>
 	</Authorized>
 
 	<NotAuthorized>
