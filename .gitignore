@@ -14,7 +14,7 @@
 *.userprefs
 
 # Automatically generated JavaScript files
-jsInterop.js
+/**/*.min.*
 Core/**/*.js
 Core/**/*.js.map
 
