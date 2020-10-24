@@ -5,43 +5,34 @@
 		<AnalysisLevel>preview</AnalysisLevel>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
-		
-		<JsLibraryRoot>Libraries\</JsLibraryRoot>
-		<DefaultItemExcludes>$(DefaultItemExcludes);$(JsLibraryRoot)node_modules\**</DefaultItemExcludes>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.0-rc.2.20475.17" />
 		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.1.0-beta">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Remove="$(JsLibraryRoot)**" />
-		<None Remove="$(JsLibraryRoot)**" />
-		<None Include="$(JsLibraryRoot)**" Exclude="$(JsLibraryRoot)node_modules\**" />
+		<Content Remove="node_modules\**" />
+		<None Remove="node_modules\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <TypeScriptCompile Remove="Libraries\node_modules\**" />
+		<TypeScriptCompile Remove="node_modules\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Libraries\src\functions.tsx" />
-	  <None Remove="tsconfig.json" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Include="tsconfig.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
+		<Content Include="tsconfig.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<Target Name="PublishRunWebpack" AfterTargets="Build">
 		<!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-		<Exec WorkingDirectory="$(JsLibraryRoot)" Command="npm install" />
-		<Exec WorkingDirectory="$(JsLibraryRoot)" Command="npm run build" />
+		<Exec WorkingDirectory="" Command="npm install" />
+		<Exec WorkingDirectory="" Command="npm run build" />
 	</Target>
 </Project>
