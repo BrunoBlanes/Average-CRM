@@ -17,6 +17,7 @@
 /**/*.min.*
 Core/**/*.js
 Core/**/*.js.map
+!webpack.config.js
 
 # Build results
 [Dd]ebug/
