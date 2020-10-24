@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace CRM.Core.Models
 {
 	[Table("People")]
-	[Index(nameof(RG), nameof(CPF), IsUnique = true)]
+	[Index(nameof(RG), IsUnique = true)]
+	[Index(nameof(CPF), IsUnique = true)]
 	public class Person : Contact
 	{
 		[Required]

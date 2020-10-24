@@ -8,7 +8,9 @@ using Microsoft.EntityFrameworkCore;
 namespace CRM.Core.Models
 {
 	[Table("Companies")]
-	[Index(nameof(IE), nameof(IM), nameof(CNPJ), IsUnique = true)]
+	[Index(nameof(IE), IsUnique = true)]
+	[Index(nameof(IM), IsUnique = true)]
+	[Index(nameof(CNPJ), IsUnique = true)]
 	public class Company : Contact
 	{
 		[Required]
@@ -30,7 +32,7 @@ namespace CRM.Core.Models
 		public string? IM { get; set; }
 
 		[DataMember]
-		public IList<Person>? Contacts { get; set; }
+		public ICollection<Person>? Contacts { get; set; }
 
 		public Company() : base()
 		{
