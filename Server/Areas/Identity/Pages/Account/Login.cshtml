@@ -20,7 +20,9 @@
 				<span asp-validation-for="Password" class="text-danger"></span>
 			</div>
 			<div>
-				<fluent-checkbox id="RememberMe" name="RememberMe" type="checkbox" value="true">@Html.DisplayNameFor(m => m.RememberMe)</fluent-checkbox>
+				<fluent-checkbox id="RememberMe" name="RememberMe" type="checkbox" value="true">
+					@Html.DisplayNameFor(m => m.RememberMe)
+				</fluent-checkbox>
 			</div>
 			<div>
 				<fluent-button appearance="accent" type="submit">Log in</button>

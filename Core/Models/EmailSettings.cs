@@ -1,6 +1,8 @@
-﻿namespace CRM.Core.Models
+﻿using MailKit.Security;
+
+namespace CRM.Core.Models
 {
-	public class EmailSetting
+	public class EmailSettings
 	{
 		public int Id { get; set; }
 		public int Port { get; set; }
@@ -9,14 +11,16 @@
 		public string Server { get; set; }
 		public string Address { get; set; }
 		public string Password { get; set; }
+		public SecureSocketOptions SecureSocketOptions { get; set; }
 
-		public EmailSetting()
+		public EmailSettings()
 		{
 			Name = string.Empty;
 			Login = string.Empty;
 			Server = string.Empty;
 			Address = string.Empty;
 			Password = string.Empty;
+			SecureSocketOptions = SecureSocketOptions.StartTls;
 		}
 	}
 }

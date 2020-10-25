@@ -1,0 +1,48 @@
+﻿@page
+
+@model CRM.Server.Pages.SetupModel
+
+@{
+	ViewData["Title"] = "Setup";
+}
+
+<div id="setup-main-div" class="content">
+	<section id="email-section">
+		<form id="email-setup" method="post">
+			<h1>Setup your email server</h4>
+			<div>
+				Port:
+				<fluent-text-field id="Port" name="Port" type="number" data-val="true" />
+				<span asp-validation-for="Port" class="text-danger"></span>
+			</div>
+			<div>
+				Name:
+				<fluent-text-field id="Name" name="Name" type="text" data-val="true" />
+				<span asp-validation-for="Name" class="text-danger"></span>
+			</div>
+			<div>
+				Login:
+				<fluent-text-field id="Login" name="Login" type="email" data-val="true" />
+				<span asp-validation-for="Login" class="text-danger"></span>
+			</div>
+			<div>
+				Server:
+				<fluent-text-field id="Server" name="Server" type="text" data-val="true" />
+				<span asp-validation-for="Server" class="text-danger"></span>
+			</div>
+			<div>
+				Address:
+				<fluent-text-field id="Address" name="Address" type="email" data-val="true" />
+				<span asp-validation-for="Address" class="text-danger"></span>
+			</div>
+			<div>
+				Password:
+				<fluent-text-field id="Password" name="Password" type="password" data-val="true" />
+				<span asp-validation-for="Password" class="text-danger"></span>
+			</div>
+			<div>
+				<fluent-button appearance="accent" type="submit">Save</button>
+			</div>
+		</form>
+	</section>
+</div>

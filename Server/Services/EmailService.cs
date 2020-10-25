@@ -3,9 +3,9 @@
 using CRM.Core.Models;
 
 using MailKit.Net.Smtp;
-using MailKit.Security;
 
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 
 using MimeKit;
 
@@ -22,15 +22,15 @@ namespace CRM.Server.Services
 
 		public async Task SendEmailAsync(string email, string subject, string body)
 		{
-			EmailSetting settings = (await context.Settings.FindAsync(1)).EmailSettings;
+			Settings settings = await context.Settings.Include(x => x.EmailSettings).FirstOrDefaultAsync();
 			var message = new MimeMessage();
-			message.From.Add(new MailboxAddress(settings.Name, settings.Address));
+			message.From.Add(new MailboxAddress(settings.EmailSettings.Name, settings.EmailSettings.Address));
 			message.To.Add(MailboxAddress.Parse(email));
 			message.Subject = subject;
 			message.Body = new TextPart("plain") { Text = $@"{body}" };
 			using var client = new SmtpClient();
-			await client.ConnectAsync(settings.Server, settings.Port, SecureSocketOptions.StartTls);
-			await client.AuthenticateAsync(settings.Login, settings.Password);
+			await client.ConnectAsync(settings.EmailSettings.Server, settings.EmailSettings.Port, settings.EmailSettings.SecureSocketOptions);
+			await client.AuthenticateAsync(settings.EmailSettings.Login, settings.EmailSettings.Password);
 			await client.SendAsync(message);
 			await client.DisconnectAsync(true);
 		}

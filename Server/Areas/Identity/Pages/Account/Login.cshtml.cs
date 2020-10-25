@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CRM.Server.Areas.Identity.Pages.Account
@@ -61,12 +62,12 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 				ModelState.AddModelError(string.Empty, ErrorMessage ?? string.Empty);
 			}
 
-			//// Check wether this is the server's first run
-			//Setting settings = await context.Settings.FindAsync(1);
-			//if (settings is null || settings.FirstRun is true)
-			//{
-			//	return LocalRedirect("~/Setup");
-			//}
+			// Check wether this is the server's first run
+			Settings settings = await context.Settings.FirstOrDefaultAsync();
+			if (settings is null || settings.FirstRun is true)
+			{
+				return LocalRedirect("~/Setup");
+			}
 
 			returnUrl ??= Url.Content("~/");
 
