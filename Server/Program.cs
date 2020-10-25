@@ -11,23 +11,20 @@ namespace CRM.Server
 	{
 		public static void Main(string[] args)
 		{
-			IHost? host = CreateHostBuilder(args).Build();
+			IHost host = CreateHostBuilder(args).Build();
+			using IServiceScope scope = host.Services.CreateScope();
+			IServiceProvider services = scope.ServiceProvider;
 
-			using (IServiceScope? scope = host.Services.CreateScope())
+			try
 			{
-				IServiceProvider? services = scope.ServiceProvider;
+				ApplicationDbContext context = services.GetRequiredService<ApplicationDbContext>();
+				context.Database.EnsureCreated();
+			}
 
-				try
-				{
-					ApplicationDbContext? context = services.GetRequiredService<ApplicationDbContext>();
-					context.Database.EnsureCreated();
-				}
-
-				catch (Exception ex)
-				{
-					ILogger<Program>? logger = services.GetRequiredService<ILogger<Program>>();
-					logger.LogError(ex, $"An error occured while creating the database: {ex.Message}.");
-				}
+			catch (Exception ex)
+			{
+				ILogger<Program> logger = services.GetRequiredService<ILogger<Program>>();
+				logger.LogError(ex, $"An error occured while creating the database: {ex.Message}.");
 			}
 
 			host.Run();
