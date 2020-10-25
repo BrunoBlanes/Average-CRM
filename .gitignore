@@ -13,8 +13,9 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
-# Automatically generated JavaScript files
-/**/*.min.*
+# Automatically generated JavaScript and minified files
+**/wwwroot/script/*.min.js
+**/wwwroot/css/*.min.css
 Core/**/*.js
 Core/**/*.js.map
 !webpack.config.js
