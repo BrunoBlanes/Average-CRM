@@ -12,11 +12,11 @@
 	<!-- Load our stylesheet -->
 	<link href="~/css/site.min.css" rel="stylesheet" />
 	
+	<!--Load Fabric Core --> 
+	<link href="~/lib/fluentui/css/fabric.min.css" rel="stylesheet" />
+	
 	<!-- Load FAST Design -->
-	<script src="~/lib/fluentui/web-components.min.js" type="module"></script>
-
-	<!-- TODO: Remove bootstrap -->
-	<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<script src="~/lib/fluentui/js/web-components.min.js" type="module"></script>
 
 	<!-- Load framework specific files -->
 	<script src="_framework/blazor.server.js"></script>
@@ -28,17 +28,15 @@
 	<script src="~/script/site.min.js" type="text/javascript"></script>
 </head>
 
-<body>
+<body class="ms-Fabric" dir="ltr">
 	<fluent-design-system-provider use-defaults>
 		<div class="main">
-			<div class="content">
-				@if (IsSectionDefined("scripts"))
-				{
-					RenderSection("scripts");
-				}
+			@if (IsSectionDefined("scripts"))
+			{
+				RenderSection("scripts");
+			}
 
-				@RenderBody()
-			</div>
+			@RenderBody()
 		</div>
 
 		<script>
