@@ -20,7 +20,7 @@ namespace CRM.Core.Models
 			Server = string.Empty;
 			Address = string.Empty;
 			Password = string.Empty;
-			SecureSocketOptions = SecureSocketOptions.StartTls;
+			SecureSocketOptions = SecureSocketOptions.Auto;
 		}
 	}
 }
