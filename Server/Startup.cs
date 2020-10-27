@@ -98,6 +98,12 @@ namespace CRM.Server
 				options.HttpsPort = 5001;
 			});
 
+			// TODO: Fix httpclient to get current domain
+			services.AddHttpClient("ServerAPI", client =>
+			{
+				client.BaseAddress = new Uri($"{Configuration["BaseUrl"]}api/");
+			});
+
 			// Sets the email service
 			services.AddTransient<IEmailSender, EmailService>();
 

@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CRM.Server.Areas.Identity.Pages.Account
@@ -19,7 +18,6 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 	public class LoginModel : PageModel
 	{
 		private readonly SignInManager<ApplicationUser> signInManager;
-		private readonly ApplicationDbContext context;
 		private readonly ILogger<LoginModel> logger;
 
 		[BindProperty]
@@ -45,11 +43,9 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 		public bool RememberMe { get; set; }
 
 		public LoginModel(SignInManager<ApplicationUser> signInManager,
-			ApplicationDbContext context,
 			ILogger<LoginModel> logger)
 		{
 			this.logger = logger;
-			this.context = context;
 			this.signInManager = signInManager;
 			Password = string.Empty;
 			Email = string.Empty;
@@ -62,12 +58,13 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 				ModelState.AddModelError(string.Empty, ErrorMessage ?? string.Empty);
 			}
 
-			// Check wether this is the server's first run
-			Settings settings = await context.Settings.SingleOrDefaultAsync();
-			if (settings is null || settings.FirstRun is true)
-			{
-				return LocalRedirect("~/Setup");
-			}
+			// TODO: Handle first run
+			//// Check wether this is the server's first run
+			//Settings settings = await context.Settings.SingleOrDefaultAsync();
+			//if (settings is null || settings.FirstRun is true)
+			//{
+			//	return LocalRedirect("~/Setup");
+			//}
 
 			returnUrl ??= Url.Content("~/");
 
