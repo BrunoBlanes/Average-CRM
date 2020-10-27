@@ -12,7 +12,8 @@ namespace CRM.Server.Controllers
 
 		public IClientRequestParametersProvider ClientRequestParametersProvider { get; }
 
-		public OidcConfigurationController(IClientRequestParametersProvider clientRequestParametersProvider, ILogger<OidcConfigurationController> logger)
+		public OidcConfigurationController(IClientRequestParametersProvider clientRequestParametersProvider,
+			ILogger<OidcConfigurationController> logger)
 		{
 			ClientRequestParametersProvider = clientRequestParametersProvider;
 			this.logger = logger;
