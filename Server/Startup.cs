@@ -143,8 +143,8 @@ namespace CRM.Server
 			{
 				endpoints.MapBlazorHub();
 				endpoints.MapRazorPages();
-				endpoints.MapControllers();
 				endpoints.MapFallbackToFile("index.html");
+				endpoints.MapControllerRoute("default", "api/{controller=name}/{action=Index}");
 			});
 		}
 	}
