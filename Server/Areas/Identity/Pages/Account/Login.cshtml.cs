@@ -63,7 +63,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 			}
 
 			// Check wether this is the server's first run
-			Settings settings = await context.Settings.FirstOrDefaultAsync();
+			Settings settings = await context.Settings.SingleOrDefaultAsync();
 			if (settings is null || settings.FirstRun is true)
 			{
 				return LocalRedirect("~/Setup");

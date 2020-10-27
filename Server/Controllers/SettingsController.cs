@@ -25,7 +25,7 @@ namespace CRM.Server.Controllers
 		{
 			return await context.Settings
 				.Include(x => x.EmailSettings)
-				.FirstOrDefaultAsync() is Settings settings
+				.SingleOrDefaultAsync() is Settings settings
 				? settings
 				: (ActionResult<Settings>)NoContent();
 		}
@@ -38,7 +38,7 @@ namespace CRM.Server.Controllers
 				return BadRequest(ModelState);
 			}
 
-			if (await context.Settings.FirstOrDefaultAsync() is Settings oldSettings)
+			if (await context.Settings.SingleOrDefaultAsync() is Settings oldSettings)
 			{
 				oldSettings.FirstRun = settings.FirstRun;
 				oldSettings.EmailSettings = settings.EmailSettings;
