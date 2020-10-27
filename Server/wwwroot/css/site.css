@@ -1,44 +1,42 @@
 ﻿body, html {
-	height: 100%;
+	margin: 0px;
+	padding: 0px;
 }
 
-:not(:defined) {
-	visibility: hidden;
-}
-
-/* Content we're putting a blur over */
-.content:before {
-	/* Center and scale the image nicely */
-	background-image: url(../img/login-bg-image.jpg);
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: cover;
-	touch-action: none;
-	position: fixed;
-	display: block;
-	right: 0;
-	left: 0;
-	/* Full height */
-	height: 100vh;
-	z-index: -1;
-	content: "";
-	width: 100%;
-	/* Applies blur effect */
-	-webkit-filter: blur(10px);
-	-moz-filter: blur(10px);
-	-ms-filter: blur(10px);
-	filter: blur(10px);
+.main {
+	margin: 0px;
+	padding: 0px;
+	display: table;
+	min-width: 100%;
+	min-height: 100%;
+	position: absolute;
 }
 
 .content {
-	left: 0;
-	right: 0;
-	z-index: 0;
-	position: fixed;
-	margin-left: 20px;
-	margin-right: 20px;
+	display: table-cell;
+	vertical-align: middle;
 }
 
-.login-form {
-	position: center;
+form {
+	padding: 12px;
+}
+
+.form-section {
+	text-align: center;
+}
+
+.form-line {
+	width: auto;
+	margin: 12px;
+	display: block;
+	text-align: center;
+}
+
+.form-line-cell {
+	margin: 0px 6px;
+	display: inline-block;
+}
+
+.text-danger {
+	color: darkred;
 }

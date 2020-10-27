@@ -6,43 +6,53 @@
 	ViewData["Title"] = "Setup";
 }
 
-<div id="setup-main-div" class="content">
-	<section id="email-section">
+<div class="content">
+	<section class="form-section">
 		<form id="email-setup" method="post">
 			<h1>Setup your email server</h4>
-			<div>
-				Port:
-				<fluent-text-field id="Port" name="Port" type="number" data-val="true" />
-				<span asp-validation-for="Port" class="text-danger"></span>
-			</div>
-			<div>
-				Name:
-				<fluent-text-field id="Name" name="Name" type="text" data-val="true" />
+
+			<div class="form-line">
+				<fluent-text-field id="Name" name="Name" placeholder="@Html.DisplayNameFor(model => model.Name)" value="@Model.Name" data-val="true" appearance="filled" />
 				<span asp-validation-for="Name" class="text-danger"></span>
 			</div>
-			<div>
-				Login:
-				<fluent-text-field id="Login" name="Login" type="email" data-val="true" />
-				<span asp-validation-for="Login" class="text-danger"></span>
-			</div>
-			<div>
-				Server:
-				<fluent-text-field id="Server" name="Server" type="text" data-val="true" />
-				<span asp-validation-for="Server" class="text-danger"></span>
-			</div>
-			<div>
-				Address:
-				<fluent-text-field id="Address" name="Address" type="email" data-val="true" />
+
+			<div class="form-line">
+				<fluent-text-field id="Address" name="Address" placeholder="@Html.DisplayNameFor(model => model.Address)" type="email" value="@Model.Address" data-val="true" appearance="filled" />
 				<span asp-validation-for="Address" class="text-danger"></span>
 			</div>
-			<div>
-				Password:
-				<fluent-text-field id="Password" name="Password" type="password" data-val="true" />
+
+			<div class="form-line">
+				<div class="form-line-cell">
+					<fluent-text-field id="Server" name="Server" style="width: 188px;" placeholder="@Html.DisplayNameFor(model => model.Server)" value="@Model.Server" data-val="true" appearance="filled" />
+					<span asp-validation-for="Server" class="text-danger" />
+				</div>
+				
+				<div class="form-line-cell">
+					<fluent-text-field id="Port" name="Port" style="width: 94px;" placeholder="@Html.DisplayNameFor(model => model.Port)" type="number" value="@Model.Port" data-val="true" appearance="filled" />
+					<span asp-validation-for="Port" class="text-danger"></span>
+				</div>
+			</div>
+
+			<div class="form-line">
+				<label asp-for="SecureSocket"></label>
+				<select asp-for="SecureSocket" asp-items="Html.GetEnumSelectList<SecureSocket>()"></select>
+				<span asp-validation-for="SecureSocket" class="text-danger"></span>
+			</div>
+
+			<div class="form-line">
+				<fluent-text-field id="Login" name="Login" placeholder="@Html.DisplayNameFor(model => model.Login)" type="email" value="@Model.Login" data-val="true" appearance="filled" />
+				<span asp-validation-for="Login" class="text-danger"></span>
+			</div>
+
+			<div class="form-line">
+				<fluent-text-field id="Password" name="Password" placeholder="@Html.DisplayNameFor(model => model.Password)" type="password" data-val="true" appearance="filled" />
 				<span asp-validation-for="Password" class="text-danger"></span>
 			</div>
-			<div>
-				<fluent-button appearance="accent" type="submit">Save</button>
+
+			<div class="form-line">
+				<fluent-button style="margin: 0px 6px 6px 0px;" appearance="accent" type="submit">Save</fluent-button>
 			</div>
 		</form>
 	</section>
+	<div />
 </div>

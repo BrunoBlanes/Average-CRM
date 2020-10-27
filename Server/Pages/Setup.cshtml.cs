@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -13,43 +14,54 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CRM.Server.Pages
 {
+	[BindProperties]
 	public class SetupModel : PageModel
 	{
 		[Required]
-		[BindProperty]
 		public int Port { get; set; }
-
-		[BindProperty]
 		public string? Name { get; set; }
 
 		[Required]
-		[BindProperty]
 		[EmailAddress]
 		public string Login { get; set; }
 
 		[Required]
-		[BindProperty]
 		public string Server { get; set; }
 
-		[BindProperty]
 		[EmailAddress]
 		public string? Address { get; set; }
 
 		[Required]
-		[BindProperty]
 		[DataType(DataType.Password)]
 		public string Password { get; set; }
 
 		[Required]
-		[BindProperty]
-		public SecureSocketOptions SecureSocketOptions { get; set; }
+		public SecureSocket SecureSocket { get; set; }
 
 		public SetupModel()
 		{
 			Login = string.Empty;
 			Server = string.Empty;
 			Password = string.Empty;
-			SecureSocketOptions = SecureSocketOptions.StartTls;
+			SecureSocket = SecureSocket.Auto;
+		}
+
+		public async Task OnGetAsync()
+		{
+			using var client = new HttpClient { BaseAddress = new Uri($"{Request.Scheme}://{Request.Host}/api/") };
+			HttpResponseMessage? response = await client.GetAsync("Settings");
+
+			if (response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NoContent)
+			{
+				Settings settings = await response.Content.ReadFromJsonAsync<Settings>() ?? new Settings();
+				Port = settings.EmailSettings.Port;
+				Name = settings.EmailSettings.Name;
+				Login = settings.EmailSettings.Login;
+				Server = settings.EmailSettings.Server;
+				Address = settings.EmailSettings.Address;
+				Password = settings.EmailSettings.Password;
+				SecureSocket = (SecureSocket)settings.EmailSettings.SecureSocketOptions;
+			}
 		}
 
 		public async Task<IActionResult> OnPostAsync()
@@ -67,13 +79,13 @@ namespace CRM.Server.Pages
 						Password = Password,
 						Address = Address ?? Login,
 						Name = Name ?? "CRM Server",
-						SecureSocketOptions = SecureSocketOptions
+						SecureSocketOptions = (SecureSocketOptions)SecureSocket
 					}
 				};
 
 				using var client = new HttpClient { BaseAddress = new Uri($"{Request.Scheme}://{Request.Host}/api/") };
 				HttpResponseMessage? response = await client.PostAsJsonAsync("Settings", settings);
-				
+
 				if (response.IsSuccessStatusCode)
 				{
 					return LocalRedirect("~/");
@@ -82,5 +94,17 @@ namespace CRM.Server.Pages
 
 			return Page();
 		}
+	}
+
+	public enum SecureSocket
+	{
+		[Display(Name = "None")]
+		None,
+		[Display(Name = "Auto")]
+		Auto,
+		[Display(Name = "SSL/TLS")]
+		SslOnConnect,
+		[Display(Name = "STARTTLS")]
+		StartTls
 	}
 }

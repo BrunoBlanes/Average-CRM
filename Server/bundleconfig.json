@@ -1,10 +1,7 @@
 [
 	{
 		"outputFileName": "wwwroot/css/site.min.css",
-		"inputFiles": [
-			"wwwroot/css/site.css",
-			"wwwroot/css/button.css"
-		],
+		"inputFiles": [ "wwwroot/css/*.css" ],
 		"minify": {
 			"enabled": true,
 			"renameLocals": true
