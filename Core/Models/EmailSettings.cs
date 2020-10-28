@@ -26,9 +26,6 @@ namespace CRM.Core.Models
 		public string Password { get; set; }
 
 		[NotMapped]
-		public string Test { get; set; }
-
-		[NotMapped]
 		[JsonIgnore]
 		public SecureSocket SecureSocket
 		{

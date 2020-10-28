@@ -23,7 +23,7 @@
 
 			<div class="form-line">
 				<div class="form-line-cell">
-					<fluent-text-field id="Settings_Server" name="Settings.Server" style="width: 188px;" placeholder="@Html.DisplayNameFor(model => model.Settings.Server)" value="@Model.Settings.Server" data-val="true" appearance="filled" />
+					<fluent-text-field id="Settings_Server" name="Settings.Server" style="width: 188px;" placeholder="@Html.DisplayNameFor(model => model.Settings.Server)" value="@Model.Settings.Server" data-val="true" appearance="filled" required />
 					<span asp-validation-for="Settings.Server" class="text-danger"></span>
 				</div>
 				
@@ -34,24 +34,18 @@
 			</div>
 
 			<div class="form-line">
-				<label asp-for="Settings.Test"></label>
-				<input asp-for="Settings.Test" />
-				<span asp-validation-for="Settings.Test" class="text-danger"></span>
-			</div>
-
-			<div class="form-line">
 				<label asp-for="Settings.SecureSocket"></label>
 				<select asp-for="Settings.SecureSocket" asp-items="Html.GetEnumSelectList<SecureSocket>()"></select>
 				<span asp-validation-for="Settings.SecureSocket" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
-				<fluent-text-field id="Settings_Login" name="Settings.Login" placeholder="@Html.DisplayNameFor(model => model.Settings.Login)" type="email" value="@Model.Settings.Login" data-val="true" appearance="filled" />
+				<fluent-text-field id="Settings_Login" name="Settings.Login" placeholder="@Html.DisplayNameFor(model => model.Settings.Login)" type="email" value="@Model.Settings.Login" data-val="true" appearance="filled" required />
 				<span asp-validation-for="Settings.Login" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
-				<fluent-text-field id="Settings_Password" name="Settings.Password" placeholder="@Html.DisplayNameFor(model => model.Settings.Password)" type="password" data-val="true" appearance="filled" />
+				<fluent-text-field id="Settings_Password" name="Settings.Password" placeholder="@Html.DisplayNameFor(model => model.Settings.Password)" type="password" data-val="true" appearance="filled" required />
 				<span asp-validation-for="Settings.Password" class="text-danger"></span>
 			</div>
 
