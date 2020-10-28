@@ -9,16 +9,12 @@ namespace CRM.Core.Models
 	{
 		[JsonIgnore]
 		public int Id { get; set; }
-
-		[Required]
 		public int Port { get; set; }
 		public string? Name { get; set; }
 
-		[Required]
 		[EmailAddress]
 		public string Login { get; set; }
 
-		[Required]
 		[Display(Name = "Server Address")]
 		public string Server { get; set; }
 
@@ -26,11 +22,12 @@ namespace CRM.Core.Models
 		[Display(Name = "Email Address")]
 		public string? Address { get; set; }
 
-		[Required]
 		[DataType(DataType.Password)]
 		public string Password { get; set; }
 
-		[Required]
+		[NotMapped]
+		public string Test { get; set; }
+
 		[NotMapped]
 		[JsonIgnore]
 		public SecureSocket SecureSocket
