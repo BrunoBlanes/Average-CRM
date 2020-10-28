@@ -14,11 +14,18 @@ namespace CRM.Client
 		{
 			var builder = WebAssemblyHostBuilder.CreateDefault(args);
 			builder.RootComponents.Add<App>("app");
-			builder.Services.AddHttpClient("CRM.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
-				.AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
+			builder.Services.AddHttpClient("ServerAPI", client =>
+			{
+				client.BaseAddress = new Uri($"{builder.HostEnvironment.BaseAddress}api/");
+			});
+
+			builder.Services.AddHttpClient("Server", client =>
+			{
+				client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+			}).AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
 
 			// Supply HttpClient instances that include access tokens when making requests to the server project
-			builder.Services.AddTransient(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("CRM.ServerAPI"));
+			builder.Services.AddTransient(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Server"));
 			builder.Services.AddOptions();
 			builder.Services.AddApiAuthorization();
 			await builder.Build().RunAsync();

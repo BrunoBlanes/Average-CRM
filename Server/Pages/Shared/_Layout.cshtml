@@ -1,25 +1,38 @@
 ﻿<!DOCTYPE html>
-<html>
 
+<html>
 <head>
 	<base href="~/" />
 	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-	<title>@ViewBag.Title</title>
+	<meta name="author" content="Bruno Blanes" />
+	<meta name="description" content="An average CRM for someone's need." />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Average CRM</title>
 
-	<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-	<link href="~/css/app.css" rel="stylesheet" />
+	<!-- Load our stylesheet -->
+	<link href="~/css/site.min.css" rel="stylesheet" />
+	
+	<!--Load Fabric Core -->
+	<link href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css" rel="stylesheet" />
+	
+	<!-- Load FAST Design -->
+	<script src="https://unpkg.com/@@fluentui/web-components@@0.6.3/dist/web-components.min.js" type="module"></script>
 
-	<!--Load JQuery --> 
-	<script src="~/lib/jquery/dist/jquery.js" type="text/javascript"></script>
-	<script src="~/lib/jquery/plugins/jquery.mask.js" type="text/javascript"></script>
+	<!-- Load framework specific files -->
+	<script src="_framework/blazor.server.js"></script>
 
-	<script src="~/js/jsInterop.js" type="text/javascript"></script>
+	<!-- Load JQuery for client-side validation --> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+
+	<!-- Load our script file -->
+	<script src="~/script/site.min.js" type="text/javascript"></script>
 </head>
 
-<body>
-	<div class="main">
-		<div class="content">
+<body class="ms-Fabric" dir="ltr">
+	<fluent-design-system-provider use-defaults>
+		<div class="main">
 			@if (IsSectionDefined("scripts"))
 			{
 				RenderSection("scripts");
@@ -27,8 +40,10 @@
 
 			@RenderBody()
 		</div>
-	</div>
 
-	<script src="_framework/blazor.server.js"></script>
+		<script>
+			JsFunctions.ApplyColorPalette();
+		</script>
+	 </fluent-design-system-provider>
 </body>
-</html>	
+</html>

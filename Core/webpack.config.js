@@ -2,6 +2,7 @@
 
 module.exports = [
 	{
+		entry: "./Scripts/Index.js",
 		module: {
 			rules: [
 				{
@@ -14,8 +15,8 @@ module.exports = [
 			]
 		},
 		output: {
-			path: path.resolve(__dirname, "../../Server/wwwroot/js"),
-			filename: "jsInterop.js",
+			path: path.resolve(__dirname, "../Server/wwwroot/script"),
+			filename: "site.min.js",
 			library: "JsFunctions",
 			libraryTarget: "window"
 		}

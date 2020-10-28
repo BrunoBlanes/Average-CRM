@@ -1,5 +1,4 @@
 ﻿@page
-@using Microsoft.AspNetCore.Authentication;
 @model LoginModel;
 
 @{
@@ -8,32 +7,25 @@
 
 <div id="login-main-div" class="content">
 	<section>
-		<form id="account" class="login-form" method="post">
+		<form id="account" method="post">
 			<h4>Use a local account to log in.</h4>
-			<hr />
-			<div asp-validation-summary="All" class="text-danger"></div>
-			<div class="form-group">
-				<label asp-for="Email"></label>
-				<input asp-for="Email" class="form-control" />
+			<div>
+				<fluent-text-field id="Email" name="Email" type="email" placeholder="@Html.DisplayNameFor(model => model.Email)" data-val="true" appearance="filled" />
 				<span asp-validation-for="Email" class="text-danger"></span>
 			</div>
-			<div class="form-group">
-				<label asp-for="Password"></label>
-				<input asp-for="Password" class="form-control" />
+			<div>
+				<fluent-text-field id="Password" name="Password" type="password" placeholder="@Html.DisplayNameFor(model => model.Password)" data-val="true" appearance="filled" />
 				<span asp-validation-for="Password" class="text-danger"></span>
 			</div>
-			<div class="form-group">
-				<div class="checkbox">
-					<label asp-for="RememberMe">
-						<input asp-for="RememberMe" />
-						@Html.DisplayNameFor(m => m.RememberMe)
-					</label>
-				</div>
+			<div>
+				<fluent-checkbox id="RememberMe" name="RememberMe" type="checkbox" value="true">
+					@Html.DisplayNameFor(model => model.RememberMe)
+				</fluent-checkbox>
 			</div>
-			<div class="form-group">
-				<button type="submit" class="btn btn-primary">Log in</button>
+			<div>
+				<fluent-button appearance="accent" type="submit">Log in</fluent-button>
 			</div>
-			<div class="form-group">
+			<div>
 				<p>
 					<a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
 				</p>
@@ -51,7 +43,3 @@
 <script>
 	JsFunctions.StopScroll("login-main-div");
 </script>
-
-@section Scripts {
-	<partial name="_ValidationScriptsPartial" />
-}

@@ -1,0 +1,57 @@
+﻿@page
+
+@model CRM.Server.Pages.SetupModel
+
+@{
+	ViewData["Title"] = "Setup";
+}
+
+<div class="content">
+	<section class="form-section">
+		<form asp-controller="EmailSettings" method="post">
+			<h1>Setup your email server</h4>
+
+			<div class="form-line">
+				<fluent-text-field id="Settings_Name" name="Settings.Name" placeholder="@Html.DisplayNameFor(model => model.Settings.Name)" value="@Model.Settings?.Name" data-val="true" appearance="filled" />
+				<span asp-validation-for="Settings.Name" class="text-danger"></span>
+			</div>
+
+			<div class="form-line">
+				<fluent-text-field id="Settings_Address" name="Settings.Address" placeholder="@Html.DisplayNameFor(model => model.Settings.Address)" type="email" value="@Model.Settings?.Address" data-val="true" appearance="filled" />
+				<span asp-validation-for="Settings.Address" class="text-danger"></span>
+			</div>
+
+			<div class="form-line">
+				<div class="form-line-cell">
+					<fluent-text-field id="Settings_Server" name="Settings.Server" style="width: 188px;" placeholder="@Html.DisplayNameFor(model => model.Settings.Server)" value="@Model.Settings?.Server" data-val="true" appearance="filled" />
+					<span asp-validation-for="Settings.Server" class="text-danger" />
+				</div>
+				
+				<div class="form-line-cell">
+					<fluent-text-field id="Settings_Port" name="Settings.Port" style="width: 94px;" placeholder="@Html.DisplayNameFor(model => model.Settings.Port)" type="number" value="@Model.Settings?.Port" data-val="true" appearance="filled" />
+					<span asp-validation-for="Settings.Port" class="text-danger"></span>
+				</div>
+			</div>
+
+			<div class="form-line">
+				<label asp-for="Settings.SecureSocket"></label>
+				<select asp-for="Settings.SecureSocket" asp-items="Html.GetEnumSelectList<SecureSocket>()"></select>
+				<span asp-validation-for="Settings.SecureSocket" class="text-danger"></span>
+			</div>
+
+			<div class="form-line">
+				<fluent-text-field id="Settings_Login" name="Settings.Login" placeholder="@Html.DisplayNameFor(model => model.Settings.Login)" type="email" value="@Model.Settings?.Login" data-val="true" appearance="filled" />
+				<span asp-validation-for="Settings.Login" class="text-danger"></span>
+			</div>
+
+			<div class="form-line">
+				<fluent-text-field id="Settings_Password" name="Settings.Password" placeholder="@Html.DisplayNameFor(model => model.Settings.Password)" type="password" data-val="true" appearance="filled" />
+				<span asp-validation-for="Settings.Password" class="text-danger"></span>
+			</div>
+
+			<div class="form-line">
+				<fluent-button style="margin: 0px 6px 6px 0px;" appearance="accent" type="submit">Save</fluent-button>
+			</div>
+		</form>
+	</section>
+</div>

@@ -1,0 +1,42 @@
+﻿body, html {
+	margin: 0px;
+	padding: 0px;
+}
+
+.main {
+	margin: 0px;
+	padding: 0px;
+	display: table;
+	min-width: 100%;
+	min-height: 100%;
+	position: absolute;
+}
+
+.content {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+form {
+	padding: 12px;
+}
+
+.form-section {
+	text-align: center;
+}
+
+.form-line {
+	width: auto;
+	margin: 12px;
+	display: block;
+	text-align: center;
+}
+
+.form-line-cell {
+	margin: 0px 6px;
+	display: inline-block;
+}
+
+.text-danger {
+	color: darkred;
+}

@@ -28,7 +28,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 		private readonly IEmailSender emailSender;
 
 		public string? ReturnUrl { get; set; }
-		public IList<AuthenticationScheme>? ExternalLogins { get; private set; }
+		public ICollection<AuthenticationScheme>? ExternalLogins { get; private set; }
 
 		[Required]
 		[EmailAddress]
@@ -112,7 +112,9 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 				}
 
 				foreach (IdentityError? error in result.Errors)
+				{
 					ModelState.AddModelError(string.Empty, error.Description);
+				}
 			}
 
 			// If we got this far, something failed, redisplay form
