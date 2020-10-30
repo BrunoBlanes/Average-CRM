@@ -4,6 +4,8 @@ using System.Text.Json.Serialization;
 
 using CRM.Core.Models;
 using CRM.Server.Services;
+using CRM.Server.TagHelpers;
+using CRM.Server.ViewFeatures;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -109,6 +112,9 @@ namespace CRM.Server
 
 			// See https://github.com/aspnet/Announcements/issues/432
 			services.AddDatabaseDeveloperPageExceptionFilter();
+
+			// Adds the FAST based Fluent HTML generator
+			services.AddScoped<IHtmlGenerator, FluentGenerator>();
 
 			// Sets the view
 			services.AddControllersWithViews();
