@@ -30,11 +30,13 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 		[Required]
 		[EmailAddress]
 		[BindProperty]
+		[Display(Prompt = "Email")]
 		public string Email { get; set; }
 
 		[Required]
 		[BindProperty]
 		[DataType(DataType.Password)]
+		[Display(Prompt = "Password")]
 		[StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
 		public string Password { get; set; }
 

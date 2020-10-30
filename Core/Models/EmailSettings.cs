@@ -9,19 +9,25 @@ namespace CRM.Core.Models
 	{
 		[JsonIgnore]
 		public int Id { get; set; }
+
+		[Display(Prompt = "Port")]
 		public int Port { get; set; }
+
+		[Display(Prompt = "Sender Name")]
 		public string? Name { get; set; }
 
 		[EmailAddress]
+		[Display(Prompt = "Login")]
 		public string Login { get; set; }
 
-		[Display(Name = "Server Address")]
+		[Display(Prompt = "Server Address")]
 		public string Server { get; set; }
 
 		[EmailAddress]
-		[Display(Name = "Email Address")]
+		[Display(Prompt = "Sender Address")]
 		public string? Address { get; set; }
 
+		[Display(Prompt = "Password")]
 		[DataType(DataType.Password)]
 		public string Password { get; set; }
 

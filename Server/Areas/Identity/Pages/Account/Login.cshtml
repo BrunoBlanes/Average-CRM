@@ -9,29 +9,36 @@
 	<section>
 		<form id="account" method="post">
 			<h4>Use a local account to log in.</h4>
+
 			<div>
-				<fluent-text-field id="Email" name="Email" type="email" placeholder="@Html.DisplayNameFor(model => model.Email)" data-val="true" appearance="filled" />
+				<fluent-text-field asp-for="Email" />
 				<span asp-validation-for="Email" class="text-danger"></span>
 			</div>
+
 			<div>
-				<fluent-text-field id="Password" name="Password" type="password" placeholder="@Html.DisplayNameFor(model => model.Password)" data-val="true" appearance="filled" />
+				<fluent-text-field asp-for="Password" />
 				<span asp-validation-for="Password" class="text-danger"></span>
 			</div>
+
 			<div>
 				<fluent-checkbox id="RememberMe" name="RememberMe" type="checkbox" value="true">
 					@Html.DisplayNameFor(model => model.RememberMe)
 				</fluent-checkbox>
 			</div>
+
 			<div>
 				<fluent-button appearance="accent" type="submit">Log in</fluent-button>
 			</div>
+
 			<div>
 				<p>
 					<a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
 				</p>
+
 				<p>
 					<a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
 				</p>
+
 				<p>
 					<a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
 				</p>
