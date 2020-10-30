@@ -2,7 +2,7 @@
 
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace CRM.Server.ViewFeatures
+namespace CRM.TagHelpers.ViewFeatures
 {
 	/// <summary>
 	/// Provides cached values for "name" and "id" HTML attributes.

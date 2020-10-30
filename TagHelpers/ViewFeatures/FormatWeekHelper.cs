@@ -4,7 +4,7 @@ using System.Threading;
 
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace CRM.Server.ViewFeatures
+namespace CRM.TagHelpers.ViewFeatures
 {
 	public class FormatWeekHelper
 	{

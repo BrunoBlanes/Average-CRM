@@ -5,8 +5,9 @@ using System.Reflection;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace CRM.Server.ViewFeatures
+namespace CRM.TagHelpers.ViewFeatures
 {
 	public class TemplateRenderer
 	{
@@ -89,6 +90,29 @@ namespace CRM.Server.ViewFeatures
 			}
 
 			yield return "Object";
+		}
+
+		// A variant of the base class TemplateRenderer.GetViewNames().
+		public static IEnumerable<string> GetInputTypeHints(ModelExplorer modelExplorer)
+		{
+			if (string.IsNullOrEmpty(modelExplorer.Metadata.TemplateHint) != true)
+			{
+				yield return modelExplorer.Metadata.TemplateHint;
+			}
+
+			if (string.IsNullOrEmpty(modelExplorer.Metadata.DataTypeName) != true)
+			{
+				yield return modelExplorer.Metadata.DataTypeName;
+			}
+
+			// We don't want to search for Nullable<T>, we want to search for T
+			// (which should handle both T and Nullable<T>).
+			Type? fieldType = modelExplorer.Metadata.UnderlyingOrModelType;
+
+			foreach (string typeName in GetTypeNames(modelExplorer.Metadata, fieldType))
+			{
+				yield return typeName;
+			}
 		}
 	}
 }

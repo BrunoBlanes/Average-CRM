@@ -4,8 +4,7 @@ using System.Text.Json.Serialization;
 
 using CRM.Core.Models;
 using CRM.Server.Services;
-using CRM.Server.TagHelpers;
-using CRM.Server.ViewFeatures;
+using CRM.TagHelpers.ViewFeatures;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -114,7 +113,7 @@ namespace CRM.Server
 			services.AddDatabaseDeveloperPageExceptionFilter();
 
 			// Adds the FAST based Fluent HTML generator
-			services.AddScoped<IHtmlGenerator, FluentGenerator>();
+			services.AddScoped<IHtmlGenerator, FastGenerator>();
 
 			// Sets the view
 			services.AddControllersWithViews();
