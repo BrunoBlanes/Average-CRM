@@ -34,9 +34,9 @@ namespace CRM.TagHelpers.ViewFeatures
 		/// <param name="value">The value.</param>
 		/// <param name="format">The format.</param>
 		/// <param name="htmlAttributes">The html attributes.</param>
-		/// <param name="designSystem">The <see cref="DesignSystem"/> to apply to the component.</param>
+		/// <param name="designSystem">The <see cref="DesignSystemLanguage"/> to apply to the component.</param>
 		/// <returns></returns>
-		public TagBuilder GenerateTextField(ViewContext viewContext, ModelExplorer modelExplorer, string inputType, string expression, object value, string format, object htmlAttributes, DesignSystem designSystem)
+		public TagBuilder GenerateTextField(ViewContext viewContext, ModelExplorer modelExplorer, string inputType, string expression, object value, string? format, object? htmlAttributes, DesignSystemLanguage designSystem)
 		{
 			string fullName = NameAndIdProvider.GetFullHtmlFieldName(viewContext, expression);
 			IDictionary<string, object>? htmlAttributeDictionary = GetHtmlAttributeDictionaryOrNull(htmlAttributes);
@@ -95,7 +95,7 @@ namespace CRM.TagHelpers.ViewFeatures
 			return tagBuilder;
 		}
 
-		private static string EvalString(ViewContext viewContext, string key, string format)
+		private static string EvalString(ViewContext viewContext, string key, string? format)
 		{
 			return Convert.ToString(viewContext.ViewData.Eval(key, format), CultureInfo.CurrentCulture);
 		}
@@ -125,7 +125,7 @@ namespace CRM.TagHelpers.ViewFeatures
 		}
 
 		// Only need a dictionary if htmlAttributes is non-null. TagBuilder.MergeAttributes() is fine with null.
-		private static IDictionary<string, object>? GetHtmlAttributeDictionaryOrNull(object htmlAttributes)
+		private static IDictionary<string, object>? GetHtmlAttributeDictionaryOrNull(object? htmlAttributes)
 		{
 			IDictionary<string, object>? htmlAttributeDictionary = null;
 

@@ -13,22 +13,22 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace CRM.TagHelpers.TagHelpers.Fast
 {
 	/// <summary>
-	/// <see cref="InputTagHelper"/> implementation targeting &lt;fast-text-field&gt;
+	/// <see cref="InputFastElement"/> implementation targeting &lt;fast-text-field&gt;
 	/// elements with an <c>asp-for</c> attribute.
 	/// </summary>
 	[HtmlTargetElement("fast-text-field", Attributes = ForAttributeName, TagStructure = TagStructure.NormalOrSelfClosing)]
-	public class FastTextFieldTagHelper : FastElement
+	public class FastTextFieldTagHelper : InputFastElement
 	{
 		/// <summary>
-		/// The appearance of the FAST element.
+		/// The appearance of the FAST text-field element.
 		/// </summary>
 		/// <remarks>
 		/// Passed through to the generated HTML in all cases. Defaults to <c>outline</c>.
 		/// </remarks>
-		public Appearance Appearance { get; set; }
+		public AppearanceAttribute Appearance { get; set; }
 
 		/// <summary>
-		/// Creates a new <see cref="FastTextFieldTagHelper"/>.
+		/// Creates a new instance of <see cref="FastTextFieldTagHelper"/>.
 		/// </summary>
 		/// <param name="generator">The <see cref="FastGenerator"/>.</param>
 		public FastTextFieldTagHelper(IHtmlGenerator generator) : base(generator) { }
@@ -90,28 +90,43 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 
 			TagBuilder tagBuilder = inputType switch
 			{
-				//"hidden" => GenerateHidden(modelExplorer, htmlAttributes),
-
-				// TODO: Override the method below to implement fluent design
-				"password" => Generator.GeneratePassword(ViewContext, modelExplorer, For.Name, value: null, htmlAttributes: htmlAttributes),
-				_ => GenerateFASTTextField(modelExplorer, inputTypeHint, inputType, htmlAttributes),
+				"hidden" => GenerateHiddenField(modelExplorer, htmlAttributes),
+				"password" => GeneratePasswordField(modelExplorer, inputType, htmlAttributes),
+				_ => GenerateTextField(modelExplorer, inputTypeHint, inputType, htmlAttributes),
 			};
 
-			if (tagBuilder is not null)
-			{
-				// This TagBuilder contains the one <fast-text-field/> element of interest.
-				output.MergeAttributes(tagBuilder);
-
-				if (tagBuilder.HasInnerHtml)
-				{
-					// Since this is not the "checkbox" special-case, no guarantee that output is a self-closing
-					// element. A later tag helper targeting this element may change output.TagMode.
-					output.Content.AppendHtml(tagBuilder.InnerHtml);
-				}
-			}
+			output.MergeAttributes(tagBuilder);
 		}
 
-		private TagBuilder GenerateFASTTextField(ModelExplorer modelExplorer, string? inputTypeHint, string inputType, IDictionary<string, object>? htmlAttributes)
+		// Imitate Generator.GenerateHidden() using Generator.GenerateTextBox(). This adds support
+		// for asp-format that is not available in Generator.GenerateHidden().
+		private TagBuilder GenerateHiddenField(ModelExplorer modelExplorer, IDictionary<string, object>? htmlAttributes)
+		{
+			object value = For.Model;
+
+			if (value is byte[] byteArrayValue)
+			{
+				value = Convert.ToBase64String(byteArrayValue);
+			}
+
+			if (htmlAttributes is null)
+			{
+				htmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+			}
+
+			// In DefaultHtmlGenerator(), GenerateTextBox() calls GenerateInput() _almost_ identically to how
+			// GenerateHidden() does and the main switch inside GenerateInput() handles InputType.Text and
+			// InputType.Hidden identically. No behavior differences at all when a type HTML attribute already exists.
+			htmlAttributes["type"] = "hidden";
+			return Generator.GenerateTextBox(ViewContext, modelExplorer, For.Name, value, Format, htmlAttributes);
+		}
+
+		private TagBuilder GeneratePasswordField(ModelExplorer modelExplorer, string inputType, IDictionary<string, object>? htmlAttributes)
+		{
+			return Generator.GenerateTextField(ViewContext, modelExplorer, inputType, For.Name, modelExplorer.Model, null, htmlAttributes, DesignSystem);
+		}
+
+		private TagBuilder GenerateTextField(ModelExplorer modelExplorer, string? inputTypeHint, string inputType, IDictionary<string, object>? htmlAttributes)
 		{
 			string format = Format;
 
@@ -218,11 +233,11 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 
 			return format;
 		}
-	}
 
-	public enum Appearance
-	{
-		Outline,
-		Filled
+		public enum AppearanceAttribute
+		{
+			Outline,
+			Filled
+		}
 	}
 }

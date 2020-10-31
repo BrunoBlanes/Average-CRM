@@ -15,13 +15,13 @@ namespace CRM.TagHelpers.TagHelpers.Fluent
 	public class FluentTextFieldTagHelper : FastTextFieldTagHelper
 	{
 		/// <summary>
-		/// Creates a new <see cref="FluentTextFieldTagHelper"/>.
+		/// Creates a new instance of <see cref="FluentTextFieldTagHelper"/>.
 		/// </summary>
 		/// <param name="generator">The <see cref="FastGenerator"/>.</param>
 		public FluentTextFieldTagHelper(IHtmlGenerator generator) : base(generator)
 		{
-			Appearance = Appearance.Filled;
-			DesignSystem = DesignSystem.Fluent;
+			Appearance = AppearanceAttribute.Filled;
+			DesignSystem = DesignSystemLanguage.Fluent;
 		}
 	}
 }

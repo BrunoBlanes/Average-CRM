@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace CRM.TagHelpers.Models
 {
-	public class FastElement : InputTagHelper
+	public class InputFastElement : InputTagHelper
 	{
 		protected const string ForAttributeName = "asp-for";
 
@@ -57,21 +57,21 @@ namespace CRM.TagHelpers.Models
 		protected new FastGenerator Generator { get; }
 
 		/// <summary>
-		/// The <see cref="DesignSystem"/> implementation.
+		/// The <see cref="DesignSystemLanguage"/> implementation.
 		/// </summary>
-		public DesignSystem DesignSystem { get; set; }
+		public DesignSystemLanguage DesignSystem { get; set; }
 
 		/// <summary>
-		/// Creates a new <see cref="FastTextFieldTagHelper"/>.
+		/// Creates a new instance of <see cref="InputFastElement"/>.
 		/// </summary>
 		/// <param name="generator">The <see cref="FastGenerator"/>.</param>
-		public FastElement(IHtmlGenerator generator) : base(generator)
+		public InputFastElement(IHtmlGenerator generator) : base(generator)
 		{
 			Generator = (FastGenerator)generator;
 		}
 	}
 
-	public enum DesignSystem
+	public enum DesignSystemLanguage
 	{
 		FAST,
 		Fluent
