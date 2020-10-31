@@ -107,7 +107,7 @@ namespace CRM.Server
 			});
 
 			// Sets the email service
-			services.AddTransient<IEmailSender, EmailService>();
+			services.AddScoped<IEmailSender, EmailService>();
 
 			// See https://github.com/aspnet/Announcements/issues/432
 			services.AddDatabaseDeveloperPageExceptionFilter();
