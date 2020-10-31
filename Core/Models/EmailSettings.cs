@@ -3,15 +3,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using MailKit.Security;
 
+//using Microsoft.AspNetCore.Mvc;
+
 namespace CRM.Core.Models
 {
 	public class EmailSettings
 	{
 		[JsonIgnore]
+		//[HiddenInput]
 		public int Id { get; set; }
 
 		[Display(Prompt = "Port")]
-		public int Port { get; set; }
+		public ushort? Port { get; set; }
 
 		[Display(Prompt = "Sender Name")]
 		public string? Name { get; set; }

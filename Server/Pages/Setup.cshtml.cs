@@ -31,6 +31,7 @@ namespace CRM.Server.Pages
 			if (response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NoContent)
 			{
 				Settings = await response.Content.ReadFromJsonAsync<EmailSettings>() ?? new();
+				Settings.Password = string.Empty;
 			}
 		}
 	}
