@@ -8,45 +8,45 @@
 
 <div class="content">
 	<section class="form-section">
-		<form asp-controller="EmailSettings" method="post">
+		<form id="email" method="post">
 			<h1>Setup your email server</h4>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="Settings.Name" />
-				<span asp-validation-for="Settings.Name" class="text-danger"></span>
+				<fluent-text-field asp-for="SmtpOptions.Name" />
+				<span asp-validation-for="SmtpOptions.Name" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="Settings.Address" />
-				<span asp-validation-for="Settings.Address" class="text-danger"></span>
+				<fluent-text-field asp-for="SmtpOptions.Address" />
+				<span asp-validation-for="SmtpOptions.Address" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
 				<div class="form-line-cell">
-					<fluent-text-field asp-for="Settings.Server" style="width: 188px;" />
-					<span asp-validation-for="Settings.Server" class="text-danger"></span>
+					<fluent-text-field asp-for="SmtpOptions.Server" style="width: 188px;" />
+					<span asp-validation-for="SmtpOptions.Server" class="text-danger"></span>
 				</div>
 				
 				<div class="form-line-cell">
-					<fluent-text-field asp-for="Settings.Port" style="width: 94px;" />
-					<span asp-validation-for="Settings.Port" class="text-danger"></span>
+					<fluent-text-field asp-for="SmtpOptions.Port" style="width: 94px;" />
+					<span asp-validation-for="SmtpOptions.Port" class="text-danger"></span>
 				</div>
 			</div>
 
 			<div class="form-line">
-				<label asp-for="Settings.SecureSocket"></label>
-				<select asp-for="Settings.SecureSocket" asp-items="Html.GetEnumSelectList<SecureSocket>()"></select>
-				<span asp-validation-for="Settings.SecureSocket" class="text-danger"></span>
+				<label asp-for="SmtpOptions.SecureSocket"></label>
+				<select asp-for="SmtpOptions.SecureSocket" asp-items="Html.GetEnumSelectList<SecureSocket>()"></select>
+				<span asp-validation-for="SmtpOptions.SecureSocket" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="Settings.Login" />
-				<span asp-validation-for="Settings.Login" class="text-danger"></span>
+				<fluent-text-field asp-for="SmtpOptions.Login" />
+				<span asp-validation-for="SmtpOptions.Login" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="Settings.Password" />
-				<span asp-validation-for="Settings.Password" class="text-danger"></span>
+				<fluent-text-field asp-for="SmtpOptions.Password" />
+				<span asp-validation-for="SmtpOptions.Password" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">

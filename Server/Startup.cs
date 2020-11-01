@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using CRM.Core.Models;
+using CRM.Server.Extensions;
 using CRM.Server.Services;
 using CRM.TagHelpers.ViewFeatures;
 
@@ -26,7 +27,7 @@ namespace CRM.Server
 	{
 		public IConfiguration Configuration { get; }
 
-		public Startup(IConfiguration configuration)
+		public Startup(IConfiguration configuration, IWebHostEnvironment env)
 		{
 			Configuration = configuration;
 		}
@@ -107,10 +108,13 @@ namespace CRM.Server
 			});
 
 			// Sets the email service
-			services.AddScoped<IEmailSender, EmailService>();
+			services.AddSingleton<IEmailSender, SmtpService>();
 
 			// See https://github.com/aspnet/Announcements/issues/432
 			services.AddDatabaseDeveloperPageExceptionFilter();
+
+			// Configure options
+			services.ConfigureWritable<SmtpOptions>(Configuration.GetSection(SmtpOptions.Section), "appconfig.json");
 
 			// Adds the FAST based Fluent HTML generator
 			services.AddScoped<IHtmlGenerator, FastGenerator>();

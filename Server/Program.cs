@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -32,8 +33,10 @@ namespace CRM.Server
 
 		public static IHostBuilder CreateHostBuilder(string[] args)
 		{
-			return Host.CreateDefaultBuilder(args)
-				.ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
+			return Host.CreateDefaultBuilder(args).ConfigureAppConfiguration(x =>
+			{
+				x.AddJsonFile("appconfig.json", true, true);
+			}).ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
 		}
 	}
 }

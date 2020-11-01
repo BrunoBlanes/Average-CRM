@@ -10,34 +10,57 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using MimeKit;
 
 namespace CRM.Server.Services
 {
-	public class EmailService : IEmailSender, IDisposable
+	public class SmtpService : IEmailSender, IDisposable
 	{
-		private readonly ApplicationDbContext context;
+		private MailboxAddress? mailboxAddress;
 		private readonly SmtpClient client;
 		private readonly ILogger logger;
+		private SmtpOptions? settings;
 		private bool disposedValue;
 
-		public EmailSettings? Settings { get; set; }
-		public MailboxAddress? MailboxAddress { get; set; }
+		/// <summary>
+		/// <c>true</c> if the configuration was successful; otherwise <c>false</c>.
+		/// </summary>
+		public bool IsConfigured { get; set; }
 
 		/// <summary>
-		/// Creates a new instance of <see cref="EmailService"/>.
+		/// Creates a new instance of <see cref="SmtpService"/>.
 		/// </summary>
-		/// <param name="context">The <see cref="ApplicationDbContext"/>.</param>
 		/// <param name="logger">The <see cref="ILogger"/>.</param>
-		public EmailService(ApplicationDbContext context, ILogger<EmailService> logger)
+		public SmtpService(ILogger<SmtpService> logger, IOptionsMonitor<SmtpOptions> options)
 		{
 			this.logger = logger;
-			this.context = context;
 			client = new SmtpClient();
-			Task.Run(() => TryConnectAsync());
+			options.OnChange(change => Configure(options));
+			Configure(options);
+		}
+
+		private async void Configure(IOptionsMonitor<SmtpOptions> options)
+		{
+			if (options.CurrentValue.Equals(new()) is false)
+			{
+				settings = options.CurrentValue;
+				string password = settings.Password;
+				settings.Password = string.Empty;
+				using var passwordHasher = new PasswordHasher();
+				settings.Password = passwordHasher.Decrypt(password, settings);
+				mailboxAddress = new MailboxAddress(settings.Name, settings.Address);
+				await TryAuthenticateAsync();
+				logger.LogInformation("Email service configured successfully.");
+				IsConfigured = true;
+			}
+
+			else
+			{
+				logger.LogError("Could not retrieve SMTP options from configuration file.");
+			}
 		}
 
 		/// <summary>
@@ -55,20 +78,9 @@ namespace CRM.Server.Services
 				return true;
 			}
 
-			if (Settings is null)
+			if (settings is null)
 			{
-				if (await context.EmailSettings.SingleOrDefaultAsync(token) is EmailSettings settings)
-				{
-					Settings = settings;
-					using var passwordHasher = new PasswordHasher();
-					Settings.Password = passwordHasher.Decrypt(settings.Password, settings);
-					MailboxAddress = new MailboxAddress(Settings.Name, Settings.Address);
-				}
-
-				else
-				{
-					throw new InvalidOperationException("Could not retrieve email configuration from the database.");
-				}
+				throw new InvalidOperationException("Could not retrieve email configuration from the database.");
 			}
 
 			int attempts = 1;
@@ -77,7 +89,7 @@ namespace CRM.Server.Services
 				try
 				{
 					logger.LogInformation("Attempting to connect to the SMTP server.");
-					await client.ConnectAsync(Settings.Server, Settings.Port ?? 0, Settings.SecureSocketOptions, token);
+					await client.ConnectAsync(settings.Server, settings.Port ?? 0, (SecureSocketOptions)settings.SecureSocket, token);
 					logger.LogInformation("Connection successful.");
 					return true;
 				}
@@ -90,13 +102,7 @@ namespace CRM.Server.Services
 				catch (Exception e)
 				{
 					attempts++;
-					logger.LogError(e, e.Message);
-					await Task.Delay(new Random().Next(1000), token);
-
-					if (attempts <= 3)
-					{
-						logger.LogInformation($"Trying again for attempt number {attempts}.");
-					}
+					await TryAgainAsync(e, attempts, token);
 				}
 			}
 
@@ -113,7 +119,6 @@ namespace CRM.Server.Services
 		/// <exception cref="OperationCanceledException">Thrown only when the <paramref name="token"/> is provided and <see cref="CancellationTokenSource.Cancel"/> is requested.</exception>
 		public async Task<bool> TryAuthenticateAsync(CancellationToken token = default)
 		{
-		Auth:
 			if (client.IsAuthenticated)
 			{
 				return true;
@@ -126,7 +131,10 @@ namespace CRM.Server.Services
 				{
 					try
 					{
-						await client.AuthenticateAsync(Settings?.Login, Settings?.Password, token);
+						logger.LogInformation("Attempting to authenticate to the SMTP server.");
+						await client.AuthenticateAsync(settings?.Login, settings?.Password, token);
+						logger.LogInformation("Authentication successful.");
+						return true;
 					}
 
 					catch (AuthenticationException e)
@@ -138,20 +146,14 @@ namespace CRM.Server.Services
 					catch (Exception e)
 					{
 						attempts++;
-						logger.LogError(e, e.Message);
-						await Task.Delay(new Random().Next(1000), token);
-
-						if (attempts <= 3)
-						{
-							logger.LogInformation($"Trying again for attempt number {attempts}.");
-						}
+						await TryAgainAsync(e, attempts, token);
 					}
 				}
 			}
 
 			else if (await TryConnectAsync(token))
 			{
-				goto Auth;
+				return await TryAuthenticateAsync(token);
 			}
 
 			return false;
@@ -161,6 +163,7 @@ namespace CRM.Server.Services
 		/// <param name="email">The receiver's address.</param>
 		/// <param name="subject">The email suject.</param>
 		/// <param name="body">The email body.</param>
+		/// <exception cref="InvalidOperationException">Thrown when no recipients have been specified.</exception>
 		public async Task SendEmailAsync(string email, string subject, string body)
 		{
 			// Create the email message
@@ -170,7 +173,8 @@ namespace CRM.Server.Services
 				Body = new TextPart("plain") { Text = $@"{body}" }
 			};
 			message.To.Add(MailboxAddress.Parse(email));
-			await SendEmailAsync(message);
+			message.From.Add(mailboxAddress);
+			await TrySendEmailAsync(message);
 		}
 
 		/// <summary>
@@ -180,24 +184,28 @@ namespace CRM.Server.Services
 		/// <param name="token">The <see cref="CancellationToken"/>.</param>
 		/// <exception cref="InvalidOperationException">Thrown when no recipients have been specified.</exception>
 		/// <exception cref="OperationCanceledException">Thrown only when the <paramref name="token"/> is provided and <see cref="CancellationTokenSource.Cancel"/> is requested.</exception>
-		public async Task SendEmailAsync(MimeMessage message, CancellationToken token = default)
+		public async Task<bool> TrySendEmailAsync(MimeMessage message, CancellationToken token = default)
 		{
-		Send:
 			if (client.IsAuthenticated)
 			{
-				message.From.Add(MailboxAddress);
-
 				int attempts = 1;
 				while (attempts <= 3)
 				{
 					try
 					{
 						await client.SendAsync(message);
+						return true;
 					}
 
 					catch (InvalidOperationException)
 					{
 						throw;
+					}
+
+					catch (CommandException e)
+					{
+						logger.LogWarning(e.Message);
+						return false;
 					}
 
 					catch (Exception e)
@@ -212,18 +220,19 @@ namespace CRM.Server.Services
 			{
 				if (await TryAuthenticateAsync(token))
 				{
-					goto Send;
+					return await TrySendEmailAsync(message, token);
 				}
 			}
+
+			return false;
 		}
 
 		private async Task TryAgainAsync(Exception e, int attempts, CancellationToken token)
 		{
-			logger.LogError(e, e.Message);
-			await Task.Delay(new Random().Next(1000), token);
-
 			if (attempts <= 3)
 			{
+				logger.LogError(e, e.Message);
+				await Task.Delay(new Random().Next(1000), token);
 				logger.LogInformation($"Trying again for attempt number {attempts}.");
 			}
 		}
@@ -238,7 +247,6 @@ namespace CRM.Server.Services
 					client.Disconnect(true);
 
 					client.Dispose();
-					context.Dispose();
 				}
 
 				disposedValue = true;

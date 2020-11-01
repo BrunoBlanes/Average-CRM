@@ -1,9 +1,8 @@
-﻿using System.Net;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using CRM.Core.Models;
+using CRM.Server.Data;
+using CRM.Server.Interfaces;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,27 +11,36 @@ namespace CRM.Server.Pages
 {
 	public class SetupModel : PageModel
 	{
-		private readonly IHttpClientFactory clientFactory;
+		private readonly IWritableOptions<SmtpOptions> options;
 
 		[BindProperty]
-		public EmailSettings Settings { get; set; }
+		public SmtpOptions SmtpOptions { get; set; }
 
-		public SetupModel(IHttpClientFactory clientFactory)
+		public SetupModel(IWritableOptions<SmtpOptions> options)
 		{
-			Settings = new EmailSettings();
-			this.clientFactory = clientFactory;
+			this.options = options;
+			SmtpOptions = options.Value ?? new();
+			SmtpOptions.Password = string.Empty;
 		}
 
-		public async Task OnGetAsync()
+		public async Task<IActionResult> OnPostAsync()
 		{
-			HttpClient client = clientFactory.CreateClient("ServerAPI");
-			HttpResponseMessage? response = await client.GetAsync("EmailSettings");
-			
-			if (response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NoContent)
+			if (SmtpOptions.Address is null)
 			{
-				Settings = await response.Content.ReadFromJsonAsync<EmailSettings>() ?? new();
-				Settings.Password = string.Empty;
+				SmtpOptions.Address = SmtpOptions.Login;
 			}
+
+			if (SmtpOptions.Name is null)
+			{
+				SmtpOptions.Name = "CRM Server";
+			}
+
+			string password = SmtpOptions.Password;
+			SmtpOptions.Password = string.Empty;
+			using var passwordHasher = new PasswordHasher();
+			SmtpOptions.Password = passwordHasher.Encrypt(password, SmtpOptions);
+			await options.UpdateAsync(SmtpOptions);
+			return LocalRedirect("~/");
 		}
 	}
 }
