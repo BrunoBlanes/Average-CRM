@@ -21,7 +21,7 @@ namespace CRM.Server.Controllers
 	public class UsersController : ControllerBase
 	{
 		private readonly ILogger logger;
-		private readonly EmailService emailService;
+		private readonly SmtpService emailService;
 		private readonly ApplicationDbContext context;
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly SignInManager<ApplicationUser> signInManager;
@@ -30,7 +30,7 @@ namespace CRM.Server.Controllers
 			SignInManager<ApplicationUser> signInManager,
 			ILogger<UsersController> logger,
 			ApplicationDbContext context,
-			EmailService emailService)
+			SmtpService emailService)
 		{
 			this.logger = logger;
 			this.context = context;

@@ -15,7 +15,7 @@
 	"dependencies": {
 		"@microsoft/fast-colors": "^5.1.0",
 		"@microsoft/fast-components": "^1.11.1",
-		"lodash-es": "^4.17.14"
+		"lodash-es": "^4.17.15"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.11.4",

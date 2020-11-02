@@ -3,7 +3,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using CRM.Core.Models;
+using CRM.Server.Extensions;
 using CRM.Server.Services;
+using CRM.TagHelpers.ViewFeatures;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +27,7 @@ namespace CRM.Server
 	{
 		public IConfiguration Configuration { get; }
 
-		public Startup(IConfiguration configuration)
+		public Startup(IConfiguration configuration, IWebHostEnvironment env)
 		{
 			Configuration = configuration;
 		}
@@ -105,10 +108,16 @@ namespace CRM.Server
 			});
 
 			// Sets the email service
-			services.AddTransient<IEmailSender, EmailService>();
+			services.AddSingleton<IEmailSender, SmtpService>();
 
 			// See https://github.com/aspnet/Announcements/issues/432
 			services.AddDatabaseDeveloperPageExceptionFilter();
+
+			// Configure options
+			services.ConfigureWritable<SmtpOptions>(Configuration.GetSection(SmtpOptions.Section), "appconfig.json");
+
+			// Adds the FAST based Fluent HTML generator
+			services.AddScoped<IHtmlGenerator, FastGenerator>();
 
 			// Sets the view
 			services.AddControllersWithViews();

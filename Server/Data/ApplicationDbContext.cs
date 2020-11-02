@@ -21,7 +21,6 @@ namespace CRM.Server
 		public DbSet<ProductGroup> ProductGroups { get; set; } = null!;
 		public DbSet<ProductUnit> ProductUnits { get; set; } = null!;
 		public DbSet<Supplier> Suppliers { get; set; } = null!;
-		public DbSet<EmailSettings> EmailSettings { get; set; } = null!;
 
 		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
 			IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions) { }

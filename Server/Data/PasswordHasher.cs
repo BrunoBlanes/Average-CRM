@@ -18,6 +18,9 @@ namespace CRM.Server.Data
 		private readonly int iterCount;
 		private bool disposedValue;
 
+		/// <summary>
+		/// Creates a new instance of <see cref="PasswordHasher"/>.
+		/// </summary>
 		public PasswordHasher()
 		{
 			var options = new PasswordHasherOptions();
@@ -30,6 +33,17 @@ namespace CRM.Server.Data
 			};
 		}
 
+		/// <summary>
+		/// Encrypts the <paramref name="password"/> using <paramref name="obj"/> as a key and
+		/// the <see cref="Rijndael"/> encryptor with the <see cref="SymmetricAlgorithm.IV"/>.
+		/// </summary>
+		/// <param name="password">The plain text password.</param>
+		/// <param name="obj">An object to be used as key.</param>
+		/// <remarks>
+		/// <paramref name="obj"/> must be JSON serializable.
+		/// </remarks>
+		/// <returns>The encrypted password as a <see cref="string"/>.</returns>
+		/// <exception cref="NotSupportedException"></exception>
 		public string Encrypt(string password, object obj)
 		{
 			// Convert the object to encrypt the password with to string
@@ -62,6 +76,16 @@ namespace CRM.Server.Data
 			return Convert.ToBase64String(cipherBytes);
 		}
 
+		/// <summary>
+		/// Decrypts the <paramref name="cipherText"/> previously encrypted using <see cref="Encrypt(string, object)"/> with <paramref name="obj"/> as a key.
+		/// </summary>
+		/// <param name="cipherText">The encrypted password.</param>
+		/// <param name="obj">The object used as key.</param>
+		/// <remarks>
+		/// <paramref name="obj"/> must be JSON serializable.
+		/// </remarks>
+		/// <returns>The decrypted password as a <see cref="string"/>.</returns>
+		/// <exception cref="NotSupportedException"></exception>
 		public string Decrypt(string cipherText, object obj)
 		{
 			// Convert the object to decrypt the password with to string
@@ -92,7 +116,7 @@ namespace CRM.Server.Data
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposedValue)
+			if (disposedValue != true)
 			{
 				if (disposing)
 				{

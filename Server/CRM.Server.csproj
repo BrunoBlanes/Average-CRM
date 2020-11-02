@@ -36,5 +36,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Client\CRM.Client.csproj" />
 		<ProjectReference Include="..\Core\CRM.Core.csproj" />
+		<ProjectReference Include="..\TagHelpers\CRM.TagHelpers.csproj" />
 	</ItemGroup>
 </Project>

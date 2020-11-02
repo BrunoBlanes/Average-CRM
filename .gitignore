@@ -20,6 +20,9 @@ Core/**/*.js
 Core/**/*.js.map
 !webpack.config.js
 
+# Configuration files
+*appconfig.*
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
