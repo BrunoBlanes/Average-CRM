@@ -12,6 +12,7 @@ namespace CRM.Server.Pages
 	public class SetupModel : PageModel
 	{
 		private readonly IWritableOptions<SmtpOptions> options;
+		private string? password;
 
 		[BindProperty]
 		public SmtpOptions SmtpOptions { get; set; }
@@ -20,6 +21,7 @@ namespace CRM.Server.Pages
 		{
 			this.options = options;
 			SmtpOptions = options.Value ?? new();
+			password = SmtpOptions.Password;
 			SmtpOptions.Password = string.Empty;
 		}
 
@@ -35,7 +37,7 @@ namespace CRM.Server.Pages
 				SmtpOptions.Name = "CRM Server";
 			}
 
-			string password = SmtpOptions.Password;
+			password = SmtpOptions.Password;
 			SmtpOptions.Password = string.Empty;
 			using var passwordHasher = new PasswordHasher();
 			SmtpOptions.Password = passwordHasher.Encrypt(password, SmtpOptions);

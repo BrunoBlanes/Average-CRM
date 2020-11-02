@@ -39,6 +39,7 @@ namespace CRM.Server.Services
 			return options.Get(name);
 		}
 
+		/// <inheritdoc/>
 		public Task UpdateAsync(object obj)
 		{
 			List<Action<T>> actions = new();
@@ -51,12 +52,13 @@ namespace CRM.Server.Services
 			return UpdateAsync((Action<T>)Delegate.Combine(actions.ToArray())!);
 		}
 
-		public async Task UpdateAsync(Action<T> applyChanges)
+		/// <inheritdoc/>
+		public async Task UpdateAsync(Action<T> updateAction)
 		{
 			IFileProvider fileProvider = environment.ContentRootFileProvider;
 			IFileInfo fileInfo = fileProvider.GetFileInfo(file);
 			string physicalPath = fileInfo.PhysicalPath;
-			applyChanges(Value);
+			updateAction(Value);
 			AppSettings appSettings = await ReadAppSettingsAsync(physicalPath, true);
 
 			foreach (PropertyInfo property in appSettings.GetType().GetProperties())
@@ -83,12 +85,10 @@ namespace CRM.Server.Services
 		/// <returns>An instance of <see cref="AppSettings"/> populated with the contents of the requested file.</returns>
 		private async Task<AppSettings> ReadAppSettingsAsync(string physicalPath, bool fallback = false)
 		{
-			string appOptions = string.Empty;
-
 			try
 			{
 				// Try reading and deserializing the contents of the file
-				appOptions = await File.ReadAllTextAsync(physicalPath);
+				string appOptions = await File.ReadAllTextAsync(physicalPath);
 				
 				if (JsonSerializer.Deserialize<AppSettings>(appOptions) is AppSettings appSettings)
 				{
@@ -102,19 +102,12 @@ namespace CRM.Server.Services
 
 			catch (JsonException)
 			{
-				// Save corrupted file for debugging
-				await File.WriteAllTextAsync($"{physicalPath}.old", appOptions);
-				return await LogAndFallBackAsync(@$"File""{physicalPath}"" is not in a valid JSON format.");
+				logger.LogError(@$"File""{physicalPath}"" is not in a valid JSON format.");
+				return fallback ? await ReadAppSettingsAsync($"{physicalPath}.bak") : new();
 			}
 
 			catch (Exception)
 			{
-				return await LogAndFallBackAsync(@$"Could not locate file""{physicalPath}"".");
-			}
-
-			async Task<AppSettings> LogAndFallBackAsync(string message)
-			{
-				logger.LogError(message);
 				return fallback ? await ReadAppSettingsAsync($"{physicalPath}.bak") : new();
 			}
 		}
