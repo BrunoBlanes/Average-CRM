@@ -114,7 +114,7 @@ namespace CRM.Server
 			services.AddDatabaseDeveloperPageExceptionFilter();
 
 			// Configure options
-			services.ConfigureWritable<SmtpOptions>(Configuration.GetSection(SmtpOptions.Section), "appconfig.json");
+			services.ConfigureWritable<SmtpOptions>(Configuration.GetSection(SmtpOptions.Section));
 
 			// Adds the FAST based Fluent HTML generator
 			services.AddScoped<IHtmlGenerator, FastGenerator>();
