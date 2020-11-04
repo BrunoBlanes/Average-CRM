@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 using CRM.Core.Models;
 using CRM.Server.Extensions;
+using CRM.Server.Interfaces;
 using CRM.Server.Services;
 using CRM.TagHelpers.ViewFeatures;
 
@@ -12,7 +13,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -108,7 +108,7 @@ namespace CRM.Server
 			});
 
 			// Sets the email service
-			services.AddSingleton<IEmailSender, SmtpService>();
+			services.AddSingleton<ISmtpService, SmtpService>();
 
 			// See https://github.com/aspnet/Announcements/issues/432
 			services.AddDatabaseDeveloperPageExceptionFilter();

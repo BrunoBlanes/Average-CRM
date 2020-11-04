@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
+using MimeKit;
+
 namespace CRM.Server.Controllers
 {
 	[ApiController]
@@ -75,8 +77,16 @@ namespace CRM.Server.Controllers
 					token
 				}, protocol: Request.Scheme);
 
-				await emailService.SendEmailAsync(user.Email,
-					"Confirm your email", $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+				var message = new MimeMessage
+				{
+					Subject = "Confirm your email",
+					Body = new TextPart("plain")
+					{
+						Text = $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>."
+					}
+				};
+				message.To.Add(MailboxAddress.Parse(user.Email));
+				await emailService.SendEmailAsync(message);
 			}
 
 			foreach (IdentityError? error in result.Errors)

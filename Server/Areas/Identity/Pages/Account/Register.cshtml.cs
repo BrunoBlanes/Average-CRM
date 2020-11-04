@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 using CRM.Core.Attributes;
 using CRM.Core.Models;
+using CRM.Server.Interfaces;
+using CRM.Server.Services;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
@@ -25,7 +26,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 		private readonly SignInManager<ApplicationUser> signInManager;
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly ILogger<RegisterModel> logger;
-		private readonly IEmailSender emailSender;
+		private readonly ISmtpService smtpService;
 
 		public string? ReturnUrl { get; set; }
 		public ICollection<AuthenticationScheme>? ExternalLogins { get; private set; }
@@ -57,10 +58,10 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 			SignInManager<ApplicationUser> signInManager,
 			UserManager<ApplicationUser> userManager,
 			ILogger<RegisterModel> logger,
-			IEmailSender emailSender)
+			ISmtpService smtpService)
 		{
 			this.logger = logger;
-			this.emailSender = emailSender;
+			this.smtpService = smtpService;
 			this.userManager = userManager;
 			this.signInManager = signInManager;
 			CPF = string.Empty;
@@ -103,9 +104,9 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 					// TODO: Generate proper email body
 					// TODO: Move code generation and email sender to two separate functions
 					// Sends a confirmation email to the user
-					await emailSender.SendEmailAsync(Email,
-						"Confirm your email",
-						$"Please confirm your account by <a href='{ HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+					//await smtpService.SendEmailAsync(Email,
+					//	"Confirm your email",
+					//	$"Please confirm your account by <a href='{ HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
 					// Redirect to the account confirmation page
 					return RedirectToPage("RegisterConfirmation", new { email = Email, returnUrl });
