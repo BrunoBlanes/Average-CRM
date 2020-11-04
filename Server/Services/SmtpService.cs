@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -45,8 +43,12 @@ namespace CRM.Server.Services
 			client = new SmtpClient();
 			this.options = new SmtpOptions();
 			Task.Run(async () => await ConfigureAsync(options.CurrentValue));
+			
+			// Adds an event listener for when 'appsettings.json' changes
 			optionsListener = options.OnChange(async (change) =>
 			{
+				// Wait for an update to finish
+				// before invoking another one
 				if (configureTask is Task)
 				{
 					await configureTask;
@@ -68,12 +70,14 @@ namespace CRM.Server.Services
 		{
 			SmtpOptions options = smtpOptions.Clone();
 
+			// smtpOptions has default value
 			if (options.Equals(new()) is false)
 			{
 				options.Password = string.Empty;
 				using var passwordHasher = new PasswordHasher();
 				options.Password = passwordHasher.Decrypt(smtpOptions.Password, options);
 
+				// Only run if new settings are different
 				if (this.options.Equals(options) is false)
 				{
 					if (await ConnectAsync(options))
@@ -104,6 +108,8 @@ namespace CRM.Server.Services
 		/// and the SMTP server does not support the STARTTLS extension.</exception>
 		private async Task<bool> ConnectAsync(SmtpOptions options, CancellationToken token = default)
 		{
+			// Disconnect to avoid thorwing InvalidOperationException
+			// by the client when connected to the same host
 			await client.DisconnectAsync(true, token);
 
 			for (int attempts = 0; attempts < 3; attempts++)
@@ -117,6 +123,8 @@ namespace CRM.Server.Services
 					return true;
 				}
 
+				// Retrow AuthenticationException
+				// to be handled by the view model
 				catch (AuthenticationException e)
 				{
 					logger.LogError(e.Message);
@@ -129,6 +137,7 @@ namespace CRM.Server.Services
 					return false;
 				}
 
+				// Retrow NotSupportedException to be handled by the view model
 				catch (Exception e) when (e is not NotSupportedException)
 				{
 					await LogAndTryAgainAsync(e, attempts, token);
@@ -141,6 +150,7 @@ namespace CRM.Server.Services
 		/// <inheritdoc/>>
 		public async Task SendEmailAsync(MimeMessage message, CancellationToken token = default)
 		{
+			// Set the default message author
 			message.From.Add(mailboxAddress);
 
 			if (client.IsAuthenticated)
@@ -163,6 +173,7 @@ namespace CRM.Server.Services
 						logger.LogWarning(e.Message);
 					}
 
+					// Retrow InvalidOperationException to be handled by the view
 					catch (Exception e) when (e is not InvalidOperationException)
 					{
 						await LogAndTryAgainAsync(e, attempts, token);
@@ -172,6 +183,8 @@ namespace CRM.Server.Services
 
 			else
 			{
+				// Try to connect before sending the message
+				// TODO: Improve this by avoiding disconnection
 				if (await ConnectAsync(options, token))
 				{
 					await SendEmailAsync(message, token);
@@ -193,6 +206,7 @@ namespace CRM.Server.Services
 
 			if (attempts + 2 <= 3)
 			{
+				// Wait for a delay as to not spam the server
 				await Task.Delay(new Random().Next(3000), token);
 				logger.LogInformation($"Trying again for attempt number {attempts + 2}.");
 			}
