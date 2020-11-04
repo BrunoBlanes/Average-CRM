@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -58,8 +60,10 @@ namespace CRM.Server.Services
 		/// Attempts to configure the SMTP client with the provided <paramref name="smtpOptions"/>.
 		/// </summary>
 		/// <param name="smtpOptions">The <see cref="SmtpOptions"/>.</param>
+		/// <returns>A <see cref="Task"/> that represents the configuration process.</returns>
 		/// <exception cref="AuthenticationException">Thrown when authentication using the supplied credentials has failed.</exception>
-		/// <exception cref="NotSupportedException">Thrown when options was set to <see cref="SecureSocketOptions.StartTls"/> and the SMTP server does not support the STARTTLS extension.</exception>
+		/// <exception cref="NotSupportedException">Thrown when options was set to <see cref="SecureSocketOptions.StartTls"/>
+		/// and the SMTP server does not support the STARTTLS extension.</exception>
 		private async Task ConfigureAsync(SmtpOptions smtpOptions)
 		{
 			SmtpOptions options = smtpOptions.Clone();
@@ -93,22 +97,23 @@ namespace CRM.Server.Services
 		/// Attempts to open a connection to the SMTP server using the provided <paramref name="options"/>.
 		/// </summary>
 		/// <param name="options">The <see cref="SmtpOptions"/>.</param>
+		/// <param name="token">The <see cref="CancellationToken"/>.</param>
 		/// <returns><c>true</c> if the connection was successful; otherwise <c>false</c>.</returns>
 		/// <exception cref="AuthenticationException">Thrown when authentication using the supplied credentials has failed.</exception>
-		/// <exception cref="NotSupportedException">Thrown when options was set to <see cref="SecureSocketOptions.StartTls"/> and the SMTP server does not support the STARTTLS extension.</exception>
-		private async Task<bool> ConnectAsync(SmtpOptions options)
+		/// <exception cref="NotSupportedException">Thrown when options was set to <see cref="SecureSocketOptions.StartTls"/>
+		/// and the SMTP server does not support the STARTTLS extension.</exception>
+		private async Task<bool> ConnectAsync(SmtpOptions options, CancellationToken token = default)
 		{
-			int attempts = 1;
-			await client.DisconnectAsync(true);
+			await client.DisconnectAsync(true, token);
 
-			while (attempts <= 3)
+			for (int attempts = 0; attempts < 3; attempts++)
 			{
 				try
 				{
 					logger.LogInformation(@$"Attempting to connect to the SMTP server at ""{options.Server}"".");
-					await client.ConnectAsync(options.Server, options.Port ?? 0, (SecureSocketOptions)options.SecureSocket);
+					await client.ConnectAsync(options.Server, options.Port ?? 0, (SecureSocketOptions)options.SecureSocket, token);
 					logger.LogInformation(@$"Attempting to authenticate to the SMTP server as ""{options.Login}"".");
-					await client.AuthenticateAsync(options.Login, options.Password);
+					await client.AuthenticateAsync(options.Login, options.Password, token);
 					return true;
 				}
 
@@ -118,40 +123,34 @@ namespace CRM.Server.Services
 					throw;
 				}
 
+				catch (OperationCanceledException e)
+				{
+					logger.LogWarning(e.Message);
+					return false;
+				}
+
 				catch (Exception e) when (e is not NotSupportedException)
 				{
-					if (attempts++ <= 3)
-					{
-						logger.LogError(e, e.Message);
-						await Task.Delay(new Random().Next(1000));
-						logger.LogInformation($"Trying again for attempt number {attempts}.");
-					}
+					await LogAndTryAgainAsync(e, attempts, token);
 				}
 			}
 
 			return false;
 		}
 
-		/// <summary>
-		/// Attempts to send a message using the <see cref="SmtpClient"/>.
-		/// </summary>
-		/// <param name="token">The <see cref="CancellationToken"/>.</param>
-		/// <param name="message">The <see cref="MimeMessage"/> to be sent.</param>
-		/// <exception cref="InvalidOperationException">Thrown when no recipients have been specified.</exception>
-		/// <exception cref="AuthenticationException">Thrown when authentication using the supplied credentials has failed.</exception>
-		/// <exception cref="NotSupportedException">Thrown when options was set to <see cref="SecureSocketOptions.StartTls"/> and the SMTP server does not support the STARTTLS extension.</exception>
-		public async Task SendEmailAsync(MimeMessage message)
+		/// <inheritdoc/>>
+		public async Task SendEmailAsync(MimeMessage message, CancellationToken token = default)
 		{
 			message.From.Add(mailboxAddress);
 
 			if (client.IsAuthenticated)
 			{
-				int attempts = 1;
-				while (attempts <= 3)
+				for (int attempts = 0; attempts < 3; attempts++)
 				{
 					try
 					{
-						await client.SendAsync(message);
+						await client.SendAsync(message, token);
+						logger.LogInformation($"New email sent to {message.To}.");
 					}
 
 					catch (CommandException e)
@@ -159,24 +158,43 @@ namespace CRM.Server.Services
 						logger.LogError(e.Message);
 					}
 
+					catch (OperationCanceledException e)
+					{
+						logger.LogWarning(e.Message);
+					}
+
 					catch (Exception e) when (e is not InvalidOperationException)
 					{
-						if (attempts++ <= 3)
-						{
-							logger.LogError(e, e.Message);
-							await Task.Delay(new Random().Next(1000));
-							logger.LogInformation($"Trying again for attempt number {attempts}.");
-						}
+						await LogAndTryAgainAsync(e, attempts, token);
 					}
 				}
 			}
 
 			else
 			{
-				if (await ConnectAsync(options))
+				if (await ConnectAsync(options, token))
 				{
-					await SendEmailAsync(message);
+					await SendEmailAsync(message, token);
 				}
+			}
+		}
+
+		/// <summary>
+		/// Log the <see cref="Exception.Message"/> and wait for a random delay of up to 3 seconds.
+		/// </summary>
+		/// <param name="exception">The <see cref="Exception"/>.</param>
+		/// <param name="attempts">The number of <paramref name="attempts"/> already been made.</param>
+		/// <param name="token">The <see cref="CancellationToken"/>.</param>
+		/// <remarks>When 3 <paramref name="attempts"/> have been made, this method will log the <paramref name="exception"/> and return without delay.</remarks>
+		/// <returns>A <see cref="Task"/> that represents the logging and the time delay.</returns>
+		private async Task LogAndTryAgainAsync(Exception exception, int attempts, CancellationToken token = default)
+		{
+			logger.LogError(exception, exception.Message);
+
+			if (attempts + 2 <= 3)
+			{
+				await Task.Delay(new Random().Next(3000), token);
+				logger.LogInformation($"Trying again for attempt number {attempts + 2}.");
 			}
 		}
 
