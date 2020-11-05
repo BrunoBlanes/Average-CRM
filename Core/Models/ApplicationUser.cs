@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
+
+using CRM.Core.Attributes;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,12 +14,8 @@ namespace CRM.Core.Models
 	public class ApplicationUser : IdentityUser
 	{
 		[Required]
-		[DataMember]
+		[CpfValidation]
 		public string CPF { get; set; }
-
-		[Required]
-		[NotMapped]
-		public string Password { get; set; }
 
 		[DataMember]
 		public ICollection<Budget>? Budgets { get; set; }
@@ -26,7 +23,6 @@ namespace CRM.Core.Models
 		public ApplicationUser()
 		{
 			CPF = string.Empty;
-			Password = string.Empty;
 		}
 	}
 

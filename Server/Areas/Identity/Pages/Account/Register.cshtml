@@ -5,68 +5,34 @@
 	ViewData["Title"] = "Register";
 }
 
-<h1>@ViewData["Title"]</h1>
-
-<div class="row">
-	<div class="col-md-4">
+<div class="content">
+	<section class="form-section">
 		<form asp-route-returnUrl="@Model.ReturnUrl" method="post">
-			<h4>Create a new account.</h4>
-			<hr />
-			@*<div asp-validation-summary="All" class="text-danger"></div>*@
-			<div class="form-group">
-				<label asp-for="Email"></label>
-				<input asp-for="Email" class="form-control" />
+			<h1>Create a new account.</h4>
+
+			<div class="form-line">
+				<fluent-text-field asp-for="Email" />
 				<span asp-validation-for="Email" class="text-danger"></span>
 			</div>
-			<div class="form-group">
-				<label asp-for="CPF"></label>
-				<input id="cpf" asp-for="CPF" class="form-control" onkeydown="FormatCPF()" />
+
+			<div class="form-line">
+				<fluent-text-field asp-for="CPF" onkeydown="FormatCPF()" />
 				<span asp-validation-for="CPF" class="text-danger"></span>
 			</div>
-			<div class="form-group">
-				<label asp-for="Password"></label>
-				<input asp-for="Password" class="form-control" />
+
+			<div class="form-line">
+				<fluent-text-field asp-for="Password" />
 				<span asp-validation-for="Password" class="text-danger"></span>
 			</div>
-			<div class="form-group">
-				<label asp-for="ConfirmPassword"></label>
-				<input asp-for="ConfirmPassword" class="form-control" />
+
+			<div class="form-line">
+				<fluent-text-field asp-for="ConfirmPassword" />
 				<span asp-validation-for="ConfirmPassword" class="text-danger"></span>
 			</div>
-			<button type="submit" class="btn btn-primary">Register</button>
+
+			<div class="form-line">
+				<fluent-button appearance="Accent" type="submit">Register</fluent-button>
+			</div>
 		</form>
-	</div>
-
-@* // TODO: Add external login options down the road
-	<div class="col-md-6 col-md-offset-2">
-		<section>
-			<h4>Use another service to register.</h4>
-			<hr />
-			@{
-				if ((Model.ExternalLogins?.Count ?? 0) == 0)
-				{
-					<div>
-						<p>
-							There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
-							for details on setting up this ASP.NET application to support logging in via external services.
-						</p>
-					</div>
-				}
-
-				else
-				{
-					<form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-						<div>
-							<p>
-								@foreach (var provider in Model.ExternalLogins ?? Enumerable.Empty<AuthenticationScheme>())
-								{
-									<button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-								}
-							</p>
-						</div>
-					</form>
-				}
-			}
-		</section>
-	</div>*@
+	</section>
 </div>
