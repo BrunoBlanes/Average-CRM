@@ -376,11 +376,22 @@
 			fullOtherName = appendModelPrefix(other, prefix),
 			element = $(options.form).find(":input").filter("[name='" + escapeAttributeValue(fullOtherName) + "']")[0];
 
+		if (element === undefined) {
+			element = $(options.form).find("fast-text-field").filter("[name='" + escapeAttributeValue(fullOtherName) + "']")[0];
+		}
+
+		if (element === undefined) {
+			element = $(options.form).find("fluent-text-field").filter("[name='" + escapeAttributeValue(fullOtherName) + "']")[0];
+		}
+
 		setValidationValues(options, "equalTo", element);
 	});
 	adapters.add("required", function (options) {
 		// jQuery Validate equates "required" with "mandatory" for checkbox elements
-		if (options.element.tagName.toUpperCase() !== "FLUENT-TEXT-FIELD" || options.element.type.toUpperCase() !== "CHECKBOX" || options.element.type.toUpperCase() !== "INPUT") {
+		if (options.element.tagName.toUpperCase() !== "FLUENT-TEXT-FIELD"
+			|| options.element.type.toUpperCase() !== "FAST-TEXT-FIELD"
+			|| options.element.type.toUpperCase() !== "CHECKBOX"
+			|| options.element.type.toUpperCase() !== "INPUT") {
 			setValidationValues(options, "required", true);
 		}
 	});
