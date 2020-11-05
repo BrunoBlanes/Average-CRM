@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -161,16 +162,13 @@ namespace CRM.Server.Services
 					{
 						await client.SendAsync(message, token);
 						logger.LogInformation($"New email sent to {message.To}.");
-					}
-
-					catch (CommandException e)
-					{
-						logger.LogError(e.Message);
+						break;
 					}
 
 					catch (OperationCanceledException e)
 					{
 						logger.LogWarning(e.Message);
+						break;
 					}
 
 					// Retrow InvalidOperationException to be handled by the view
@@ -188,6 +186,46 @@ namespace CRM.Server.Services
 				if (await ConnectAsync(options, token))
 				{
 					await SendEmailAsync(message, token);
+				}
+			}
+		}
+
+		/// <inheritdoc/>
+		public async Task SendAccountConfirmationEmailAsync(string callbackUrl, ApplicationUser user, CancellationToken token = default)
+		{
+			var message = new MimeMessage
+			{
+				Subject = "Confirm your email",
+				Body = new TextPart("plain")
+				{
+					Text = @$"Please confirm your account by <a href=""{HtmlEncoder.Default.Encode(callbackUrl)}"">clicking here</a>."
+				},
+			};
+			message.To.Add(MailboxAddress.Parse(user.Email));
+
+			for (int attempts = 0; attempts < 3; attempts++)
+			{
+				try
+				{
+					await SendEmailAsync(message, token);
+					break;
+				}
+
+				catch (AuthenticationException e)
+				{
+					logger.LogError(e, e.Message);
+					break;
+				}
+
+				catch (OperationCanceledException e)
+				{
+					logger.LogWarning(e.Message);
+					break;
+				}
+
+				catch (Exception e)
+				{
+					await LogAndTryAgainAsync(e, attempts, token);
 				}
 			}
 		}
