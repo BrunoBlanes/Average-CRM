@@ -2,13 +2,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 using CRM.Core.Attributes;
 using CRM.Core.Models;
 using CRM.Server.Interfaces;
-using CRM.Server.Services;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -31,43 +29,16 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 		public string? ReturnUrl { get; set; }
 		public ICollection<AuthenticationScheme>? ExternalLogins { get; private set; }
 
-		[Required]
-		[EmailAddress]
 		[BindProperty]
-		public string Email { get; set; }
+		public ApplicationUser AppUser { get; set; }
 
-		[Required]
-		[CpfValidation]
-		[BindProperty]
-		[StringLength(14, ErrorMessage = "The {0} must be exactly 11 characters long.", MinimumLength = 14)]
-		public string CPF { get; set; }
-
-		[Required]
-		[BindProperty]
-		[DataType(DataType.Password)]
-		[StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
-		public string Password { get; set; }
-
-		[BindProperty]
-		[DataType(DataType.Password)]
-		[Display(Name = "Confirm password")]
-		[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-		public string ConfirmPassword { get; set; }
-
-		public RegisterModel(
-			SignInManager<ApplicationUser> signInManager,
-			UserManager<ApplicationUser> userManager,
-			ILogger<RegisterModel> logger,
-			ISmtpService smtpService)
+		public RegisterModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<RegisterModel> logger, ISmtpService smtpService)
 		{
 			this.logger = logger;
 			this.smtpService = smtpService;
 			this.userManager = userManager;
 			this.signInManager = signInManager;
-			CPF = string.Empty;
-			Email = string.Empty;
-			Password = string.Empty;
-			ConfirmPassword = string.Empty;
+			AppUser = new ApplicationUser();
 		}
 
 		// Page load
@@ -86,30 +57,28 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 			if (ModelState.IsValid)
 			{
 				// Creates the new user and it's identity
-				var user = new ApplicationUser { UserName = Email, Email = Email, CPF = CPF };
-				IdentityResult? result = await userManager.CreateAsync(user, Password);
+				AppUser.UserName = AppUser.Email;
+				IdentityResult result = await userManager.CreateAsync(AppUser, AppUser.Password);
 
 				if (result.Succeeded)
 				{
 					// Generates the user account confirmation code
-					logger.LogInformation($"User {Email} created a new account with password.");
-					string? code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+					logger.LogInformation($"User {AppUser.Email} created a new account with password.");
+					string code = await userManager.GenerateEmailConfirmationTokenAsync(AppUser);
 					code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-					string? callbackUrl = Url.Page(
-						"/Account/ConfirmEmail",
-						pageHandler: null,
-						values: new { area = "Identity", userId = user.Id, code, returnUrl },
-						protocol: Request.Scheme);
+					string callbackUrl = Url.Page("/Account/ConfirmEmail", null, new
+					{
+						area = "Identity",
+						userId = AppUser.Id,
+						code,
+						returnUrl
+					}, Request.Scheme);
 
-					// TODO: Generate proper email body
-					// TODO: Move code generation and email sender to two separate functions
 					// Sends a confirmation email to the user
-					//await smtpService.SendEmailAsync(Email,
-					//	"Confirm your email",
-					//	$"Please confirm your account by <a href='{ HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+					await smtpService.SendAccountConfirmationEmailAsync(callbackUrl, AppUser);
 
 					// Redirect to the account confirmation page
-					return RedirectToPage("RegisterConfirmation", new { email = Email, returnUrl });
+					return RedirectToPage("RegisterConfirmation", new { email = AppUser.Email, returnUrl });
 				}
 
 				foreach (IdentityError? error in result.Errors)

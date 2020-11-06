@@ -196,7 +196,7 @@ namespace CRM.Server.Services
 			var message = new MimeMessage
 			{
 				Subject = "Confirm your email",
-				Body = new TextPart("plain")
+				Body = new TextPart("html")
 				{
 					Text = @$"Please confirm your account by <a href=""{HtmlEncoder.Default.Encode(callbackUrl)}"">clicking here</a>."
 				},
