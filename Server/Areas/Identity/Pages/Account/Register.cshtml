@@ -11,23 +11,23 @@
 			<h1>Create a new account.</h4>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="Email" />
-				<span asp-validation-for="Email" class="text-danger"></span>
+				<fluent-text-field asp-for="AppUser.Email" />
+				<span asp-validation-for="AppUser.Email" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="CPF" onkeydown="FormatCPF()" />
-				<span asp-validation-for="CPF" class="text-danger"></span>
+				<fluent-text-field asp-for="AppUser.CPF" onkeydown="FormatCPF()" />
+				<span asp-validation-for="AppUser.CPF" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="Password" />
-				<span asp-validation-for="Password" class="text-danger"></span>
+				<fluent-text-field asp-for="AppUser.Password" />
+				<span asp-validation-for="AppUser.Password" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="ConfirmPassword" />
-				<span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+				<fluent-text-field asp-for="AppUser.ConfirmPassword" />
+				<span asp-validation-for="AppUser.ConfirmPassword" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">

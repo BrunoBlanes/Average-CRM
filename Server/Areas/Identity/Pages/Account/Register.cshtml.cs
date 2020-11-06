@@ -28,49 +28,17 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 
 		public string? ReturnUrl { get; set; }
 		public ICollection<AuthenticationScheme>? ExternalLogins { get; private set; }
-		public ApplicationUser ApplicationUser { get; set; }
-
-		[Required]
-		[EmailAddress]
-		[ProtectedPersonalData]
-		[Display(Prompt = "Email")]
-		public string Email
-		{
-			get => ApplicationUser.Email;
-			set => ApplicationUser.Email = value;
-		}
-
-		[Required]
-		[CpfValidation]
-		[Display(Prompt = "CPF")]
-		[StringLength(14, ErrorMessage = "The {0} must be exactly 11 characters long.", MinimumLength = 14)]
-		public string CPF
-		{
-			get => ApplicationUser.CPF;
-			set => ApplicationUser.CPF = value;
-		}
 
 		[BindProperty]
-		[DataType(DataType.Password)]
-		[Display(Prompt = "Password")]
-		[StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
-		public string Password { get; set; }
-
-		[BindProperty]
-		[DataType(DataType.Password)]
-		[Display(Prompt = "Confirm password")]
-		[Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
-		public string ConfirmPassword { get; set; }
+		public ApplicationUser AppUser { get; set; }
 
 		public RegisterModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<RegisterModel> logger, ISmtpService smtpService)
 		{
 			this.logger = logger;
-			Password = string.Empty;
-			ConfirmPassword = string.Empty;
 			this.smtpService = smtpService;
 			this.userManager = userManager;
 			this.signInManager = signInManager;
-			ApplicationUser = new ApplicationUser();
+			AppUser = new ApplicationUser();
 		}
 
 		// Page load
@@ -89,28 +57,28 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 			if (ModelState.IsValid)
 			{
 				// Creates the new user and it's identity
-				ApplicationUser.UserName = ApplicationUser.Email;
-				IdentityResult result = await userManager.CreateAsync(ApplicationUser, Password);
+				AppUser.UserName = AppUser.Email;
+				IdentityResult result = await userManager.CreateAsync(AppUser, AppUser.Password);
 
 				if (result.Succeeded)
 				{
 					// Generates the user account confirmation code
-					logger.LogInformation($"User {ApplicationUser.Email} created a new account with password.");
-					string code = await userManager.GenerateEmailConfirmationTokenAsync(ApplicationUser);
+					logger.LogInformation($"User {AppUser.Email} created a new account with password.");
+					string code = await userManager.GenerateEmailConfirmationTokenAsync(AppUser);
 					code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 					string callbackUrl = Url.Page("/Account/ConfirmEmail", null, new
 					{
 						area = "Identity",
-						userId = ApplicationUser.Id,
+						userId = AppUser.Id,
 						code,
 						returnUrl
 					}, Request.Scheme);
 
 					// Sends a confirmation email to the user
-					await smtpService.SendAccountConfirmationEmailAsync(callbackUrl, ApplicationUser);
+					await smtpService.SendAccountConfirmationEmailAsync(callbackUrl, AppUser);
 
 					// Redirect to the account confirmation page
-					return RedirectToPage("RegisterConfirmation", new { email = ApplicationUser.Email, returnUrl });
+					return RedirectToPage("RegisterConfirmation", new { email = AppUser.Email, returnUrl });
 				}
 
 				foreach (IdentityError? error in result.Errors)

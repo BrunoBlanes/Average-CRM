@@ -26,23 +26,22 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 
 		public async Task<IActionResult> OnGetAsync(string userId, string code)
 		{
-			if (userId is null || code is null)
-				return RedirectToPage("/Index");
+			if (userId is not null && code is not null)
+			{
+				if (await userManager.FindByIdAsync(userId) is ApplicationUser user)
+				{
+					// Confirm the account
+					code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+					IdentityResult result = await userManager.ConfirmEmailAsync(user, code);
+					StatusMessage = result.Succeeded
+						? "Thank you for confirming your email."
+						: "Error confirming your email.";
+				}
 
-			// Gets the user from the database
-			ApplicationUser? user = await userManager.FindByIdAsync(userId);
-
-			// User id is incorrect
-			if (user is null)
 				return NotFound($"Unable to load user with ID '{userId}'.");
+			}
 
-			// Confirm the account
-			code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-			IdentityResult? result = await userManager.ConfirmEmailAsync(user, code);
-			StatusMessage = result.Succeeded
-				? "Thank you for confirming your email."
-				: "Error confirming your email.";
-			return Page();
+			return RedirectToPage("Manage/Index");
 		}
 	}
 }
