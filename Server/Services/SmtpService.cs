@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 
 using CRM.Core.Models;
 using CRM.Server.Data;
+using CRM.Server.Interfaces;
 
 using MailKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -17,12 +18,14 @@ using MimeKit;
 
 namespace CRM.Server.Services
 {
-	public class SmtpService : IEmailSender, IDisposable
+	public class SmtpService : ISmtpService, IDisposable
 	{
+		private readonly IDisposable optionsListener;
 		private MailboxAddress? mailboxAddress;
 		private readonly SmtpClient client;
 		private readonly ILogger logger;
-		private SmtpOptions? settings;
+		private Task? configureTask;
+		private SmtpOptions options;
 		private bool disposedValue;
 
 		/// <summary>
@@ -34,206 +37,216 @@ namespace CRM.Server.Services
 		/// Creates a new instance of <see cref="SmtpService"/>.
 		/// </summary>
 		/// <param name="logger">The <see cref="ILogger"/>.</param>
+		/// <param name="options">The <see cref="IOptionsMonitor{TOptions}"/>.</param>
 		public SmtpService(ILogger<SmtpService> logger, IOptionsMonitor<SmtpOptions> options)
 		{
 			this.logger = logger;
 			client = new SmtpClient();
-			options.OnChange(change => Configure(options));
-			Configure(options);
+			this.options = new SmtpOptions();
+			Task.Run(async () => await ConfigureAsync(options.CurrentValue));
+			
+			// Adds an event listener for when 'appsettings.json' changes
+			optionsListener = options.OnChange(async (change) =>
+			{
+				// Wait for an update to finish
+				// before invoking another one
+				if (configureTask is Task)
+				{
+					await configureTask;
+				}
+
+				configureTask = ConfigureAsync(change);
+			});
 		}
 
-		private async void Configure(IOptionsMonitor<SmtpOptions> options)
+		/// <summary>
+		/// Attempts to configure the SMTP client with the provided <paramref name="smtpOptions"/>.
+		/// </summary>
+		/// <param name="smtpOptions">The <see cref="SmtpOptions"/>.</param>
+		/// <returns>A <see cref="Task"/> that represents the configuration process.</returns>
+		/// <exception cref="AuthenticationException">Thrown when authentication using the supplied credentials has failed.</exception>
+		/// <exception cref="NotSupportedException">Thrown when options was set to <see cref="SecureSocketOptions.StartTls"/>
+		/// and the SMTP server does not support the STARTTLS extension.</exception>
+		private async Task ConfigureAsync(SmtpOptions smtpOptions)
 		{
-			if (options.CurrentValue.Equals(new()) is false)
+			SmtpOptions options = smtpOptions.Clone();
+
+			// smtpOptions has default value
+			if (options.Equals(new()) is false)
 			{
-				settings = options.CurrentValue;
-				string password = settings.Password;
-				settings.Password = string.Empty;
+				options.Password = string.Empty;
 				using var passwordHasher = new PasswordHasher();
-				settings.Password = passwordHasher.Decrypt(password, settings);
-				mailboxAddress = new MailboxAddress(settings.Name, settings.Address);
-				await TryAuthenticateAsync();
-				logger.LogInformation("Email service configured successfully.");
-				IsConfigured = true;
+				options.Password = passwordHasher.Decrypt(smtpOptions.Password, options);
+
+				// Only run if new settings are different
+				if (this.options.Equals(options) is false)
+				{
+					if (await ConnectAsync(options))
+					{
+						IsConfigured = true;
+						this.options = options;
+						mailboxAddress = new MailboxAddress(options.Name, options.Address);
+						logger.LogInformation("Email service was configured successfully.");
+					}
+				}
 			}
 
 			else
 			{
-				logger.LogError("Could not retrieve SMTP options from configuration file.");
+				IsConfigured = false;
+				logger.LogCritical("Could not retrieve SMTP options from configuration file.");
 			}
 		}
 
 		/// <summary>
-		/// Attempts to open a connection to the SMTP server using a <see cref="SmtpClient"/> instance.
+		/// Attempts to open a connection to the SMTP server using the provided <paramref name="options"/>.
 		/// </summary>
+		/// <param name="options">The <see cref="SmtpOptions"/>.</param>
 		/// <param name="token">The <see cref="CancellationToken"/>.</param>
-		/// <returns><c>true</c> if connection was stabilished; otherwise <c>false</c>.</returns>
-		/// <exception cref="NotSupportedException">Thrown when options was set to MailKit.Security.SecureSocketOptions.StartTls and the SMTP server does not support the STARTTLS extension.</exception>
-		/// <exception cref="InvalidOperationException">Thrown when the email configuration could not be found.</exception>
-		/// <exception cref="OperationCanceledException">Thrown only when the <paramref name="token"/> is provided and <see cref="CancellationTokenSource.Cancel"/> is requested.</exception>
-		public async Task<bool> TryConnectAsync(CancellationToken token = default)
+		/// <returns><c>true</c> if the connection was successful; otherwise <c>false</c>.</returns>
+		/// <exception cref="AuthenticationException">Thrown when authentication using the supplied credentials has failed.</exception>
+		/// <exception cref="NotSupportedException">Thrown when options was set to <see cref="SecureSocketOptions.StartTls"/>
+		/// and the SMTP server does not support the STARTTLS extension.</exception>
+		private async Task<bool> ConnectAsync(SmtpOptions options, CancellationToken token = default)
 		{
-			if (client.IsConnected)
-			{
-				return true;
-			}
+			// Disconnect to avoid thorwing InvalidOperationException
+			// by the client when connected to the same host
+			await client.DisconnectAsync(true, token);
 
-			if (settings is null)
-			{
-				throw new InvalidOperationException("Could not retrieve email configuration from the database.");
-			}
-
-			int attempts = 1;
-			while (attempts <= 3)
+			for (int attempts = 0; attempts < 3; attempts++)
 			{
 				try
 				{
-					logger.LogInformation("Attempting to connect to the SMTP server.");
-					await client.ConnectAsync(settings.Server, settings.Port ?? 0, (SecureSocketOptions)settings.SecureSocket, token);
-					logger.LogInformation("Connection successful.");
+					logger.LogInformation(@$"Attempting to connect to the SMTP server at ""{options.Server}"".");
+					await client.ConnectAsync(options.Server, options.Port ?? 0, (SecureSocketOptions)options.SecureSocket, token);
+					logger.LogInformation(@$"Attempting to authenticate to the SMTP server as ""{options.Login}"".");
+					await client.AuthenticateAsync(options.Login, options.Password, token);
 					return true;
 				}
 
-				catch (NotSupportedException)
+				// Retrow AuthenticationException
+				// to be handled by the view model
+				catch (AuthenticationException e)
 				{
+					logger.LogError(e.Message);
 					throw;
+				}
+
+				catch (OperationCanceledException e)
+				{
+					logger.LogWarning(e.Message);
+					return false;
+				}
+
+				// Retrow NotSupportedException to be handled by the view model
+				catch (Exception e) when (e is not NotSupportedException)
+				{
+					await LogAndTryAgainAsync(e, attempts, token);
+				}
+			}
+
+			return false;
+		}
+
+		/// <inheritdoc/>>
+		public async Task SendEmailAsync(MimeMessage message, CancellationToken token = default)
+		{
+			// Set the default message author
+			message.From.Add(mailboxAddress);
+
+			if (client.IsAuthenticated)
+			{
+				for (int attempts = 0; attempts < 3; attempts++)
+				{
+					try
+					{
+						await client.SendAsync(message, token);
+						logger.LogInformation($"New email sent to {message.To}.");
+						break;
+					}
+
+					catch (OperationCanceledException e)
+					{
+						logger.LogWarning(e.Message);
+						break;
+					}
+
+					// Retrow InvalidOperationException to be handled by the view
+					catch (Exception e) when (e is not InvalidOperationException)
+					{
+						await LogAndTryAgainAsync(e, attempts, token);
+					}
+				}
+			}
+
+			else
+			{
+				// Try to connect before sending the message
+				// TODO: Improve this by avoiding disconnection
+				if (await ConnectAsync(options, token))
+				{
+					await SendEmailAsync(message, token);
+				}
+			}
+		}
+
+		/// <inheritdoc/>
+		public async Task SendAccountConfirmationEmailAsync(string callbackUrl, ApplicationUser user, CancellationToken token = default)
+		{
+			var message = new MimeMessage
+			{
+				Subject = "Confirm your email",
+				Body = new TextPart("html")
+				{
+					Text = @$"Please confirm your account by <a href=""{HtmlEncoder.Default.Encode(callbackUrl)}"">clicking here</a>."
+				},
+			};
+			message.To.Add(MailboxAddress.Parse(user.Email));
+
+			for (int attempts = 0; attempts < 3; attempts++)
+			{
+				try
+				{
+					await SendEmailAsync(message, token);
+					break;
+				}
+
+				catch (AuthenticationException e)
+				{
+					logger.LogError(e, e.Message);
+					break;
+				}
+
+				catch (OperationCanceledException e)
+				{
+					logger.LogWarning(e.Message);
+					break;
 				}
 
 				catch (Exception e)
 				{
-					attempts++;
-					await TryAgainAsync(e, attempts, token);
+					await LogAndTryAgainAsync(e, attempts, token);
 				}
 			}
-
-			return false;
 		}
 
 		/// <summary>
-		/// Attempts to authenticate to the SMTP server.
+		/// Log the <see cref="Exception.Message"/> and wait for a random delay of up to 3 seconds.
 		/// </summary>
+		/// <param name="exception">The <see cref="Exception"/>.</param>
+		/// <param name="attempts">The number of <paramref name="attempts"/> already been made.</param>
 		/// <param name="token">The <see cref="CancellationToken"/>.</param>
-		/// <returns><c>true</c> if authentication was successful; otherwise <c>false</c>.</returns>
-		/// <exception cref="AuthenticationException">Thrown when authentication using the supplied credentials has failed.</exception>
-		/// <exception cref="InvalidOperationException">Thrown when the SMTP client is not connected.</exception>
-		/// <exception cref="OperationCanceledException">Thrown only when the <paramref name="token"/> is provided and <see cref="CancellationTokenSource.Cancel"/> is requested.</exception>
-		public async Task<bool> TryAuthenticateAsync(CancellationToken token = default)
+		/// <remarks>When 3 <paramref name="attempts"/> have been made, this method will log the <paramref name="exception"/> and return without delay.</remarks>
+		/// <returns>A <see cref="Task"/> that represents the logging and the time delay.</returns>
+		private async Task LogAndTryAgainAsync(Exception exception, int attempts, CancellationToken token = default)
 		{
-			if (client.IsAuthenticated)
+			logger.LogError(exception, exception.Message);
+
+			if (attempts + 2 <= 3)
 			{
-				return true;
-			}
-
-			if (client.IsConnected)
-			{
-				int attempts = 1;
-				while (attempts <= 3)
-				{
-					try
-					{
-						logger.LogInformation("Attempting to authenticate to the SMTP server.");
-						await client.AuthenticateAsync(settings?.Login, settings?.Password, token);
-						logger.LogInformation("Authentication successful.");
-						return true;
-					}
-
-					catch (AuthenticationException e)
-					{
-						logger.LogWarning(e.Message);
-						throw;
-					}
-
-					catch (Exception e)
-					{
-						attempts++;
-						await TryAgainAsync(e, attempts, token);
-					}
-				}
-			}
-
-			else if (await TryConnectAsync(token))
-			{
-				return await TryAuthenticateAsync(token);
-			}
-
-			return false;
-		}
-
-		/// <inheritdoc/>
-		/// <param name="email">The receiver's address.</param>
-		/// <param name="subject">The email suject.</param>
-		/// <param name="body">The email body.</param>
-		/// <exception cref="InvalidOperationException">Thrown when no recipients have been specified.</exception>
-		public async Task SendEmailAsync(string email, string subject, string body)
-		{
-			// Create the email message
-			var message = new MimeMessage
-			{
-				Subject = subject,
-				Body = new TextPart("plain") { Text = $@"{body}" }
-			};
-			message.To.Add(MailboxAddress.Parse(email));
-			message.From.Add(mailboxAddress);
-			await TrySendEmailAsync(message);
-		}
-
-		/// <summary>
-		/// Attempts to send a message using the <see cref="SmtpClient"/>.
-		/// </summary>
-		/// <param name="message">The <see cref="MimeMessage"/> to be sent.</param>
-		/// <param name="token">The <see cref="CancellationToken"/>.</param>
-		/// <exception cref="InvalidOperationException">Thrown when no recipients have been specified.</exception>
-		/// <exception cref="OperationCanceledException">Thrown only when the <paramref name="token"/> is provided and <see cref="CancellationTokenSource.Cancel"/> is requested.</exception>
-		public async Task<bool> TrySendEmailAsync(MimeMessage message, CancellationToken token = default)
-		{
-			if (client.IsAuthenticated)
-			{
-				int attempts = 1;
-				while (attempts <= 3)
-				{
-					try
-					{
-						await client.SendAsync(message);
-						return true;
-					}
-
-					catch (InvalidOperationException)
-					{
-						throw;
-					}
-
-					catch (CommandException e)
-					{
-						logger.LogWarning(e.Message);
-						return false;
-					}
-
-					catch (Exception e)
-					{
-						attempts++;
-						await TryAgainAsync(e, attempts, token);
-					}
-				}
-			}
-
-			else if (client.IsConnected)
-			{
-				if (await TryAuthenticateAsync(token))
-				{
-					return await TrySendEmailAsync(message, token);
-				}
-			}
-
-			return false;
-		}
-
-		private async Task TryAgainAsync(Exception e, int attempts, CancellationToken token)
-		{
-			if (attempts <= 3)
-			{
-				logger.LogError(e, e.Message);
-				await Task.Delay(new Random().Next(1000), token);
-				logger.LogInformation($"Trying again for attempt number {attempts}.");
+				// Wait for a delay as to not spam the server
+				await Task.Delay(new Random().Next(3000), token);
+				logger.LogInformation($"Trying again for attempt number {attempts + 2}.");
 			}
 		}
 
@@ -247,6 +260,8 @@ namespace CRM.Server.Services
 					client.Disconnect(true);
 
 					client.Dispose();
+					configureTask?.Dispose();
+					optionsListener.Dispose();
 				}
 
 				disposedValue = true;

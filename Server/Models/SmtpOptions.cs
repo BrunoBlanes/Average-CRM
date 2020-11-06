@@ -58,6 +58,11 @@ namespace CRM.Core.Models
 		{
 			return HashCode.Combine(Port, Name, Login, Server, Address, Password, SecureSocket);
 		}
+
+		public SmtpOptions Clone()
+		{
+			return (SmtpOptions)MemberwiseClone();
+		}
 	}
 
 	public enum SecureSocket

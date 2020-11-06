@@ -40,11 +40,13 @@ namespace CRM.Server.Areas.Identity.Pages.Account.Manage
 
 		public async Task<IActionResult> OnGetAsync()
 		{
-			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user is null)
-				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
-			await LoadAsync(user);
-			return Page();
+			if (await userManager.GetUserAsync(User) is ApplicationUser user)
+			{
+				await LoadAsync(user);
+				return Page();
+			}
+
+			return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 		}
 
 		public async Task<IActionResult> OnPostAsync()

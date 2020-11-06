@@ -78,7 +78,7 @@ namespace CRM.Server.Services
 		/// </summary>
 		/// <remarks>
 		/// When <paramref name="fallback"/> is <c>true</c> and the requested file is not found or is corrupted,
-		/// a new instance of this method will be called with "<paramref name="physicalPath"/>.old" as the file path.
+		/// a new instance of this method will be called with "<paramref name="physicalPath"/>.bak" as the file path.
 		/// </remarks>
 		/// <param name="physicalPath">The local path to the file.</param>
 		/// <param name="fallback">Whether to fall back to the backup file in case the requested file is not found or is corrupted.</param>

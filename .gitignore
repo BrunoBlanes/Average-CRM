@@ -21,7 +21,7 @@ Core/**/*.js.map
 !webpack.config.js
 
 # Configuration files
-*appconfig.*
+*appsettings.json*
 
 # Build results
 [Dd]ebug/
