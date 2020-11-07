@@ -1,10 +1,8 @@
 ---
 name: To do
 about: Track a task to be done
-title: "[TASK]: Short description"
-labels: Task
-assignees: ''
+title: ""
+labels: Triage, Task
+assignees: 'Bruno Blanes'
 
 ---
-
-Optional
