@@ -1,36 +1,37 @@
 ﻿@page
+
 @model LoginModel;
 
 @{
 	ViewData["Title"] = "Log in";
 }
 
-<div id="login-main-div" class="content">
-	<section>
+<div class="content">
+	<section class="form-section">
 		<form id="account" method="post">
-			<h4>Use a local account to log in.</h4>
+			<h1>Use a local account to log in</h4>
 
-			<div>
+			<div class="form-line">
 				<fluent-text-field asp-for="Email" />
 				<span asp-validation-for="Email" class="text-danger"></span>
 			</div>
 
-			<div>
+			<div class="form-line">
 				<fluent-text-field asp-for="Password" />
 				<span asp-validation-for="Password" class="text-danger"></span>
 			</div>
 
-			<div>
-				<fluent-checkbox id="RememberMe" name="RememberMe" type="checkbox" value="true">
+			<div class="form-line">
+				<fluent-checkbox asp-for="RememberMe">
 					@Html.DisplayNameFor(model => model.RememberMe)
 				</fluent-checkbox>
 			</div>
 
-			<div>
+			<div class="form-line">
 				<fluent-button appearance="Accent" type="submit">Log in</fluent-button>
 			</div>
 
-			<div>
+			<div class="form-line">
 				<p>
 					<a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
 				</p>

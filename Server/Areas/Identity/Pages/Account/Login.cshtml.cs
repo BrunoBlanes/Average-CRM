@@ -47,10 +47,10 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 		public LoginModel(SignInManager<ApplicationUser> signInManager,
 			ILogger<LoginModel> logger)
 		{
-			this.logger = logger;
-			this.signInManager = signInManager;
-			Password = string.Empty;
 			Email = string.Empty;
+			this.logger = logger;
+			Password = string.Empty;
+			this.signInManager = signInManager;
 		}
 
 		public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
@@ -59,14 +59,6 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 			{
 				ModelState.AddModelError(string.Empty, ErrorMessage ?? string.Empty);
 			}
-
-			// TODO: Handle first run
-			//// Check wether this is the server's first run
-			//Settings settings = await context.Settings.SingleOrDefaultAsync();
-			//if (settings is null || settings.FirstRun is true)
-			//{
-			//	return LocalRedirect("~/Setup");
-			//}
 
 			returnUrl ??= Url.Content("~/");
 
@@ -85,11 +77,7 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 			if (ModelState.IsValid)
 			{
 				// Try to login
-				Microsoft.AspNetCore.Identity.SignInResult? result = await signInManager.PasswordSignInAsync(
-					Email,
-					Password,
-					RememberMe,
-					lockoutOnFailure: true);
+				Microsoft.AspNetCore.Identity.SignInResult? result = await signInManager.PasswordSignInAsync(Email, Password, RememberMe, lockoutOnFailure: true);
 
 				// Sucessful login
 				if (result.Succeeded)
@@ -100,9 +88,11 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 
 				// Redirect to two factor auth
 				if (result.RequiresTwoFactor)
+				{
 					return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe });
+				}
 
-				// Redirect t lockout
+				// Redirect to lockout
 				if (result.IsLockedOut)
 				{
 					logger.LogWarning("User account locked out.");
