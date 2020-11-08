@@ -90,40 +90,24 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 
 			TagBuilder tagBuilder = inputType switch
 			{
-				"hidden" => GenerateHiddenField(modelExplorer, htmlAttributes),
-				"password" => GeneratePasswordField(modelExplorer, inputType, htmlAttributes),
+				"password" => GeneratePasswordField(modelExplorer, htmlAttributes),
 				_ => GenerateTextField(modelExplorer, inputTypeHint, inputType, htmlAttributes),
 			};
 
 			output.MergeAttributes(tagBuilder);
 		}
 
-		// Imitate Generator.GenerateHidden() using Generator.GenerateTextBox(). This adds support
-		// for asp-format that is not available in Generator.GenerateHidden().
-		private TagBuilder GenerateHiddenField(ModelExplorer modelExplorer, IDictionary<string, object>? htmlAttributes)
+		private TagBuilder GeneratePasswordField(ModelExplorer modelExplorer, IDictionary<string, object>? htmlAttributes)
 		{
-			object value = For.Model;
-
-			if (value is byte[] byteArrayValue)
-			{
-				value = Convert.ToBase64String(byteArrayValue);
-			}
-
-			if (htmlAttributes is null)
-			{
-				htmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-			}
-
-			// In DefaultHtmlGenerator(), GenerateTextBox() calls GenerateInput() _almost_ identically to how
-			// GenerateHidden() does and the main switch inside GenerateInput() handles InputType.Text and
-			// InputType.Hidden identically. No behavior differences at all when a type HTML attribute already exists.
-			htmlAttributes["type"] = "hidden";
-			return Generator.GenerateTextBox(ViewContext, modelExplorer, For.Name, value, Format, htmlAttributes);
-		}
-
-		private TagBuilder GeneratePasswordField(ModelExplorer modelExplorer, string inputType, IDictionary<string, object>? htmlAttributes)
-		{
-			return Generator.GenerateTextField(ViewContext, modelExplorer, inputType, For.Name, modelExplorer.Model, null, htmlAttributes, DesignSystem);
+			return Generator.GenerateTextField(
+				ViewContext,
+				modelExplorer,
+				InputType.Password,
+				For.Name,
+				modelExplorer.Model,
+				null,
+				htmlAttributes,
+				DesignSystem);
 		}
 
 		private TagBuilder GenerateTextField(ModelExplorer modelExplorer, string? inputTypeHint, string inputType, IDictionary<string, object>? htmlAttributes)
@@ -151,7 +135,15 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 			}
 
 			htmlAttributes["type"] = inputType;
-			return Generator.GenerateTextField(ViewContext, modelExplorer, inputType, For.Name, modelExplorer.Model, format, htmlAttributes, DesignSystem);
+			return Generator.GenerateTextField(
+				ViewContext,
+				modelExplorer,
+				InputType.Text,
+				For.Name,
+				modelExplorer.Model,
+				format,
+				htmlAttributes,
+				DesignSystem);
 		}
 
 		/// <summary>
