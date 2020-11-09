@@ -17,8 +17,11 @@ module.exports = [
 		output: {
 			path: path.resolve(__dirname, "../Server/wwwroot/script"),
 			filename: "site.min.js",
-			library: "JsFunctions",
+			library: "Functions",
 			libraryTarget: "window"
-		}
+		},
+		//optimization: {
+		//	minimize: false
+		//},
 	}
 ];

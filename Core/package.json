@@ -19,6 +19,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.11.4",
+		"@types/jquery-mask-plugin": "^1.14.3",
 		"babel-loader": "^8.1.0",
 		"webpack": "^4.44.1",
 		"webpack-cli": "^3.3.12"
