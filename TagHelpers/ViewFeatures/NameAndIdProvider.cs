@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -99,7 +100,7 @@ namespace CRM.TagHelpers.ViewFeatures
 			}
 
 			// Need to concatenate. See if we've already done that.
-			System.Collections.Generic.IDictionary<object, object?> items = viewContext.HttpContext.Items;
+			IDictionary<object, object?> items = viewContext.HttpContext.Items;
 			PreviousNameAndId? previousNameAndId = null;
 
 			if (items.TryGetValue(PreviousNameAndIdKey, out object? previousNameAndIdObject)
