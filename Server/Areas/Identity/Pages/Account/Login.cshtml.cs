@@ -77,7 +77,12 @@ namespace CRM.Server.Areas.Identity.Pages.Account
 			if (ModelState.IsValid)
 			{
 				// Try to login
-				Microsoft.AspNetCore.Identity.SignInResult? result = await signInManager.PasswordSignInAsync(Email, Password, RememberMe, lockoutOnFailure: true);
+				Microsoft.AspNetCore.Identity.SignInResult? result = await signInManager
+					.PasswordSignInAsync(
+						Email,
+						Password,
+						RememberMe,
+						true);
 
 				// Sucessful login
 				if (result.Succeeded)
