@@ -8,8 +8,16 @@
 		}
 	},
 	{
-		"outputFileName": "wwwroot/script/jquery-validate.min.js",
+		"outputFileName": "wwwroot/script/jquery-validation-unobtrusive.min.js",
 		"inputFiles": [ "wwwroot/script/jQuery/*.js" ],
+		"minify": {
+			"enabled": true,
+			"renameLocals": true
+		}
+	},
+	{
+		"outputFileName": "wwwroot/script/jquery.mask.min.js",
+		"inputFiles": [ "wwwroot/script/jQuery/Plugins/jquery.mask.js" ],
 		"minify": {
 			"enabled": true,
 			"renameLocals": true

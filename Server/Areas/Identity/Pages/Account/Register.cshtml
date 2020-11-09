@@ -16,7 +16,7 @@
 			</div>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="AppUser.CPF" onkeydown="FormatCPF()" />
+				<fluent-text-field asp-for="AppUser.CPF" onkeydown="Functions.FormatCPF(event)" />
 				<span asp-validation-for="AppUser.CPF" class="text-danger"></span>
 			</div>
 

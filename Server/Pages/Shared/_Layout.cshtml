@@ -25,13 +25,16 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="~/script/jquery-validate.min.js"></script>
 
+	<!-- Load JQuery Mask Plugin -->
+	<script src="~/script/jquery.mask.min.js"></script>
+
 	<!-- Load our script file -->
 	<script src="~/script/site.min.js" type="text/javascript"></script>
 </head>
 
 <body class="ms-Fabric" dir="ltr">
 	<fluent-design-system-provider use-defaults>
-		<div class="main">
+		<div id="main" class="main">
 			@if (IsSectionDefined("scripts"))
 			{
 				RenderSection("scripts");
@@ -41,7 +44,7 @@
 		</div>
 
 		<script>
-			JsFunctions.ApplyColorPalette();
+			Functions.ApplyColorPalette();
 		</script>
 	 </fluent-design-system-provider>
 </body>
