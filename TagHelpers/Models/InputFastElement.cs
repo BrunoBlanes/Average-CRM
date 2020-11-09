@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using CRM.TagHelpers.Enums;
 using CRM.TagHelpers.ViewFeatures;
 
 using Microsoft.AspNetCore.Mvc.TagHelpers;
@@ -57,9 +58,9 @@ namespace CRM.TagHelpers.Models
 		protected new FastGenerator Generator { get; }
 
 		/// <summary>
-		/// The <see cref="DesignSystemLanguage"/> implementation.
+		/// The <see cref="Enums.DesignSystem"/> implementation.
 		/// </summary>
-		public DesignSystemLanguage DesignSystem { get; set; }
+		public DesignSystem DesignSystem { get; set; }
 
 		/// <summary>
 		/// Creates a new instance of <see cref="InputFastElement"/>.
@@ -69,11 +70,5 @@ namespace CRM.TagHelpers.Models
 		{
 			Generator = (FastGenerator)generator;
 		}
-	}
-
-	public enum DesignSystemLanguage
-	{
-		FAST,
-		Fluent
 	}
 }

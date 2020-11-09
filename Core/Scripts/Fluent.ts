@@ -1,7 +1,6 @@
 ﻿import { FASTDesignSystemProvider, createColorPalette } from "@microsoft/fast-components";
 import { parseColorHexRGB } from "@microsoft/fast-colors";
 
-
 const neutral = "#323130";
 const accent = "#DF0000";
 
