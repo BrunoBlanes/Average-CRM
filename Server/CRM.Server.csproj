@@ -8,6 +8,7 @@
 		<AnalysisLevel>preview</AnalysisLevel>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<StartupObject>CRM.Server.Program</StartupObject>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PreserveCompilationContext>true</PreserveCompilationContext>
 		<UserSecretsId>311b3395-91d4-422a-82a7-52ea76f9e066</UserSecretsId>
 		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
@@ -30,6 +31,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
 		<PackageReference Include="System.Drawing.Common" Version="5.0.0" />
 		<PackageReference Include="System.Text.Json" Version="5.0.0" />
 	</ItemGroup>
