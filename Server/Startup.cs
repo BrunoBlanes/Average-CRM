@@ -66,16 +66,16 @@ namespace CRM.Server
 				options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 			}).AddRazorPagesOptions(options =>
 			{
-				options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
-				options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
+				options.Conventions.AuthorizeAreaPage("account", "/logout");
+				options.Conventions.AuthorizeAreaFolder("account", "/manage");
 			});
 
 			// Configure identity path for cookies
 			services.ConfigureApplicationCookie(options =>
 			{
-				options.LoginPath = $"/Identity/Account/Login";
-				options.LogoutPath = $"/Identity/Account/Logout";
-				options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+				options.LoginPath = "/account/login";
+				options.LogoutPath = "/account/logout";
+				options.AccessDeniedPath = "/account/accessdenied";
 			});
 
 			// Configure api versioning
@@ -137,7 +137,7 @@ namespace CRM.Server
 
 			else
 			{
-				app.UseExceptionHandler("/Error");
+				app.UseExceptionHandler("/error");
 
 				// TODO: The default HSTS value is 30 days.
 				// You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.

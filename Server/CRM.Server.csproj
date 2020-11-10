@@ -14,9 +14,6 @@
 		<RuntimeIdentifiers>win-x86;win-x64;win-arm;linux-x64;linux-arm</RuntimeIdentifiers>
 	</PropertyGroup>
 	<ItemGroup>
-		<None Include="Areas\Identity\Pages\Shared\_LoginPartial.cshtml" />
-	</ItemGroup>
-	<ItemGroup>
 		<PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
 		<PackageReference Include="MailKit" Version="2.9.0" />
 		<PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="5.0.0-rc.2.20475.17" />
