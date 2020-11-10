@@ -10,7 +10,7 @@
 	<ItemGroup>
 		<PackageReference Include="MailKit" Version="2.9.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.0" />
-		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.1.0-beta">
+		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.1.1-rc">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
