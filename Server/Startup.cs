@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -20,6 +22,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace CRM.Server
 {
@@ -27,7 +32,7 @@ namespace CRM.Server
 	{
 		public IConfiguration Configuration { get; }
 
-		public Startup(IConfiguration configuration, IWebHostEnvironment env)
+		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
 		}
@@ -107,6 +112,34 @@ namespace CRM.Server
 				client.BaseAddress = new Uri($"{Configuration["BaseUrl"]}api/");
 			});
 
+			// Register the Swagger generator, defining 1 or more Swagger documents
+			services.AddSwaggerGen(options =>
+			{
+				options.SwaggerDoc("v1", new OpenApiInfo
+				{
+					Version = "v1",
+					Title = "CRM API",
+					Description = "A simple example ASP.NET Core Web API",
+					TermsOfService = new Uri($"{Configuration["BaseUrl"]}terms"),
+					Contact = new OpenApiContact
+					{
+						Name = "Bruno Blanes",
+						Email = "bruno.blanes@outlook.com",
+						Url = new Uri($"{Configuration["BaseUrl"]}contact"),
+					},
+					License = new OpenApiLicense
+					{
+						Name = "Use under LICX",
+						Url = new Uri($"{Configuration["BaseUrl"]}license"),
+					}
+				});
+
+				// Set the comments path for the Swagger JSON and UI.
+				string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+				string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+				options.IncludeXmlComments(xmlPath);
+			});
+
 			// Sets the email service
 			services.AddSingleton<ISmtpService, SmtpService>();
 
@@ -133,6 +166,25 @@ namespace CRM.Server
 				app.UseDeveloperExceptionPage();
 				app.UseWebAssemblyDebugging();
 				app.UseMigrationsEndPoint();
+
+				// Enable middleware to serve generated Swagger as a JSON endpoint.
+				app.UseSwagger(options =>
+				{
+					options.RouteTemplate = "api/{documentName}/swagger.json";
+				});
+
+				// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+				// specifying the Swagger JSON endpoint.
+				app.UseSwaggerUI(options =>
+				{
+					options.SwaggerEndpoint("/api/v1/swagger.json", "CRM API V1");
+					options.DefaultModelRendering(ModelRendering.Model);
+					options.DisplayRequestDuration();
+					options.RoutePrefix = "api";
+					options.EnableDeepLinking();
+					options.EnableValidator();
+					options.EnableFilter();
+				});
 			}
 
 			else
