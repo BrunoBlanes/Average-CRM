@@ -1,20 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 	<PropertyGroup>
+		<!-- Development settings -->
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<TargetFramework>net5.0</TargetFramework>
+		<AnalysisLevel>preview</AnalysisLevel>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
-		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<!-- Package settings -->
 		<Version>0.1.0.0</Version>
-		<AnalysisLevel>preview</AnalysisLevel>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<OutputType>Exe</OutputType>
 		<StartupObject>CRM.Server.Program</StartupObject>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PreserveCompilationContext>true</PreserveCompilationContext>
 		<UserSecretsId>311b3395-91d4-422a-82a7-52ea76f9e066</UserSecretsId>
 		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
 		<RuntimeIdentifiers>win-x86;win-x64;win-arm;linux-x64;linux-arm</RuntimeIdentifiers>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<!-- Swagger UI -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+	
 	<ItemGroup>
+		<!-- Package references -->
 		<PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
 		<PackageReference Include="MailKit" Version="2.9.0" />
 		<PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="5.0.0" />
@@ -32,9 +44,11 @@
 		<PackageReference Include="System.Drawing.Common" Version="5.0.0" />
 		<PackageReference Include="System.Text.Json" Version="5.0.0" />
 	</ItemGroup>
+	
 	<ItemGroup>
-		<ProjectReference Include="..\Client\CRM.Client.csproj" />
+		<!-- Project references -->
 		<ProjectReference Include="..\Core\CRM.Core.csproj" />
+		<ProjectReference Include="..\Client\CRM.Client.csproj" />
 		<ProjectReference Include="..\TagHelpers\CRM.TagHelpers.csproj" />
 	</ItemGroup>
 </Project>
