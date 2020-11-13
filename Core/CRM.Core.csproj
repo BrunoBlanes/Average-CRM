@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<!-- Development settings -->
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<TargetFramework>net5.0</TargetFramework>
 		<AnalysisLevel>preview</AnalysisLevel>
@@ -8,6 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<!-- Package references -->
 		<PackageReference Include="MailKit" Version="2.9.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.0" />
 		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.1.1-rc">
@@ -17,11 +19,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Remove="node_modules\**" />
+		<!-- Ignore node modules -->
 		<None Remove="node_modules\**" />
-	</ItemGroup>
-
-	<ItemGroup>
+		<Content Remove="node_modules\**" />
 		<TypeScriptCompile Remove="node_modules\**" />
 	</ItemGroup>
 

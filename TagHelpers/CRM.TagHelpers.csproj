@@ -1,18 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<!-- Development settings -->
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<TargetFramework>net5.0</TargetFramework>
 		<AnalysisLevel>preview</AnalysisLevel>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<!-- Package settings -->
 		<Version>0.1.0</Version>
 		<Authors>Bruno Blanes</Authors>
-		<!--<PackageId>FAST.Tag.Helpers</PackageId>-->
-		<PackageDescription>This package adds an ASP.NET Core tag helpers for FAST Elements.</PackageDescription>
+		<PackageId>FAST.TagHelpers</PackageId>
 		<RepositoryUrl>https://github.com/BrunoBlanes/Average-CRM</RepositoryUrl>
+		<PackageDescription>This package adds MVC tag helpers for FAST Elements.</PackageDescription>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<!-- Project references -->
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.2.0" />
 	</ItemGroup>
 </Project>
