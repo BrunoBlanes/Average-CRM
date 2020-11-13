@@ -54,7 +54,7 @@ namespace CRM.TagHelpers.ModelBinding
 					// case 1: both destination + source type are arrays, so convert each element
 					var converted = (IList)Array.CreateInstance(destinationElementType, valueAsArray.Length);
 
-					for (int i = 0; i < valueAsArray.Length; i++)
+					for (var i = 0; i < valueAsArray.Length; i++)
 					{
 						converted[i] = ConvertSimpleType(valueAsArray.GetValue(i), destinationElementType, culture);
 					}
@@ -65,7 +65,7 @@ namespace CRM.TagHelpers.ModelBinding
 				else if (destinationElementType is not null)
 				{
 					// case 2: destination type is array but source is single element, so wrap element in array + convert
-					object? element = ConvertSimpleType(value, destinationElementType, culture);
+					var element = ConvertSimpleType(value, destinationElementType, culture);
 					var converted = (IList)Array.CreateInstance(destinationElementType, 1);
 					converted[0] = element;
 					return converted;
@@ -108,7 +108,7 @@ namespace CRM.TagHelpers.ModelBinding
 			}
 
 			TypeConverter converter = TypeDescriptor.GetConverter(destinationType);
-			bool canConvertFrom = converter.CanConvertFrom(value.GetType());
+			var canConvertFrom = converter.CanConvertFrom(value.GetType());
 
 			if (canConvertFrom != true)
 			{

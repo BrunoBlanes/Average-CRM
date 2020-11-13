@@ -1,6 +1,6 @@
-﻿using CRM.TagHelpers.TagHelpers.Fast;
+﻿using CRM.TagHelpers.Enums;
+using CRM.TagHelpers.TagHelpers.Fast;
 using CRM.TagHelpers.ViewFeatures;
-using CRM.TagHelpers.Enums;
 
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;

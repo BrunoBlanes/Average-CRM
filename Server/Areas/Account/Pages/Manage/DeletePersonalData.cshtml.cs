@@ -38,8 +38,12 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnGet()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
+			
 			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			}
+
 			RequirePassword = await userManager.HasPasswordAsync(user);
 			return Page();
 		}
@@ -47,8 +51,12 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnPostAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
+			
 			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			}
+
 			RequirePassword = await userManager.HasPasswordAsync(user);
 
 			if (RequirePassword)
@@ -61,9 +69,13 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 			}
 
 			IdentityResult? result = await userManager.DeleteAsync(user);
-			string? userId = await userManager.GetUserIdAsync(user);
+			var userId = await userManager.GetUserIdAsync(user);
+			
 			if (result.Succeeded is not true)
+			{
 				throw new InvalidOperationException($"Unexpected error occurred deleting user with ID '{userId}'.");
+			}
+
 			await signInManager.SignOutAsync();
 			logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
 			return Redirect("~/");

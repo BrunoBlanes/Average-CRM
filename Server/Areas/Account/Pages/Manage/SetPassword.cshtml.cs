@@ -42,12 +42,13 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnGetAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
+			
 			if (user is null)
 			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 			}
 
-			bool hasPassword = await userManager.HasPasswordAsync(user);
+			var hasPassword = await userManager.HasPasswordAsync(user);
 			return hasPassword ? RedirectToPage("./ChangePassword") : (IActionResult)Page();
 		}
 
@@ -56,14 +57,21 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 			if (ModelState.IsValid)
 			{
 				ApplicationUser? user = await userManager.GetUserAsync(User);
+				
 				if (user is null)
+				{
 					return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+				}
+
 				IdentityResult? addPasswordResult = await userManager.AddPasswordAsync(user, NewPassword);
 
 				if (addPasswordResult.Succeeded is not true)
 				{
 					foreach (IdentityError? error in addPasswordResult.Errors)
+					{
 						ModelState.AddModelError(string.Empty, error.Description);
+					}
+
 					return Page();
 				}
 

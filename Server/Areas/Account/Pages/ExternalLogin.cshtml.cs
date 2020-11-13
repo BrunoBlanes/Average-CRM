@@ -49,7 +49,7 @@ namespace CRM.Server.Areas.Account.Pages
 		public IActionResult OnPost(string provider, string? returnUrl = null)
 		{
 			// Request a redirect to the external login provider.
-			string? redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+			var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
 			AuthenticationProperties? properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
 			return new ChallengeResult(provider, properties);
 		}
@@ -89,13 +89,18 @@ namespace CRM.Server.Areas.Account.Pages
 			{
 				return RedirectToPage("./Lockout");
 			}
+
 			else
 			{
 				// If the user does not have an account, then ask the user to create an account.
 				ReturnUrl = returnUrl;
 				ProviderDisplayName = info.ProviderDisplayName;
+				
 				if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
+				{
 					Email = info.Principal.FindFirstValue(ClaimTypes.Email);
+				}
+
 				return Page();
 			}
 		}
@@ -132,7 +137,9 @@ namespace CRM.Server.Areas.Account.Pages
 				}
 
 				foreach (IdentityError? error in result.Errors)
+				{
 					ModelState.AddModelError(string.Empty, error.Description);
+				}
 			}
 
 			ProviderDisplayName = info.ProviderDisplayName;

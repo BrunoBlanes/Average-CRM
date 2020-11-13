@@ -57,7 +57,7 @@ namespace CRM.Server.Services
 		{
 			IFileProvider fileProvider = environment.ContentRootFileProvider;
 			IFileInfo fileInfo = fileProvider.GetFileInfo(file);
-			string physicalPath = fileInfo.PhysicalPath;
+			var physicalPath = fileInfo.PhysicalPath;
 			updateAction(Value);
 			AppSettings appSettings = await ReadAppSettingsAsync(physicalPath, true);
 
@@ -88,8 +88,8 @@ namespace CRM.Server.Services
 			try
 			{
 				// Try reading and deserializing the contents of the file
-				string appOptions = await File.ReadAllTextAsync(physicalPath);
-				
+				var appOptions = await File.ReadAllTextAsync(physicalPath);
+
 				if (JsonSerializer.Deserialize<AppSettings>(appOptions) is AppSettings appSettings)
 				{
 					// Save a backup of the deserialized JSON file and return its content

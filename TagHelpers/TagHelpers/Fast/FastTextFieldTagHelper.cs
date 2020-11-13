@@ -112,7 +112,7 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 
 		private TagBuilder GenerateTextField(ModelExplorer modelExplorer, string? inputTypeHint, string inputType, IDictionary<string, object>? htmlAttributes)
 		{
-			string format = Format;
+			var format = Format;
 
 			if (string.IsNullOrEmpty(format))
 			{
@@ -154,11 +154,11 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 		/// <param name="inputTypeHint">When this method returns, contains the string, often the name of a
 		/// <see cref="ModelMetadata.ModelType"/> base class, used to determine this method's return value.</param>
 		/// <returns>A &lt;fast-text-field&gt; element's "type" attribute value.</returns>
-		private new static string GetInputType(ModelExplorer modelExplorer, out string inputTypeHint)
+		private static new string GetInputType(ModelExplorer modelExplorer, out string inputTypeHint)
 		{
-			foreach (string hint in TemplateRenderer.GetInputTypeHints(modelExplorer))
+			foreach (var hint in TemplateRenderer.GetInputTypeHints(modelExplorer))
 			{
-				if (defaultInputTypes.TryGetValue(hint, out string? inputType))
+				if (defaultInputTypes.TryGetValue(hint, out var inputType))
 				{
 					inputTypeHint = hint;
 					return inputType;
@@ -205,7 +205,7 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 					format = dateTimeFormats["datetime"];
 				}
 
-				else if (dateTimeFormats.TryGetValue(inputType, out string? rfc3339Format))
+				else if (dateTimeFormats.TryGetValue(inputType, out var rfc3339Format))
 				{
 					format = rfc3339Format;
 				}

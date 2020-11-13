@@ -30,17 +30,17 @@ namespace CRM.Server
 {
 	public class Startup
 	{
-		public IConfiguration Configuration { get; }
+		private readonly IConfiguration configuration;
 
 		public Startup(IConfiguration configuration)
 		{
-			Configuration = configuration;
+			this.configuration = configuration;
 		}
 
 		public void ConfigureServices(IServiceCollection services)
 		{
 			// Sets the database connection string
-			services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+			services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
 			// Configure identity
 			services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -62,8 +62,8 @@ namespace CRM.Server
 			{
 				options.Clients.AddSPA("CRM.Client", client =>
 				{
-					client.WithRedirectUri($"{Configuration["BaseUrl"]}account/login-callback");
-					client.WithLogoutRedirectUri($"{Configuration["BaseUrl"]}account/logout-callback");
+					client.WithRedirectUri($"{configuration["BaseUrl"]}account/login-callback");
+					client.WithLogoutRedirectUri($"{configuration["BaseUrl"]}account/logout-callback");
 				});
 			});
 
@@ -117,7 +117,7 @@ namespace CRM.Server
 			// TODO: Fix httpclient to get current domain
 			services.AddHttpClient("ServerAPI", client =>
 			{
-				client.BaseAddress = new Uri($"{Configuration["BaseUrl"]}api/");
+				client.BaseAddress = new Uri($"{configuration["BaseUrl"]}api/");
 			});
 
 			// Register the Swagger generator, defining 1 or more Swagger documents
@@ -128,23 +128,23 @@ namespace CRM.Server
 					Version = "v1",
 					Title = "CRM API",
 					Description = "A simple example ASP.NET Core Web API",
-					TermsOfService = new Uri($"{Configuration["BaseUrl"]}terms"),
+					TermsOfService = new Uri($"{configuration["BaseUrl"]}terms"),
 					Contact = new OpenApiContact
 					{
 						Name = "Bruno Blanes",
 						Email = "bruno.blanes@outlook.com",
-						Url = new Uri($"{Configuration["BaseUrl"]}contact"),
+						Url = new Uri($"{configuration["BaseUrl"]}contact"),
 					},
 					License = new OpenApiLicense
 					{
 						Name = "Use under LICX",
-						Url = new Uri($"{Configuration["BaseUrl"]}license"),
+						Url = new Uri($"{configuration["BaseUrl"]}license"),
 					}
 				});
 
 				// Set the comments path for the Swagger JSON and UI.
-				string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-				string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+				var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+				var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 				options.IncludeXmlComments(xmlPath);
 			});
 
@@ -155,7 +155,7 @@ namespace CRM.Server
 			services.AddDatabaseDeveloperPageExceptionFilter();
 
 			// Configure options
-			services.ConfigureWritable<SmtpOptions>(Configuration.GetSection(SmtpOptions.Section));
+			services.ConfigureWritable<SmtpOptions>(configuration.GetSection(SmtpOptions.Section));
 
 			// Adds the FAST based Fluent HTML generator
 			services.AddScoped<IHtmlGenerator, FastGenerator>();

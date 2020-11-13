@@ -42,8 +42,12 @@ namespace CRM.Server.Areas.Account.Pages
 		{
 			// Ensure the user has gone through the username & password screen first
 			ApplicationUser? user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+			
 			if (user is null)
+			{
 				throw new InvalidOperationException($"Unable to load two-factor authentication user.");
+			}
+
 			ReturnUrl = returnUrl;
 			RememberMe = rememberMe;
 			return Page();
@@ -55,9 +59,13 @@ namespace CRM.Server.Areas.Account.Pages
 			{
 
 				ApplicationUser? user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+				
 				if (user is null)
+				{
 					throw new InvalidOperationException($"Unable to load two-factor authentication user.");
-				string? authenticatorCode = TwoFactorCode
+				}
+
+				var authenticatorCode = TwoFactorCode
 					.Replace(" ", string.Empty, StringComparison.OrdinalIgnoreCase)
 					.Replace("-", string.Empty, StringComparison.OrdinalIgnoreCase);
 				Microsoft.AspNetCore.Identity.SignInResult? result = await signInManager.TwoFactorAuthenticatorSignInAsync(

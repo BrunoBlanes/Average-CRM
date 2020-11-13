@@ -30,8 +30,12 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnPostAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
+			
 			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			}
+
 			logger.LogInformation("User with ID '{UserId}' asked for their personal data.", userManager.GetUserId(User));
 
 			// Only include personal data for download
@@ -39,11 +43,19 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 			IEnumerable<PropertyInfo>? personalDataProps = typeof(ApplicationUser)
 				.GetProperties()
 				.Where(prop => Attribute.IsDefined(prop, typeof(PersonalDataAttribute)));
+			
 			foreach (PropertyInfo? p in personalDataProps)
+			{
 				personalData.Add(p.Name, p.GetValue(user)?.ToString() ?? "null");
-			IList<UserLoginInfo>? logins = await userManager.GetLoginsAsync(user);
+			}
+
+			ICollection<UserLoginInfo>? logins = await userManager.GetLoginsAsync(user);
+			
 			foreach (UserLoginInfo? l in logins)
+			{
 				personalData.Add($"{l.LoginProvider} external login provider key", l.ProviderKey);
+			}
+
 			Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
 			return new FileContentResult(JsonSerializer.SerializeToUtf8Bytes(personalData), "application/json");
 		}

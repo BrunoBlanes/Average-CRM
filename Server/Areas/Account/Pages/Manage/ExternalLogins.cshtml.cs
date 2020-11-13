@@ -20,8 +20,8 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		[TempData]
 		public string? StatusMessage { get; set; }
 		public bool ShowRemoveButton { get; set; }
-		public IList<UserLoginInfo>? CurrentLogins { get; private set; }
-		public IList<AuthenticationScheme>? OtherLogins { get; private set; }
+		public ICollection<UserLoginInfo>? CurrentLogins { get; private set; }
+		public ICollection<AuthenticationScheme>? OtherLogins { get; private set; }
 
 		public ExternalLoginsModel(
 			UserManager<ApplicationUser> userManager,
@@ -34,8 +34,12 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnGetAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
+			
 			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID 'user.Id'.");
+			}
+
 			CurrentLogins = await userManager.GetLoginsAsync(user);
 			OtherLogins = (await signInManager.GetExternalAuthenticationSchemesAsync())
 				.Where(auth => CurrentLogins.All(ul => auth.Name != ul.LoginProvider))
@@ -47,8 +51,12 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnPostRemoveLoginAsync(string loginProvider, string providerKey)
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			if (user == null)
+			
+			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID 'user.Id'.");
+			}
+
 			IdentityResult? result = await userManager.RemoveLoginAsync(user, loginProvider, providerKey);
 
 			if (result.Succeeded is not true)
@@ -68,7 +76,7 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 			await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
 			// Request a redirect to the external login provider to link a login for the current user
-			string? redirectUrl = Url.Page("./ExternalLogins", pageHandler: "LinkLoginCallback");
+			var redirectUrl = Url.Page("./ExternalLogins", pageHandler: "LinkLoginCallback");
 			AuthenticationProperties? properties = signInManager.ConfigureExternalAuthenticationProperties(
 				provider,
 				redirectUrl,
@@ -79,11 +87,19 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnGetLinkLoginCallbackAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
+			
 			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID 'user.Id'.");
+			}
+
 			ExternalLoginInfo? info = await signInManager.GetExternalLoginInfoAsync(user.Id);
+			
 			if (info is null)
+			{
 				throw new InvalidOperationException($"Unexpected error occurred loading external login info for user with ID '{user.Id}'.");
+			}
+
 			IdentityResult? result = await userManager.AddLoginAsync(user, info);
 
 			if (result.Succeeded is not true)

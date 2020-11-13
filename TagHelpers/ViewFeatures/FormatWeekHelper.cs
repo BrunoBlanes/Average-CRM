@@ -10,7 +10,7 @@ namespace CRM.TagHelpers.ViewFeatures
 	{
 		public static string? GetFormattedWeek(ModelExplorer modelExplorer)
 		{
-			object value = modelExplorer.Model;
+			var value = modelExplorer.Model;
 
 			if (value is DateTimeOffset dateTimeOffset)
 			{
@@ -29,9 +29,9 @@ namespace CRM.TagHelpers.ViewFeatures
 					date = date.AddDays(3);
 				}
 
-				int week = calendar.GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-				int year = calendar.GetYear(date);
-				int month = calendar.GetMonth(date);
+				var week = calendar.GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+				var year = calendar.GetYear(date);
+				var month = calendar.GetMonth(date);
 
 				// Last week (either 52 or 53) includes January dates (1st, 2nd, 3rd) 
 				if (week >= 52 && month == 1)

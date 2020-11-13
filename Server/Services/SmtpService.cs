@@ -7,7 +7,6 @@ using CRM.Core.Models;
 using CRM.Server.Data;
 using CRM.Server.Interfaces;
 
-using MailKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 
@@ -44,7 +43,7 @@ namespace CRM.Server.Services
 			client = new SmtpClient();
 			this.options = new SmtpOptions();
 			Task.Run(async () => await ConfigureAsync(options.CurrentValue));
-			
+
 			// Adds an event listener for when 'appsettings.json' changes
 			optionsListener = options.OnChange(async (change) =>
 			{
@@ -113,7 +112,7 @@ namespace CRM.Server.Services
 			// by the client when connected to the same host
 			await client.DisconnectAsync(true, token);
 
-			for (int attempts = 0; attempts < 3; attempts++)
+			for (var attempts = 0; attempts < 3; attempts++)
 			{
 				try
 				{
@@ -156,7 +155,7 @@ namespace CRM.Server.Services
 
 			if (client.IsAuthenticated)
 			{
-				for (int attempts = 0; attempts < 3; attempts++)
+				for (var attempts = 0; attempts < 3; attempts++)
 				{
 					try
 					{
@@ -203,7 +202,7 @@ namespace CRM.Server.Services
 			};
 			message.To.Add(MailboxAddress.Parse(user.Email));
 
-			for (int attempts = 0; attempts < 3; attempts++)
+			for (var attempts = 0; attempts < 3; attempts++)
 			{
 				try
 				{

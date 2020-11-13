@@ -98,7 +98,7 @@ namespace CRM.TagHelpers.ViewFeatures
 			Debug.Assert(isChecked.HasValue is false);
 			IDictionary<string, object>? htmlAttributeDictionary = GetHtmlAttributeDictionaryOrNull(htmlAttributes);
 
-			if (bool.TryParse(modelExplorer.Model.ToString(), out bool modelChecked))
+			if (bool.TryParse(modelExplorer.Model.ToString(), out var modelChecked))
 			{
 				isChecked = modelChecked;
 			}
@@ -150,7 +150,7 @@ namespace CRM.TagHelpers.ViewFeatures
 			DesignSystem designSystem,
 			IDictionary<string, object>? htmlAttributeDictionary)
 		{
-			string fullName = NameAndIdProvider.GetFullHtmlFieldName(viewContext, expression);
+			var fullName = NameAndIdProvider.GetFullHtmlFieldName(viewContext, expression);
 
 			if (IsFullNameValid(fullName, htmlAttributeDictionary) is not true)
 			{
@@ -163,15 +163,15 @@ namespace CRM.TagHelpers.ViewFeatures
 			}
 
 			TagBuilder tagBuilder;
-			string valueParameter = FormatValue(value, format);
-			bool usedModelState = false;
+			var valueParameter = FormatValue(value, format);
+			var usedModelState = false;
 
 			// Element tag name prefix is its design system name
-			string prefix = designSystem.ToString().ToLowerInvariant();
+			var prefix = designSystem.ToString().ToLowerInvariant();
 
 			if (inputType is InputType.CheckBox)
 			{
-				bool? modelStateWasChecked = GetModelStateValue(viewContext, fullName, typeof(bool)) as bool?;
+				var modelStateWasChecked = GetModelStateValue(viewContext, fullName, typeof(bool)) as bool?;
 				tagBuilder = new TagBuilder($"{prefix}-checkbox") { TagRenderMode = TagRenderMode.EndTag };
 
 				if (modelStateWasChecked.HasValue)
@@ -218,7 +218,7 @@ namespace CRM.TagHelpers.ViewFeatures
 
 				else
 				{
-					string? attributeValue = (string?)GetModelStateValue(viewContext, fullName, typeof(string));
+					var attributeValue = (string?)GetModelStateValue(viewContext, fullName, typeof(string));
 
 					if (attributeValue is null)
 					{
@@ -237,7 +237,7 @@ namespace CRM.TagHelpers.ViewFeatures
 			}
 
 			tagBuilder.MergeAttributes(htmlAttributeDictionary);
-			string inputTypeString = GetInputTypeString(inputType);
+			var inputTypeString = GetInputTypeString(inputType);
 			tagBuilder.MergeAttribute("type", inputTypeString);
 			NameAndIdProvider.GenerateId(viewContext, tagBuilder, fullName, IdAttributeDotReplacement);
 
@@ -273,7 +273,7 @@ namespace CRM.TagHelpers.ViewFeatures
 
 				// Check if user has provided an explicit name attribute.
 				// Generalized a bit because other attributes e.g. data-valmsg-for refer to element names.
-				htmlAttributeDictionary.TryGetValue("name", out object? attributeObject);
+				htmlAttributeDictionary.TryGetValue("name", out var attributeObject);
 
 				if (string.IsNullOrEmpty(Convert.ToString(attributeObject, CultureInfo.InvariantCulture)))
 				{
