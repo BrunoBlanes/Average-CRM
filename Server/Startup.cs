@@ -57,8 +57,16 @@ namespace CRM.Server
 				options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 			}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
-			// Sets identity to use JWT tokens
-			services.AddIdentityServer().AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+			// Adds identity server and the client's settings
+			services.AddIdentityServer().AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
+			{
+				options.Clients.AddSPA("CRM.Client", client =>
+				{
+					client.WithRedirectUri($"{Configuration["BaseUrl"]}account/login-callback");
+					client.WithLogoutRedirectUri($"{Configuration["BaseUrl"]}account/logout-callback");
+				});
+			});
+
 			services.AddAuthentication().AddIdentityServerJwt();
 
 			// Configure json and razor pages
