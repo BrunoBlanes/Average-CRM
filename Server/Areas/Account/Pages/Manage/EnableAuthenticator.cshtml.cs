@@ -17,7 +17,7 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 {
 	public class EnableAuthenticatorModel : PageModel
 	{
-		private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
+		private const string authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly ILogger<EnableAuthenticatorModel> logger;
 		private readonly UrlEncoder urlEncoder;
@@ -51,8 +51,12 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnGetAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
+			
 			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			}
+
 			await LoadSharedKeyAndQrCodeUriAsync(user);
 			return Page();
 		}
@@ -60,16 +64,19 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnPostAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
+			
 			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			}
 
 			if (ModelState.IsValid)
 			{
 				// Strip spaces and hypens
-				string? verificationCode = Code
+				var verificationCode = Code
 					.Replace(" ", string.Empty, StringComparison.OrdinalIgnoreCase)
 					.Replace("-", string.Empty, StringComparison.OrdinalIgnoreCase);
-				bool is2faTokenValid = await userManager.VerifyTwoFactorTokenAsync(
+				var is2faTokenValid = await userManager.VerifyTwoFactorTokenAsync(
 					user,
 					userManager.Options.Tokens.AuthenticatorTokenProvider,
 					verificationCode);
@@ -82,7 +89,7 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 				}
 
 				await userManager.SetTwoFactorEnabledAsync(user, true);
-				string? userId = await userManager.GetUserIdAsync(user);
+				var userId = await userManager.GetUserIdAsync(user);
 				logger.LogInformation("User with ID '{UserId}' has enabled 2FA with an authenticator app.", userId);
 				StatusMessage = "Your authenticator app has been verified.";
 
@@ -105,7 +112,7 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		private async Task LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user)
 		{
 			// Load the authenticator key & QR code URI to display on the form
-			string? unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
+			var unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
 
 			if (string.IsNullOrEmpty(unformattedKey))
 			{
@@ -114,14 +121,14 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 			}
 
 			SharedKey = FormatKey(unformattedKey);
-			string? email = await userManager.GetEmailAsync(user);
+			var email = await userManager.GetEmailAsync(user);
 			AuthenticatorUri = GenerateQrCodeUri(email, unformattedKey);
 		}
 
 		private static string FormatKey(string unformattedKey)
 		{
 			var result = new StringBuilder();
-			int currentPosition = 0;
+			var currentPosition = 0;
 
 			while (currentPosition + 4 < unformattedKey.Length)
 			{
@@ -140,7 +147,7 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		private string GenerateQrCodeUri(string email, string unformattedKey)
 		{
 			return string.Format(CultureInfo.InvariantCulture,
-				AuthenticatorUriFormat,
+				authenticatorUriFormat,
 				urlEncoder.Encode("CRM.Server"),
 				urlEncoder.Encode(email),
 				unformattedKey);

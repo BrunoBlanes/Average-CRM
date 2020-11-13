@@ -65,14 +65,21 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 			if (ModelState.IsValid)
 			{
 				ApplicationUser? user = await userManager.GetUserAsync(User);
+				
 				if (user is null)
+				{
 					return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+				}
+
 				IdentityResult? changePasswordResult = await userManager.ChangePasswordAsync(user, OldPassword, NewPassword);
 
 				if (changePasswordResult.Succeeded is not true)
 				{
 					foreach (IdentityError? error in changePasswordResult.Errors)
+					{
 						ModelState.AddModelError(string.Empty, error.Description);
+					}
+
 					return Page();
 				}
 

@@ -11,7 +11,7 @@ namespace CRM.TagHelpers.ViewFeatures
 {
 	public class TemplateRenderer
 	{
-		private const string IEnumerableOfIFormFileName = "IEnumerable`" + nameof(IFormFile);
+		private const string iEnumerableOfIFormFileName = "IEnumerable`" + nameof(IFormFile);
 
 		public static IEnumerable<string> GetTypeNames(ModelMetadata modelMetadata, Type fieldType)
 		{
@@ -72,7 +72,7 @@ namespace CRM.TagHelpers.ViewFeatures
 			{
 				if (typeof(IEnumerable<IFormFile>).IsAssignableFrom(fieldType))
 				{
-					yield return IEnumerableOfIFormFileName;
+					yield return iEnumerableOfIFormFileName;
 
 					// Specific name has already been returned, now return the generic name.
 					if (typeof(IEnumerable<IFormFile>) == fieldType)
@@ -109,7 +109,7 @@ namespace CRM.TagHelpers.ViewFeatures
 			// (which should handle both T and Nullable<T>).
 			Type? fieldType = modelExplorer.Metadata.UnderlyingOrModelType;
 
-			foreach (string typeName in GetTypeNames(modelExplorer.Metadata, fieldType))
+			foreach (var typeName in GetTypeNames(modelExplorer.Metadata, fieldType))
 			{
 				yield return typeName;
 			}

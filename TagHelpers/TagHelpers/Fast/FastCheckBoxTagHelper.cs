@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using CRM.TagHelpers.Models;
 using CRM.TagHelpers.ViewFeatures;
 
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -48,7 +47,7 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 				output.CopyHtmlAttribute(nameof(Value), context);
 			}
 
-			string inputType = string.IsNullOrEmpty(InputTypeName)
+			var inputType = string.IsNullOrEmpty(InputTypeName)
 				? InputType.CheckBox.ToString().ToLowerInvariant()
 				: InputTypeName.ToLowerInvariant();
 

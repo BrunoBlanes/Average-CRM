@@ -65,16 +65,23 @@ namespace CRM.Server.Areas.Account.Pages
 
 				// Don't reveal that the user does not exist
 				if (user is null)
+				{
 					return RedirectToPage("./ResetPasswordConfirmation");
+				}
 
 				// Resets the user's password
 				IdentityResult? result = await userManager.ResetPasswordAsync(user, Code, Password);
 				if (result.Succeeded)
+				{
 					return RedirectToPage("./ResetPasswordConfirmation");
+				}
 
 				// Log errors
 				foreach (IdentityError? error in result.Errors)
+				{
 					ModelState.AddModelError(string.Empty, error.Description);
+				}
+
 				return Page();
 			}
 

@@ -58,7 +58,7 @@ namespace CRM.Server.Controllers
 		/// </summary>
 		/// <param name="email">The user <paramref name="email"/>.</param>
 		[HttpGet("Email={email}")]
-		public async Task<ActionResult<Person>> OnGetAsync([EmailAddress]string email)
+		public async Task<ActionResult<Person>> OnGetAsync([EmailAddress] string email)
 		{
 			return await context.People.Include(x => x.Address).FirstOrDefaultAsync(x => x.Email == email) is Person individual
 				? individual
@@ -82,7 +82,10 @@ namespace CRM.Server.Controllers
 		public async Task<ActionResult<Person>> OnPostAsync([FromBody] Person person)
 		{
 			if (!ModelState.IsValid || person is null)
+			{
 				return BadRequest(ModelState);
+			}
+
 			if (await context.People.FirstOrDefaultAsync(x => x.CPF == person.CPF) is null)
 			{
 				//TODO: Check for issues with inputing the user address

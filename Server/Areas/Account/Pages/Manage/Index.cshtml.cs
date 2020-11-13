@@ -52,12 +52,15 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnPostAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
+			
 			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			}
 
 			if (ModelState.IsValid)
 			{
-				string? phoneNumber = await userManager.GetPhoneNumberAsync(user);
+				var phoneNumber = await userManager.GetPhoneNumberAsync(user);
 
 				if (PhoneNumber != phoneNumber)
 				{

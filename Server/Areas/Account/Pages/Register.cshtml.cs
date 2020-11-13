@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using CRM.Core.Attributes;
 using CRM.Core.Models;
 using CRM.Server.Interfaces;
 
@@ -64,9 +62,9 @@ namespace CRM.Server.Areas.Account.Pages
 				{
 					// Generates the user account confirmation code
 					logger.LogInformation($"User {AppUser.Email} created a new account with password.");
-					string code = await userManager.GenerateEmailConfirmationTokenAsync(AppUser);
+					var code = await userManager.GenerateEmailConfirmationTokenAsync(AppUser);
 					code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-					string callbackUrl = Url.Page("/Account/ConfirmEmail", null, new
+					var callbackUrl = Url.Page("/Account/ConfirmEmail", null, new
 					{
 						area = "Identity",
 						userId = AppUser.Id,

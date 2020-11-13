@@ -49,8 +49,12 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnGetAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
+			
 			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			}
+
 			await LoadAsync(user);
 			return Page();
 		}
@@ -58,24 +62,27 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnPostChangeEmailAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
+			
 			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			}
 
 			if (ModelState.IsValid)
 			{
-				string? email = await userManager.GetEmailAsync(user);
+				var email = await userManager.GetEmailAsync(user);
 
 				if (NewEmail != email)
 				{
-					string? userId = await userManager.GetUserIdAsync(user);
+					var userId = await userManager.GetUserIdAsync(user);
 
 					// Generates a new email confirmation code and encodes it
-					string? code = await userManager.GenerateChangeEmailTokenAsync(user, NewEmail);
-					string? callbackUrl = Url.Page(
+					var code = await userManager.GenerateChangeEmailTokenAsync(user, NewEmail);
+					var callbackUrl = Url.Page(
 						"/Account/ConfirmEmailChange",
-						pageHandler: null,
-						values: new { userId, email = NewEmail, code },
-						protocol: Request.Scheme);
+						null,
+						new { userId, email = NewEmail, code },
+						Request.Scheme);
 
 					// Sends an email to the user with the confirmation code
 					await emailSender.SendEmailAsync(
@@ -98,21 +105,23 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
 			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			}
 
 			if (ModelState.IsValid)
 			{
-				string? userId = await userManager.GetUserIdAsync(user);
-				string? email = await userManager.GetEmailAsync(user);
+				var userId = await userManager.GetUserIdAsync(user);
+				var email = await userManager.GetEmailAsync(user);
 
 				// Generates a new email confirmation code and encodes it
-				string? code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+				var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 				code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-				string? callbackUrl = Url.Page(
+				var callbackUrl = Url.Page(
 					"/Account/ConfirmEmail",
-					pageHandler: null,
-					values: new { area = "Identity", userId, code },
-					protocol: Request.Scheme);
+					null,
+					new { area = "Identity", userId, code },
+					Request.Scheme);
 
 				// Sends an email to the user with the confirmation code
 				await emailSender.SendEmailAsync(

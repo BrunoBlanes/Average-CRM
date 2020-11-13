@@ -39,8 +39,12 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnPostAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
+			
 			if (user is null)
+			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			}
+
 			await userManager.SetTwoFactorEnabledAsync(user, false);
 			await userManager.ResetAuthenticatorKeyAsync(user);
 			logger.LogInformation("User with ID '{UserId}' has reset their authentication app key.", user.Id);

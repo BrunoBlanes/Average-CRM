@@ -40,12 +40,14 @@ namespace CRM.Server.Areas.Account.Pages
 
 				// Don't reveal that the user does not exist or is not confirmed
 				if (user is null || !await userManager.IsEmailConfirmedAsync(user))
+				{
 					return RedirectToPage("./ForgotPasswordConfirmation");
+				}
 
 				// Generates and encodes the confirmation code
-				string? code = await userManager.GeneratePasswordResetTokenAsync(user);
+				var code = await userManager.GeneratePasswordResetTokenAsync(user);
 				code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-				string? callbackUrl = Url.Page(
+				var callbackUrl = Url.Page(
 					"/Account/ResetPassword",
 					pageHandler: null,
 					values: new { area = "Identity", code },

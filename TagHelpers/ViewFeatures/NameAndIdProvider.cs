@@ -10,7 +10,7 @@ namespace CRM.TagHelpers.ViewFeatures
 	/// </summary>
 	public class NameAndIdProvider
 	{
-		private static readonly object PreviousNameAndIdKey = typeof(PreviousNameAndId);
+		private static readonly object previousNameAndIdKey = typeof(PreviousNameAndId);
 
 		/// <summary>
 		/// Returns a valid HTML 4.01 "id" attribute value for an element with the given <paramref name="fullName"/>.
@@ -47,17 +47,17 @@ namespace CRM.TagHelpers.ViewFeatures
 			}
 
 			// Check cache to avoid whatever TagBuilder.CreateSanitizedId() may do.
-			System.Collections.Generic.IDictionary<object, object?> items = viewContext.HttpContext.Items;
+			IDictionary<object, object?> items = viewContext.HttpContext.Items;
 			PreviousNameAndId? previousNameAndId = null;
 
-			if (items.TryGetValue(PreviousNameAndIdKey, out object? previousNameAndIdObject)
+			if (items.TryGetValue(previousNameAndIdKey, out var previousNameAndIdObject)
 				&& (previousNameAndId = (PreviousNameAndId?)previousNameAndIdObject) != null
 				&& string.Equals(previousNameAndId.FullName, fullName, StringComparison.Ordinal))
 			{
 				return previousNameAndId.SanitizedId;
 			}
 
-			string sanitizedId = TagBuilder.CreateSanitizedId(fullName, invalidCharReplacement);
+			var sanitizedId = TagBuilder.CreateSanitizedId(fullName, invalidCharReplacement);
 
 			if (previousNameAndId is null)
 			{
@@ -68,7 +68,7 @@ namespace CRM.TagHelpers.ViewFeatures
 				}
 
 				previousNameAndId = new PreviousNameAndId();
-				items[PreviousNameAndIdKey] = previousNameAndId;
+				items[previousNameAndIdKey] = previousNameAndId;
 			}
 
 			previousNameAndId.FullName = fullName;
@@ -87,7 +87,7 @@ namespace CRM.TagHelpers.ViewFeatures
 		/// </remarks>
 		public static string GetFullHtmlFieldName(ViewContext viewContext, string expression)
 		{
-			string htmlFieldPrefix = viewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
+			var htmlFieldPrefix = viewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
 
 			if (string.IsNullOrEmpty(expression))
 			{
@@ -103,7 +103,7 @@ namespace CRM.TagHelpers.ViewFeatures
 			IDictionary<object, object?> items = viewContext.HttpContext.Items;
 			PreviousNameAndId? previousNameAndId = null;
 
-			if (items.TryGetValue(PreviousNameAndIdKey, out object? previousNameAndIdObject)
+			if (items.TryGetValue(previousNameAndIdKey, out var previousNameAndIdObject)
 				&& (previousNameAndId = (PreviousNameAndId?)previousNameAndIdObject) != null
 				&& string.Equals(previousNameAndId.HtmlFieldPrefix, htmlFieldPrefix, StringComparison.Ordinal)
 				&& string.Equals(previousNameAndId.Expression, expression, StringComparison.Ordinal))
@@ -114,7 +114,7 @@ namespace CRM.TagHelpers.ViewFeatures
 			if (previousNameAndId is null)
 			{
 				previousNameAndId = new PreviousNameAndId();
-				items[PreviousNameAndIdKey] = previousNameAndId;
+				items[previousNameAndIdKey] = previousNameAndId;
 			}
 
 			previousNameAndId.HtmlFieldPrefix = htmlFieldPrefix;
@@ -176,7 +176,7 @@ namespace CRM.TagHelpers.ViewFeatures
 
 			if (tagBuilder.Attributes.ContainsKey("id") != true)
 			{
-				string sanitizedId = CreateSanitizedId(viewContext, fullName, invalidCharReplacement);
+				var sanitizedId = CreateSanitizedId(viewContext, fullName, invalidCharReplacement);
 
 				// Duplicate check for null or empty to cover the corner case where fullName contains only invalid
 				// characters and invalidCharReplacement is empty.
