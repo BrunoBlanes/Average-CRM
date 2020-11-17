@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CRM.Core.Models;
 using CRM.Server.Data;
 using CRM.Server.Interfaces;
+using CRM.Server.Models;
 
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -24,8 +25,8 @@ namespace CRM.Server.Services
 		private readonly SmtpClient client;
 		private readonly ILogger logger;
 		private Task? configureTask;
-		private SmtpOptions options;
 		private bool disposedValue;
+		private Smtp smtp;
 
 		/// <summary>
 		/// <c>true</c> if the configuration was successful; otherwise <c>false</c>.
@@ -36,16 +37,16 @@ namespace CRM.Server.Services
 		/// Creates a new instance of <see cref="SmtpService"/>.
 		/// </summary>
 		/// <param name="logger">The <see cref="ILogger"/>.</param>
-		/// <param name="options">The <see cref="IOptionsMonitor{TOptions}"/>.</param>
-		public SmtpService(ILogger<SmtpService> logger, IOptionsMonitor<SmtpOptions> options)
+		/// <param name="smtpSettings">The <see cref="IOptionsMonitor{TOptions}"/>.</param>
+		public SmtpService(ILogger<SmtpService> logger, IOptionsMonitor<Smtp> smtpSettings)
 		{
+			smtp = new Smtp();
 			this.logger = logger;
 			client = new SmtpClient();
-			this.options = new SmtpOptions();
-			Task.Run(async () => await ConfigureAsync(options.CurrentValue));
+			Task.Run(async () => await ConfigureAsync(smtpSettings.CurrentValue));
 
 			// Adds an event listener for when 'appsettings.json' changes
-			optionsListener = options.OnChange(async (change) =>
+			optionsListener = smtpSettings.OnChange(async (change) =>
 			{
 				// Wait for an update to finish
 				// before invoking another one
@@ -58,33 +59,26 @@ namespace CRM.Server.Services
 			});
 		}
 
-		/// <summary>
-		/// Attempts to configure the SMTP client with the provided <paramref name="smtpOptions"/>.
-		/// </summary>
-		/// <param name="smtpOptions">The <see cref="SmtpOptions"/>.</param>
-		/// <returns>A <see cref="Task"/> that represents the configuration process.</returns>
-		/// <exception cref="AuthenticationException">Thrown when authentication using the supplied credentials has failed.</exception>
-		/// <exception cref="NotSupportedException">Thrown when options was set to <see cref="SecureSocketOptions.StartTls"/>
-		/// and the SMTP server does not support the STARTTLS extension.</exception>
-		private async Task ConfigureAsync(SmtpOptions smtpOptions)
+		/// <inheritdoc/>
+		public async Task ConfigureAsync(Smtp smtp)
 		{
-			SmtpOptions options = smtpOptions.Clone();
+			Smtp settings = smtp.Clone();
 
 			// smtpOptions has default value
-			if (options.Equals(new()) is false)
+			if (settings.Equals(new()) is false)
 			{
-				options.Password = string.Empty;
+				settings.Password = string.Empty;
 				using var passwordHasher = new PasswordHasher();
-				options.Password = passwordHasher.Decrypt(smtpOptions.Password, options);
+				settings.Password = passwordHasher.Decrypt(smtp.Password, settings);
 
 				// Only run if new settings are different
-				if (this.options.Equals(options) is false)
+				if (this.smtp.Equals(settings) is false)
 				{
-					if (await ConnectAsync(options))
+					if (await ConnectAsync(settings))
 					{
 						IsConfigured = true;
-						this.options = options;
-						mailboxAddress = new MailboxAddress(options.Name, options.Address);
+						this.smtp = settings;
+						mailboxAddress = new MailboxAddress(settings.Name, settings.Address);
 						logger.LogInformation("Email service was configured successfully.");
 					}
 				}
@@ -98,15 +92,15 @@ namespace CRM.Server.Services
 		}
 
 		/// <summary>
-		/// Attempts to open a connection to the SMTP server using the provided <paramref name="options"/>.
+		/// Attempts to open a connection to the SMTP server using the provided <paramref name="smtp"/>.
 		/// </summary>
-		/// <param name="options">The <see cref="SmtpOptions"/>.</param>
+		/// <param name="smtp">The <see cref="Smtp"/>.</param>
 		/// <param name="token">The <see cref="CancellationToken"/>.</param>
 		/// <returns><c>true</c> if the connection was successful; otherwise <c>false</c>.</returns>
 		/// <exception cref="AuthenticationException">Thrown when authentication using the supplied credentials has failed.</exception>
 		/// <exception cref="NotSupportedException">Thrown when options was set to <see cref="SecureSocketOptions.StartTls"/>
 		/// and the SMTP server does not support the STARTTLS extension.</exception>
-		private async Task<bool> ConnectAsync(SmtpOptions options, CancellationToken token = default)
+		private async Task<bool> ConnectAsync(Smtp smtp, CancellationToken token = default)
 		{
 			// Disconnect to avoid thorwing InvalidOperationException
 			// by the client when connected to the same host
@@ -116,10 +110,10 @@ namespace CRM.Server.Services
 			{
 				try
 				{
-					logger.LogInformation(@$"Attempting to connect to the SMTP server at ""{options.Server}"".");
-					await client.ConnectAsync(options.Server, options.Port ?? 0, (SecureSocketOptions)options.SecureSocket, token);
-					logger.LogInformation(@$"Attempting to authenticate to the SMTP server as ""{options.Login}"".");
-					await client.AuthenticateAsync(options.Login, options.Password, token);
+					logger.LogInformation(@$"Attempting to connect to the SMTP server at ""{smtp.Server}"".");
+					await client.ConnectAsync(smtp.Server, smtp.Port ?? 0, (SecureSocketOptions)smtp.SecureSocket, token);
+					logger.LogInformation(@$"Attempting to authenticate to the SMTP server as ""{smtp.Login}"".");
+					await client.AuthenticateAsync(smtp.Login, smtp.Password, token);
 					return true;
 				}
 
@@ -182,7 +176,7 @@ namespace CRM.Server.Services
 			{
 				// Try to connect before sending the message
 				// TODO: Improve this by avoiding disconnection
-				if (await ConnectAsync(options, token))
+				if (await ConnectAsync(smtp, token))
 				{
 					await SendEmailAsync(message, token);
 				}

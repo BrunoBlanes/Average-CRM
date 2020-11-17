@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 using CRM.Server.Interfaces;
@@ -59,18 +60,23 @@ namespace CRM.Server.Services
 			IFileInfo fileInfo = fileProvider.GetFileInfo(file);
 			var physicalPath = fileInfo.PhysicalPath;
 			updateAction(Value);
-			AppSettings appSettings = await ReadAppSettingsAsync(physicalPath, true);
+			Settings settings = await ReadAppSettingsAsync(physicalPath, true);
 
-			foreach (PropertyInfo property in appSettings.GetType().GetProperties())
+			foreach (PropertyInfo property in settings.GetType().GetProperties())
 			{
 				if (property.Name == propertyName)
 				{
-					property.SetValue(appSettings, Value);
+					property.SetValue(settings, Value);
 					break;
 				}
 			}
 
-			await File.WriteAllTextAsync(physicalPath, JsonSerializer.Serialize(appSettings, new JsonSerializerOptions { WriteIndented = true }));
+			await File.WriteAllTextAsync(physicalPath, JsonSerializer.Serialize(settings,
+			new JsonSerializerOptions
+			{
+				WriteIndented = true,
+				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+			}));
 		}
 
 		/// <summary>
@@ -82,19 +88,19 @@ namespace CRM.Server.Services
 		/// </remarks>
 		/// <param name="physicalPath">The local path to the file.</param>
 		/// <param name="fallback">Whether to fall back to the backup file in case the requested file is not found or is corrupted.</param>
-		/// <returns>An instance of <see cref="AppSettings"/> populated with the contents of the requested file.</returns>
-		private async Task<AppSettings> ReadAppSettingsAsync(string physicalPath, bool fallback = false)
+		/// <returns>An instance of <see cref="Settings"/> populated with the contents of the requested file.</returns>
+		private async Task<Settings> ReadAppSettingsAsync(string physicalPath, bool fallback = false)
 		{
 			try
 			{
 				// Try reading and deserializing the contents of the file
 				var appOptions = await File.ReadAllTextAsync(physicalPath);
 
-				if (JsonSerializer.Deserialize<AppSettings>(appOptions) is AppSettings appSettings)
+				if (JsonSerializer.Deserialize<Settings>(appOptions) is Settings settings)
 				{
 					// Save a backup of the deserialized JSON file and return its content
 					await File.WriteAllTextAsync($"{physicalPath}.bak", appOptions);
-					return appSettings;
+					return settings;
 				}
 
 				return new();
