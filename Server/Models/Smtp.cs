@@ -1,11 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace CRM.Core.Models
+namespace CRM.Server.Models
 {
-	public class SmtpOptions : IEquatable<SmtpOptions?>
+	public class Smtp : IEquatable<Smtp?>
 	{
-		public const string Section = "SmtpOptions";
+		public const string Section = "Smtp";
 
 		[Display(Prompt = "Port")]
 		public ushort? Port { get; set; }
@@ -29,7 +29,7 @@ namespace CRM.Core.Models
 		public string Password { get; set; }
 		public SecureSocket SecureSocket { get; set; }
 
-		public SmtpOptions()
+		public Smtp()
 		{
 			Login = string.Empty;
 			Server = string.Empty;
@@ -39,10 +39,10 @@ namespace CRM.Core.Models
 
 		public override bool Equals(object? obj)
 		{
-			return Equals(obj as SmtpOptions);
+			return Equals(obj as Smtp);
 		}
 
-		public bool Equals(SmtpOptions? other)
+		public bool Equals(Smtp? other)
 		{
 			return other is not null
 				&& Port == other.Port
@@ -59,9 +59,9 @@ namespace CRM.Core.Models
 			return HashCode.Combine(Port, Name, Login, Server, Address, Password, SecureSocket);
 		}
 
-		public SmtpOptions Clone()
+		public Smtp Clone()
 		{
-			return (SmtpOptions)MemberwiseClone();
+			return (Smtp)MemberwiseClone();
 		}
 	}
 

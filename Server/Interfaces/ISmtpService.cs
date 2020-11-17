@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 
 using CRM.Core.Models;
+using CRM.Server.Models;
 
 using MimeKit;
 
@@ -9,6 +10,16 @@ namespace CRM.Server.Interfaces
 {
 	public interface ISmtpService
 	{
+		/// <summary>
+		/// Attempts to configure the SMTP client with the provided <paramref name="smtp"/> settings.
+		/// </summary>
+		/// <param name="smtp">The <see cref="Smtp"/> settings.</param>
+		/// <returns>A <see cref="Task"/> that represents the configuration process.</returns>
+		/// <exception cref="MailKit.Security.AuthenticationException">Thrown when authentication using the supplied credentials has failed.</exception>
+		/// <exception cref="System.NotSupportedException">Thrown when options was set to <see cref="MailKit.Security.SecureSocketOptions.StartTls"/>
+		/// and the SMTP server does not support the STARTTLS extension.</exception>
+		Task ConfigureAsync(Smtp smtp);
+
 		/// <summary>
 		/// Attempts to send a message using the <see cref="MailKit.Net.Smtp.SmtpClient"/>.
 		/// </summary>

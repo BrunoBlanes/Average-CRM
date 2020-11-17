@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using CRM.Core.Models;
 using CRM.Server.Extensions;
 using CRM.Server.Interfaces;
+using CRM.Server.Models;
 using CRM.Server.Services;
 using CRM.TagHelpers.ViewFeatures;
 
@@ -31,16 +32,20 @@ namespace CRM.Server
 	public class Startup
 	{
 		private readonly IConfiguration configuration;
-
+		private readonly string baseUrl;
 		public Startup(IConfiguration configuration)
 		{
 			this.configuration = configuration;
+			baseUrl = this.configuration["Application:BaseUrl"];
 		}
 
 		public void ConfigureServices(IServiceCollection services)
 		{
 			// Sets the database connection string
-			services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+			services.AddDbContext<ApplicationDbContext>(options =>
+			{
+				options.UseSqlServer(configuration.GetConnectionString("SqlConnection"));
+			});
 
 			// Configure identity
 			services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -62,8 +67,8 @@ namespace CRM.Server
 			{
 				options.Clients.AddSPA("CRM.Client", client =>
 				{
-					client.WithRedirectUri($"{configuration["BaseUrl"]}account/login-callback");
-					client.WithLogoutRedirectUri($"{configuration["BaseUrl"]}account/logout-callback");
+					client.WithRedirectUri($"{baseUrl}account/login-callback");
+					client.WithLogoutRedirectUri($"{baseUrl}account/logout-callback");
 				});
 			});
 
@@ -88,7 +93,7 @@ namespace CRM.Server
 			{
 				options.LoginPath = "/account/login";
 				options.LogoutPath = "/account/logout";
-				options.AccessDeniedPath = "/account/accessdenied";
+				options.AccessDeniedPath = "/accessdenied";
 			});
 
 			// Configure api versioning
@@ -117,7 +122,7 @@ namespace CRM.Server
 			// TODO: Fix httpclient to get current domain
 			services.AddHttpClient("ServerAPI", client =>
 			{
-				client.BaseAddress = new Uri($"{configuration["BaseUrl"]}api/");
+				client.BaseAddress = new Uri($"{baseUrl}api/");
 			});
 
 			// Register the Swagger generator, defining 1 or more Swagger documents
@@ -128,17 +133,17 @@ namespace CRM.Server
 					Version = "v1",
 					Title = "CRM API",
 					Description = "A simple example ASP.NET Core Web API",
-					TermsOfService = new Uri($"{configuration["BaseUrl"]}terms"),
+					TermsOfService = new Uri($"{baseUrl}terms"),
 					Contact = new OpenApiContact
 					{
 						Name = "Bruno Blanes",
 						Email = "bruno.blanes@outlook.com",
-						Url = new Uri($"{configuration["BaseUrl"]}contact"),
+						Url = new Uri($"{baseUrl}contact"),
 					},
 					License = new OpenApiLicense
 					{
 						Name = "Use under LICX",
-						Url = new Uri($"{configuration["BaseUrl"]}license"),
+						Url = new Uri($"{baseUrl}license"),
 					}
 				});
 
@@ -154,8 +159,9 @@ namespace CRM.Server
 			// See https://github.com/aspnet/Announcements/issues/432
 			services.AddDatabaseDeveloperPageExceptionFilter();
 
-			// Configure options
-			services.ConfigureWritable<SmtpOptions>(configuration.GetSection(SmtpOptions.Section));
+			// Configure writable appsettings
+			services.ConfigureWritable<Smtp>(configuration.GetSection(Smtp.Section));
+			services.ConfigureWritable<Application>(configuration.GetSection(Application.Section));
 
 			// Adds the FAST based Fluent HTML generator
 			services.AddScoped<IHtmlGenerator, FastGenerator>();
@@ -176,10 +182,7 @@ namespace CRM.Server
 				app.UseMigrationsEndPoint();
 
 				// Enable middleware to serve generated Swagger as a JSON endpoint.
-				app.UseSwagger(options =>
-				{
-					options.RouteTemplate = "api/{documentName}/swagger.json";
-				});
+				app.UseSwagger();
 
 				// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
 				// specifying the Swagger JSON endpoint.
@@ -219,6 +222,7 @@ namespace CRM.Server
 				endpoints.MapBlazorHub();
 				endpoints.MapRazorPages();
 				endpoints.MapFallbackToFile("index.html");
+				endpoints.MapSwagger("api/{documentName}/swagger.json");
 				endpoints.MapControllerRoute("default", "api/{controller=name}/{action=Index}");
 			});
 		}

@@ -11,7 +11,10 @@ namespace CRM.Server.Extensions
 {
 	public static class ServiceCollectionExtensions
 	{
-		public static void ConfigureWritable<T>(this IServiceCollection services, IConfigurationSection section, string file = "appsettings.json") where T : class, new()
+		public static void ConfigureWritable<T>(
+			this IServiceCollection services,
+			IConfigurationSection section,
+			string file = "appsettings.json") where T : class, new()
 		{
 			services.Configure<T>(section);
 			services.AddTransient<IWritableOptions<T>>(provider =>
