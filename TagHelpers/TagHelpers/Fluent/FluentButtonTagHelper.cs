@@ -1,5 +1,6 @@
 ﻿using CRM.TagHelpers.TagHelpers.Fast;
 
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace CRM.TagHelpers.TagHelpers.Fluent
@@ -14,7 +15,7 @@ namespace CRM.TagHelpers.TagHelpers.Fluent
 		/// Creates a new <see cref="FluentButtonTagHelper"/>.
 		/// </summary>
 		/// <param name="generator">The <see cref="FastGenerator"/>.</param>
-		public FluentButtonTagHelper() : base()
+		public FluentButtonTagHelper(IUrlHelperFactory urlHelperFactory) : base(urlHelperFactory)
 		{
 			Appearance = AppearanceAttribute.Accent;
 		}
