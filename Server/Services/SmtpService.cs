@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,11 +30,6 @@ namespace CRM.Server.Services
 		private Smtp smtp;
 
 		/// <summary>
-		/// <c>true</c> if the configuration was successful; otherwise <c>false</c>.
-		/// </summary>
-		public bool IsConfigured { get; set; }
-
-		/// <summary>
 		/// Creates a new instance of <see cref="SmtpService"/>.
 		/// </summary>
 		/// <param name="logger">The <see cref="ILogger"/>.</param>
@@ -42,7 +38,7 @@ namespace CRM.Server.Services
 		{
 			smtp = new Smtp();
 			this.logger = logger;
-			client = new SmtpClient();
+			client = new SmtpClient { Timeout = 10000 };
 			Task.Run(async () => await ConfigureAsync(smtpSettings.CurrentValue));
 
 			// Adds an event listener for when 'appsettings.json' changes
@@ -74,19 +70,15 @@ namespace CRM.Server.Services
 				// Only run if new settings are different
 				if (this.smtp.Equals(settings) is false)
 				{
-					if (await ConnectAsync(settings))
-					{
-						IsConfigured = true;
-						this.smtp = settings;
-						mailboxAddress = new MailboxAddress(settings.Name, settings.Address);
-						logger.LogInformation("Email service was configured successfully.");
-					}
+					await ConnectAsync(settings);
+					this.smtp = settings;
+					mailboxAddress = new MailboxAddress(settings.Name, settings.Address);
+					logger.LogInformation("Email service was configured successfully.");
 				}
 			}
 
 			else
 			{
-				IsConfigured = false;
 				logger.LogCritical("Could not retrieve SMTP options from configuration file.");
 			}
 		}
@@ -100,45 +92,28 @@ namespace CRM.Server.Services
 		/// <exception cref="AuthenticationException">Thrown when authentication using the supplied credentials has failed.</exception>
 		/// <exception cref="NotSupportedException">Thrown when options was set to <see cref="SecureSocketOptions.StartTls"/>
 		/// and the SMTP server does not support the STARTTLS extension.</exception>
-		private async Task<bool> ConnectAsync(Smtp smtp, CancellationToken token = default)
+		/// <exception cref="SslHandshakeException">Thrown when an error occurs while attempting to establish an SSL or TLS connection.</exception>
+		/// <exception cref="SocketException">Thrown when the specified host could not be reached.</exception>
+		/// <exception cref="TimeoutException">Thrown after the <see cref="SmtpClient.Timeout"/> is reached during a request.</exception>
+		private async Task ConnectAsync(Smtp smtp, CancellationToken token = default)
 		{
 			// Disconnect to avoid thorwing InvalidOperationException
 			// by the client when connected to the same host
 			await client.DisconnectAsync(true, token);
 
-			for (var attempts = 0; attempts < 3; attempts++)
+			try
 			{
-				try
-				{
-					logger.LogInformation(@$"Attempting to connect to the SMTP server at ""{smtp.Server}"".");
-					await client.ConnectAsync(smtp.Server, smtp.Port ?? 0, (SecureSocketOptions)smtp.SecureSocket, token);
-					logger.LogInformation(@$"Attempting to authenticate to the SMTP server as ""{smtp.Login}"".");
-					await client.AuthenticateAsync(smtp.Login, smtp.Password, token);
-					return true;
-				}
-
-				// Retrow AuthenticationException
-				// to be handled by the view model
-				catch (AuthenticationException e)
-				{
-					logger.LogError(e.Message);
-					throw;
-				}
-
-				catch (OperationCanceledException e)
-				{
-					logger.LogWarning(e.Message);
-					return false;
-				}
-
-				// Retrow NotSupportedException to be handled by the view model
-				catch (Exception e) when (e is not NotSupportedException)
-				{
-					await LogAndTryAgainAsync(e, attempts, token);
-				}
+				logger.LogInformation(@$"Attempting to connect to the SMTP server at ""{smtp.Server}"".");
+				await client.ConnectAsync(smtp.Server, smtp.Port ?? 0, (SecureSocketOptions)smtp.SecureSocket, token);
+				logger.LogInformation(@$"Attempting to authenticate to the SMTP server as ""{smtp.Login}"".");
+				await client.AuthenticateAsync(smtp.Login, smtp.Password, token);
 			}
 
-			return false;
+			catch (Exception e)
+			{
+				logger.LogError(e, "");
+				throw;
+			}
 		}
 
 		/// <inheritdoc/>>
@@ -176,10 +151,8 @@ namespace CRM.Server.Services
 			{
 				// Try to connect before sending the message
 				// TODO: Improve this by avoiding disconnection
-				if (await ConnectAsync(smtp, token))
-				{
-					await SendEmailAsync(message, token);
-				}
+				await ConnectAsync(smtp, token);
+				await SendEmailAsync(message, token);
 			}
 		}
 

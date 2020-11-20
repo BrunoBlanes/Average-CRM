@@ -12,6 +12,10 @@
 			<h1>Setup your email server</h1>
 
 			<div class="form-line">
+				<span asp-validation-for="Smtp" class="text-danger"></span>
+			</div>
+
+			<div class="form-line">
 				<fluent-text-field asp-for="Smtp.Name" />
 				<span asp-validation-for="Smtp.Name" class="text-danger"></span>
 			</div>
@@ -50,7 +54,7 @@
 			</div>
 
 			<div class="form-line">
-				<fluent-button appearance="Accent" style="margin: 0px 6px 6px 0px;" type="submit">Save</fluent-button>
+				<fluent-button appearance="Accent" style="margin: 0px 6px 6px 0px;">Save</fluent-button>
 			</div>
 		</form>
 	</section>

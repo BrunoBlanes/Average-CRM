@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 using CRM.Server.Data;
@@ -17,7 +18,6 @@ namespace CRM.Server.Areas.Setup.Pages
 		private readonly IWritableOptions<Application> writableApplication;
 		private readonly IWritableOptions<Smtp> writableSmtp;
 		private readonly ISmtpService smtpService;
-		private readonly Application application;
 		private string password;
 
 		[BindProperty]
@@ -31,7 +31,6 @@ namespace CRM.Server.Areas.Setup.Pages
 			this.smtpService = smtpService;
 			this.writableSmtp = writableSmtp;
 			this.writableApplication = writableApplication;
-			application = writableApplication.Value ?? new();
 			Smtp = writableSmtp.Value ??  new();
 			password = Smtp.Password;
 			Smtp.Password = string.Empty;
@@ -39,12 +38,7 @@ namespace CRM.Server.Areas.Setup.Pages
 
 		public IActionResult OnGet()
 		{
-			if (application.FirstRun)
-			{
-				return Page();
-			}
-
-			return new NoContentResult();
+			return Program.FirstRun ? Page() : Unauthorized();
 		}
 
 		public async Task<IActionResult> OnPostAsync()
@@ -70,20 +64,48 @@ namespace CRM.Server.Areas.Setup.Pages
 				await writableSmtp.UpdateAsync(Smtp);
 
 				// Disables setup
+				Application application = writableApplication.Value ?? new();
 				application.FirstRun = false;
 				await writableApplication.UpdateAsync(application);
 				return LocalRedirect("~/");
 			}
 
+			catch (SocketException)
+			{
+				Smtp.Password = password;
+				ModelState.AddModelError("Smtp.Server", " ");
+				ModelState.AddModelError("Smtp", "Could not connect to the specified SMTP server.");
+			}
+
 			catch (AuthenticationException)
 			{
-				return Page();
+				Smtp.Password = password;
+				ModelState.AddModelError("Smtp.Login", " ");
+				ModelState.AddModelError("Smtp.Password", " ");
+				ModelState.AddModelError("Smtp", "Failed to authenticate with the SMTP server.");
 			}
 
 			catch (NotSupportedException)
 			{
-				return Page();
+				Smtp.Password = password;
+				ModelState.AddModelError("Smtp.SecureSocket", " ");
+				ModelState.AddModelError("Smtp", "The specified SMTP server does not support selected Secure Socket option.");
 			}
+
+			catch (SslHandshakeException)
+			{
+				Smtp.Password = password;
+				ModelState.AddModelError("Smtp.SecureSocket", " ");
+				ModelState.AddModelError("Smtp", "An error occurred while attempting to establish an SSL or TLS connection.");
+			}
+
+			catch (Exception)
+			{
+				Smtp.Password = password;
+				ModelState.AddModelError("Smtp", $"An error occurred while attempting to establish a connection.");
+			}
+
+			return Page();
 		}
 	}
 }

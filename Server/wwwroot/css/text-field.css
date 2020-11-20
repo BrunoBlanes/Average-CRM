@@ -2,3 +2,7 @@
 	width: 300px;
 	display: inline-block;
 }
+
+fluent-text-field.input-validation-error::part(root) {
+	border-color: red;
+}

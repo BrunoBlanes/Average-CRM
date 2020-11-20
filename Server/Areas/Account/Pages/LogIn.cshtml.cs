@@ -55,6 +55,11 @@ namespace CRM.Server.Areas.Account.Pages
 
 		public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
 		{
+			if (Program.FirstRun)
+			{
+				return LocalRedirect("~/setup");
+			}
+
 			if (string.IsNullOrEmpty(ErrorMessage) is not true)
 			{
 				ModelState.AddModelError(string.Empty, ErrorMessage ?? string.Empty);
@@ -94,14 +99,14 @@ namespace CRM.Server.Areas.Account.Pages
 				// Redirect to two factor auth
 				if (result.RequiresTwoFactor)
 				{
-					return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe });
+					return RedirectToPage("./loginwith2fa", new { ReturnUrl = returnUrl, RememberMe });
 				}
 
 				// Redirect to lockout
 				if (result.IsLockedOut)
 				{
 					logger.LogWarning("User account locked out.");
-					return RedirectToPage("./Lockout");
+					return RedirectToPage("./lockout");
 				}
 
 				else

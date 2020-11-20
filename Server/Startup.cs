@@ -37,6 +37,11 @@ namespace CRM.Server
 		{
 			this.configuration = configuration;
 			baseUrl = this.configuration["Application:BaseUrl"];
+
+			if (string.IsNullOrEmpty(baseUrl))
+			{
+				baseUrl = "https://127.0.0.1:5001/";
+			}
 		}
 
 		public void ConfigureServices(IServiceCollection services)
@@ -221,9 +226,9 @@ namespace CRM.Server
 			{
 				endpoints.MapBlazorHub();
 				endpoints.MapRazorPages();
+				endpoints.MapControllers();
 				endpoints.MapFallbackToFile("index.html");
 				endpoints.MapSwagger("api/{documentName}/swagger.json");
-				endpoints.MapControllerRoute("default", "api/{controller=name}/{action=Index}");
 			});
 		}
 	}

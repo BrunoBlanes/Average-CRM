@@ -18,6 +18,9 @@ namespace CRM.Server.Interfaces
 		/// <exception cref="MailKit.Security.AuthenticationException">Thrown when authentication using the supplied credentials has failed.</exception>
 		/// <exception cref="System.NotSupportedException">Thrown when options was set to <see cref="MailKit.Security.SecureSocketOptions.StartTls"/>
 		/// and the SMTP server does not support the STARTTLS extension.</exception>
+		/// <exception cref="MailKit.Security.SslHandshakeException">Thrown when an error occurs while attempting to establish an SSL or TLS connection.</exception>
+		/// <exception cref="System.Net.Sockets.SocketException">Thrown when the specified host could not be reached.</exception>
+		/// <exception cref="System.TimeoutException">Thrown after the <see cref="MailKit.Net.Smtp.SmtpClient.Timeout"/> is reached during a request.</exception>
 		Task ConfigureAsync(Smtp smtp);
 
 		/// <summary>
