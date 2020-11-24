@@ -30,7 +30,11 @@ namespace CRM.Server.Areas.Account.Pages
 		[BindProperty]
 		public ApplicationUser AppUser { get; set; }
 
-		public RegisterModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<RegisterModel> logger, ISmtpService smtpService)
+		public RegisterModel(
+			SignInManager<ApplicationUser> signInManager,
+			UserManager<ApplicationUser> userManager,
+			ILogger<RegisterModel> logger,
+			ISmtpService smtpService)
 		{
 			this.logger = logger;
 			this.smtpService = smtpService;
