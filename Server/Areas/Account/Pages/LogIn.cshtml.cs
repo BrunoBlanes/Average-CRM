@@ -55,11 +55,6 @@ namespace CRM.Server.Areas.Account.Pages
 
 		public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
 		{
-			if (Program.FirstRun)
-			{
-				return LocalRedirect("~/setup");
-			}
-
 			if (string.IsNullOrEmpty(ErrorMessage) is not true)
 			{
 				ModelState.AddModelError(string.Empty, ErrorMessage ?? string.Empty);
