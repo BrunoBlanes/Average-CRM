@@ -1,0 +1,51 @@
+﻿@model IndexModel
+
+<form id="smtp-setup" method="post">
+	<h1>Setup your email server</h1>
+
+	<div class="form-line">
+		<span asp-validation-for="Smtp" class="text-danger"></span>
+	</div>
+
+	<div class="form-line">
+		<fluent-text-field asp-for="Smtp.Name" />
+		<span asp-validation-for="Smtp.Name" class="text-danger"></span>
+	</div>
+
+	<div class="form-line">
+		<fluent-text-field asp-for="Smtp.Address" />
+		<span asp-validation-for="Smtp.Address" class="text-danger"></span>
+	</div>
+
+	<div class="form-line">
+		<div class="form-line-cell">
+			<fluent-text-field asp-for="Smtp.Server" style="width: 188px;" />
+			<span asp-validation-for="Smtp.Server" class="text-danger"></span>
+		</div>
+				
+		<div class="form-line-cell">
+			<fluent-text-field asp-for="Smtp.Port" style="width: 94px;" />
+			<span asp-validation-for="Smtp.Port" class="text-danger"></span>
+		</div>
+	</div>
+
+	<div class="form-line">
+		<label asp-for="Smtp.SecureSocket"></label>
+		<select asp-for="Smtp.SecureSocket" asp-items="Html.GetEnumSelectList<SecureSocket>()"></select>
+		<span asp-validation-for="Smtp.SecureSocket" class="text-danger"></span>
+	</div>
+
+	<div class="form-line">
+		<fluent-text-field asp-for="Smtp.Login" />
+		<span asp-validation-for="Smtp.Login" class="text-danger"></span>
+	</div>
+
+	<div class="form-line">
+		<fluent-text-field asp-for="Smtp.Password" />
+		<span asp-validation-for="Smtp.Password" class="text-danger"></span>
+	</div>
+
+	<div class="form-line">
+		<fluent-button appearance="Accent" style="margin: 0px 6px 6px 0px;">Save</fluent-button>
+	</div>
+</form>

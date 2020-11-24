@@ -8,12 +8,27 @@
 
 <div class="content">
 	<section class="form-section">
-		<form>
-			<h1>Welcome to Average CRM</h1>
+		<!-- TODO: Create a side menu -->
 
-			<div class="form-line">
-				<fluent-button appearance="Accent" asp-page="/smtp">Next</fluent-button>
-			</div>
-		</form>
+		@if (Model.Start)
+		{
+			<form id="setup" method="post">
+				<h1>Welcome to Average CRM v1.0</h1>
+				
+				<div class="form-line">
+					<fluent-button appearance="Accent">Next</fluent-button>
+				</div>
+			</form>
+		}
+
+		else if (Model.IsSmtpConfigured is false)
+		{
+			<partial name="./Shared/_SmtpPartial.cshtml" />
+		}
+
+		else if (Model.IsIdentityConfigured is false)
+		{
+			<partial name="./Shared/_IdentityPartial.cshtml" />
+		}
 	</section>
 </div>
