@@ -11,6 +11,7 @@ namespace CRM.Core.Attributes
 		protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
 		{
 			var cpf = value?.ToString();
+
 			if (string.IsNullOrEmpty(cpf))
 			{
 				return new ValidationResult("The field CPF cannot be empty.");

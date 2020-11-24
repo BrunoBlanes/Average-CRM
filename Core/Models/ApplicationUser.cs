@@ -3,24 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using CRM.Core.Attributes;
-
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Core.Models
 {
-	[Index(nameof(CPF), IsUnique = true)]
 	public class ApplicationUser : IdentityUser
 	{
-		[CpfValidation]
-		[Display(Prompt = "CPF")]
-		[StringLength(14, ErrorMessage = "The {0} must be exactly 11 characters long.", MinimumLength = 14)]
-		public string CPF { get; set; }
-
 		[NotMapped]
-		[DataType(DataType.Password)]
 		[Display(Prompt = "Password")]
+		[DataType(DataType.Password)]
 		[StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
 		public string Password { get; set; }
 
@@ -42,7 +33,7 @@ namespace CRM.Core.Models
 
 		public ApplicationUser()
 		{
-			CPF = string.Empty;
+			Email = string.Empty;
 			Password = string.Empty;
 		}
 	}
@@ -56,5 +47,13 @@ namespace CRM.Core.Models
 		{
 			Token = string.Empty;
 		}
+	}
+
+	public readonly struct Roles
+	{
+		/// <summary>
+		/// The <c>Administrator</c> role.
+		/// </summary>
+		public const string Administrator = nameof(Administrator);
 	}
 }
