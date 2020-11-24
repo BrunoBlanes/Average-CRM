@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace CRM.Server
@@ -23,7 +22,6 @@ namespace CRM.Server
 			host = CreateHostBuilder(args).Build();
 			using IServiceScope scope = host.Services.CreateScope();
 			IServiceProvider services = scope.ServiceProvider;
-			ILogger<Program> logger = services.GetRequiredService<ILogger<Program>>();
 			ApplicationDbContext context = services.GetRequiredService<ApplicationDbContext>();
 			IOptionsMonitor<Application> application = services.GetRequiredService<IOptionsMonitor<Application>>();
 
@@ -50,12 +48,10 @@ namespace CRM.Server
 		/// </summary>
 		public static async void Shutdown()
 		{
-			if (host is null)
+			if (host is not null)
 			{
-				throw new InvalidOperationException();
+				await host.StopAsync();
 			}
-
-			await host.StopAsync();
 		}
 	}
 }
