@@ -196,23 +196,27 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 
 			if (pageLink)
 			{
-				url = urlHelper.Page(Page, PageHandler, routeValues, protocol: null, host: null, fragment: Fragment);
+				url = urlHelper.Page(Page, PageHandler, routeValues, null, null, Fragment);
 			}
 
 			else if (routeLink)
 			{
-				url = urlHelper.RouteUrl(Route, routeValues, protocol: null, host: null, fragment: Fragment);
+				url = urlHelper.RouteUrl(Route, routeValues, null, null, Fragment);
 			}
 
-			else
+			else if (actionLink)
 			{
-				url = urlHelper.Action(Action, Controller, routeValues, protocol: null, host: null, fragment: Fragment);
+				url = urlHelper.Action(Action, Controller, routeValues, null, null, Fragment);
+			}
+
+			if (string.IsNullOrEmpty(url) is false)
+			{
+				output.Attributes.SetAttribute(formAction, url);
 			}
 
 			// Set the button appearance
 			output.Attributes.SetAttribute(nameof(Appearance), Appearance.ToString().ToLowerInvariant());
 			output.Attributes.SetAttribute("type", "submit");
-			output.Attributes.SetAttribute(formAction, url);
 		}
 
 		/// <summary>
