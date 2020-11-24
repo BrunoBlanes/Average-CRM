@@ -55,11 +55,17 @@ namespace CRM.Server
 			// Configure identity
 			services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 			{
-				// Password strength settings
-				options.Password.RequiredLength = 8;
-				options.User.RequireUniqueEmail = true;
+				// Account settings
 				options.SignIn.RequireConfirmedAccount = true;
-				options.Password.RequireNonAlphanumeric = false;
+				IConfigurationSection identity = configuration.GetSection("Identity");
+				options.User.RequireUniqueEmail = bool.TryParse(identity["RequireUniqueEmail"], out var result) && result;
+
+				// Password strength settings
+				IConfigurationSection password = identity.GetSection("Password");
+				options.Password.RequireDigit = bool.TryParse(password["RequireDigit"], out result) && result;
+				options.Password.RequireUppercase = bool.TryParse(password["RequireUppercase"], out result) && result;
+				options.Password.RequireNonAlphanumeric = bool.TryParse(password["RequireNonAlphanumeric"], out result) && result;
+				options.Password.RequiredLength = int.TryParse(password["RequiredLength"], out var lengthResult) ? lengthResult : 4;
 
 				// Default Lockout settings
 				options.Lockout.AllowedForNewUsers = false;
@@ -226,9 +232,10 @@ namespace CRM.Server
 			{
 				endpoints.MapBlazorHub();
 				endpoints.MapRazorPages();
-				endpoints.MapControllers();
 				endpoints.MapFallbackToFile("index.html");
 				endpoints.MapSwagger("api/{documentName}/swagger.json");
+				endpoints.MapControllerRoute("area", "{area:exists}/{controller=home}/{action=index}");
+				endpoints.MapControllerRoute("default", "api/{controller=api}/{action=index}/{id?}");
 			});
 		}
 	}
