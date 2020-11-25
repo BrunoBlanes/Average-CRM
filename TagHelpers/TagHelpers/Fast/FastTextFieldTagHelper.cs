@@ -13,20 +13,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace CRM.TagHelpers.TagHelpers.Fast
 {
 	/// <summary>
-	/// <see cref="InputFastElement"/> implementation targeting &lt;fast-text-field&gt;
+	/// <see cref="TextFieldFastElement"/> implementation targeting &lt;fast-text-field&gt;
 	/// elements with an <c>asp-for</c> attribute.
 	/// </summary>
 	[HtmlTargetElement("fast-text-field", Attributes = ForAttributeName, TagStructure = TagStructure.NormalOrSelfClosing)]
-	public class FastTextFieldTagHelper : InputFastElement
+	public class FastTextFieldTagHelper : TextFieldFastElement
 	{
-		/// <summary>
-		/// The appearance of the FAST text-field element.
-		/// </summary>
-		/// <remarks>
-		/// Passed through to the generated HTML in all cases. Defaults to <c>outline</c>.
-		/// </remarks>
-		public AppearanceAttribute Appearance { get; set; }
-
 		/// <summary>
 		/// Creates a new instance of <see cref="FastTextFieldTagHelper"/>.
 		/// </summary>
@@ -224,12 +216,6 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 			}
 
 			return format;
-		}
-
-		public enum AppearanceAttribute
-		{
-			Outline,
-			Filled
 		}
 	}
 }

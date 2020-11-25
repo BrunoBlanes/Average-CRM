@@ -1,126 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 
 using CRM.TagHelpers.Models;
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Routing;
 
 namespace CRM.TagHelpers.TagHelpers.Fast
 {
 	/// <summary>
-	/// <see cref="InputFastElement"/> implementation targeting &lt;fast-button&gt; elements.
+	/// <see cref="ButtonFastElement"/> implementation targeting &lt;fast-button&gt; elements.
 	/// </summary>
 	[HtmlTargetElement("fast-button", TagStructure = TagStructure.NormalOrSelfClosing)]
-	public class FastButtonTagHelper : TagHelper
+	public class FastButtonTagHelper : ButtonFastElement
 	{
-		private const string routeValuesDictionaryName = "asp-all-route-data";
-		private const string pageHandlerAttributeName = "asp-page-handler";
-		private const string controllerAttributeName = "asp-controller";
-		private const string fragmentAttributeName = "asp-fragment";
-		private const string actionAttributeName = "asp-action";
-		private const string routeValuesPrefix = "asp-route-";
-		private const string routeAttributeName = "asp-route";
-		private readonly IUrlHelperFactory urlHelperFactory;
-		private const string pageAttributeName = "asp-page";
-		private const string areaAttributeName = "asp-area";
-		private IDictionary<string, string>? routeValues;
-		private const string formAction = "formaction";
-
-		/// <summary>
-		/// The appearance of the FAST button element.
-		/// </summary>
-		/// <remarks>
-		/// Passed through to the generated HTML in all cases. Defaults to <c>neutral</c>.
-		/// </remarks>
-		public AppearanceAttribute Appearance { get; set; }
-
-		/// <inheritdoc />
-		public override int Order => -1000;
-
-		/// <summary>
-		/// Gets or sets the <see cref="Microsoft.AspNetCore.Mvc.Rendering.ViewContext"/> for the current request.
-		/// </summary>
-		[ViewContext]
-		[HtmlAttributeNotBound]
-		public ViewContext ViewContext { get; set; } = null!;
-
-		/// <summary>
-		/// The name of the action method.
-		/// </summary>
-		[HtmlAttributeName(actionAttributeName)]
-		public string? Action { get; set; }
-
-		/// <summary>
-		/// The name of the controller.
-		/// </summary>
-		[HtmlAttributeName(controllerAttributeName)]
-		public string? Controller { get; set; }
-
-		/// <summary>
-		/// The name of the area.
-		/// </summary>
-		[HtmlAttributeName(areaAttributeName)]
-		public string? Area { get; set; }
-
-		/// <summary>
-		/// The name of the page.
-		/// </summary>
-		[HtmlAttributeName(pageAttributeName)]
-		public string? Page { get; set; }
-
-		/// <summary>
-		/// The name of the page handler.
-		/// </summary>
-		[HtmlAttributeName(pageHandlerAttributeName)]
-		public string? PageHandler { get; set; }
-
-		/// <summary>
-		/// Gets or sets the URL fragment.
-		/// </summary>
-		[HtmlAttributeName(fragmentAttributeName)]
-		public string? Fragment { get; set; }
-
-		/// <summary>
-		/// Name of the route.
-		/// </summary>
-		/// <remarks>
-		/// Must be <c>null</c> if <see cref="Action"/> or <see cref="Controller"/> is non-<c>null</c>.
-		/// </remarks>
-		[HtmlAttributeName(routeAttributeName)]
-		public string? Route { get; set; }
-
-		/// <summary>
-		/// Additional parameters for the route.
-		/// </summary>
-		[HtmlAttributeName(routeValuesDictionaryName, DictionaryAttributePrefix = routeValuesPrefix)]
-		public IDictionary<string, string> RouteValues
-		{
-			get
-			{
-				if (routeValues is null)
-				{
-					routeValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-				}
-
-				return routeValues;
-			}
-			set => routeValues = value;
-		}
-
-		/// <summary>
-		/// Creates a new <see cref="FastButtonTagHelper"/>.
-		/// </summary>
-		/// <param name="urlHelperFactory">The <see cref="IUrlHelperFactory"/>.</param>
-		public FastButtonTagHelper(IUrlHelperFactory urlHelperFactory)
-		{
-			this.urlHelperFactory = urlHelperFactory;
-		}
+		public FastButtonTagHelper(IUrlHelperFactory urlHelperFactory) : base(urlHelperFactory) { }
 
 		/// <inheritdoc />
 		/// <remarks>Does nothing if user provides an <c>formAction</c> attribute.</remarks>
@@ -132,27 +28,27 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 		public override void Process(TagHelperContext context, TagHelperOutput output)
 		{
 			// If "FormAction" is already set, it means the user is attempting to use a normal button or input element.
-			if (output.Attributes.ContainsName(formAction))
+			if (output.Attributes.ContainsName(FormAction))
 			{
 				if (Action is not null || Controller is not null || Area is not null
 					|| Page is not null || PageHandler is not null || Fragment is not null
 					|| Route is not null
-					|| (this.routeValues is not null && this.routeValues.Count > 0))
+					|| (RouteValues is not null && RouteValues.Count > 0))
 				{
 					// User specified a FormAction and one of the bound attributes
 					// Can't override that FormAction attribute.
 					throw new InvalidOperationException(
 						CannotOverrideFormAction(
-							formAction,
+							FormAction,
 							output.TagName,
-							routeValuesPrefix,
-							actionAttributeName,
-							controllerAttributeName,
-							areaAttributeName,
-							fragmentAttributeName,
-							routeAttributeName,
-							pageAttributeName,
-							pageHandlerAttributeName));
+							RouteValuesPrefix,
+							ActionAttributeName,
+							ControllerAttributeName,
+							AreaAttributeName,
+							FragmentAttributeName,
+							RouteAttributeName,
+							PageAttributeName,
+							PageHandlerAttributeName));
 				}
 
 				return;
@@ -166,18 +62,18 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 			{
 				var message = string.Join(
 					Environment.NewLine,
-					FormatCannotDetermineAttributeFor(formAction, '<' + output.TagName + '>'),
-					routeAttributeName,
-					controllerAttributeName + ", " + actionAttributeName,
-					pageAttributeName + ", " + pageHandlerAttributeName);
+					FormatCannotDetermineAttributeFor(FormAction, '<' + output.TagName + '>'),
+					RouteAttributeName,
+					ControllerAttributeName + ", " + ActionAttributeName,
+					PageAttributeName + ", " + PageHandlerAttributeName);
 				throw new InvalidOperationException(message);
 			}
 
 			RouteValueDictionary? routeValues = null;
 
-			if (this.routeValues is not null && this.routeValues.Count > 0)
+			if (RouteValues is not null && RouteValues.Count > 0)
 			{
-				routeValues = new RouteValueDictionary(this.routeValues);
+				routeValues = new RouteValueDictionary(RouteValues);
 			}
 
 			if (Area is not null)
@@ -192,7 +88,7 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 			}
 
 			var url = string.Empty;
-			IUrlHelper? urlHelper = urlHelperFactory.GetUrlHelper(ViewContext);
+			IUrlHelper? urlHelper = UrlHelperFactory.GetUrlHelper(ViewContext);
 
 			if (pageLink)
 			{
@@ -204,15 +100,20 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 				url = urlHelper.RouteUrl(Route, routeValues, protocol: null, host: null, fragment: Fragment);
 			}
 
-			else
+			else if (actionLink)
 			{
-				url = urlHelper.Action(Action, Controller, routeValues, protocol: null, host: null, fragment: Fragment);
+				url = urlHelper.Action(Action, Controller, routeValues, null, null, Fragment);
+			}
+
+			if (string.IsNullOrEmpty(url) is false)
+			{
+				output.Attributes.SetAttribute(FormAction, url);
 			}
 
 			// Set the button appearance
 			output.Attributes.SetAttribute(nameof(Appearance), Appearance.ToString().ToLowerInvariant());
 			output.Attributes.SetAttribute("type", "submit");
-			output.Attributes.SetAttribute(formAction, url);
+			output.Attributes.SetAttribute(FormAction, url);
 		}
 
 		/// <summary>
@@ -229,15 +130,6 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 		private static string FormatCannotDetermineAttributeFor(object p0, object p1)
 		{
 			return string.Format(CultureInfo.CurrentCulture, "Cannot determine the '{0}' attribute for {1}. The following attributes are mutually exclusive:", p0, p1);
-		}
-
-		public enum AppearanceAttribute
-		{
-			Neutral,
-			Accent,
-			Lightweight,
-			Outline,
-			Stealth
 		}
 	}
 }

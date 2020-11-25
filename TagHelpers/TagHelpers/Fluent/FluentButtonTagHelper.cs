@@ -1,4 +1,5 @@
-﻿using CRM.TagHelpers.TagHelpers.Fast;
+﻿using CRM.TagHelpers.Enums;
+using CRM.TagHelpers.TagHelpers.Fast;
 
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -17,7 +18,8 @@ namespace CRM.TagHelpers.TagHelpers.Fluent
 		/// <param name="generator">The <see cref="FastGenerator"/>.</param>
 		public FluentButtonTagHelper(IUrlHelperFactory urlHelperFactory) : base(urlHelperFactory)
 		{
-			Appearance = AppearanceAttribute.Accent;
+			DesignSystem = DesignSystem.Fluent;
+			Appearance = ButtonAppearance.Accent;
 		}
 	}
 }

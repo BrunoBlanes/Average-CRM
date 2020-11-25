@@ -8,20 +8,19 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace CRM.TagHelpers.TagHelpers.Fluent
 {
 	/// <summary>
-	/// <see cref="FastTextFieldTagHelper"/> implementation targeting &lt;fluent-text-field&gt;
-	/// elements with an <c>asp-for</c> attribute.
+	/// <see cref="FastSelectTagHelper"/> implementation targeting &lt;fluent-select&gt; elements with <c>asp-for</c> and/or <c>asp-items</c> attribute(s).
 	/// </summary>
-	[HtmlTargetElement("fluent-text-field", Attributes = ForAttributeName, TagStructure = TagStructure.NormalOrSelfClosing)]
-	public class FluentTextFieldTagHelper : FastTextFieldTagHelper
+	[HtmlTargetElement("fluent-select", Attributes = ForAttributeName)]
+	[HtmlTargetElement("fluent-select", Attributes = ItemsAttributeName)]
+	public class FluentSelectTagHelper : FastSelectTagHelper
 	{
 		/// <summary>
 		/// Creates a new instance of <see cref="FluentTextFieldTagHelper"/>.
 		/// </summary>
 		/// <param name="generator">The <see cref="FastGenerator"/>.</param>
-		public FluentTextFieldTagHelper(IHtmlGenerator generator) : base(generator)
+		public FluentSelectTagHelper(IHtmlGenerator generator) : base(generator)
 		{
 			DesignSystem = DesignSystem.Fluent;
-			Appearance = TextFieldAppearance.Filled;
 		}
 	}
 }
