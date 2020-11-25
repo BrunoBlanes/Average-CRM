@@ -7,14 +7,16 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 namespace CRM.TagHelpers.Models
 {
 	/// <summary>
-	/// <see cref="InputTagHelper"/> implementation targeting &lt;fast-checkbox&gt; elements with an <c>asp-for</c> attribute.
+	/// <see cref="SelectTagHelper"/> implementation targeting &lt;fast-select&gt; elements with <c>asp-for</c> and/or
+	/// <c>asp-items</c> attribute(s).
 	/// </summary>
-	public class CheckBoxFastElement : InputTagHelper
+	public class SelectFastElement : SelectTagHelper
 	{
 		protected const string ForAttributeName = "asp-for";
+		protected const string ItemsAttributeName = "asp-items";
 
 		/// <summary>
-		/// Gets the <see cref="FastGenerator"/> used to generate the <see cref="TagHelpers.Fast.FastCheckBoxTagHelper"/>'s output.
+		/// Gets the <see cref="FastGenerator"/> used to generate the <see cref="TagHelpers.Fast.FastSelectTagHelper"/>'s output.
 		/// </summary>
 		protected new FastGenerator Generator { get; }
 
@@ -27,10 +29,10 @@ namespace CRM.TagHelpers.Models
 		public override int Order => -1000;
 
 		/// <summary>
-		/// Creates a new instance of <see cref="CheckBoxFastElement"/>.
+		/// Creates a new instance of <see cref="SelectFastElement"/>.
 		/// </summary>
 		/// <param name="generator">The <see cref="FastGenerator"/>.</param>
-		public CheckBoxFastElement(IHtmlGenerator generator) : base(generator)
+		public SelectFastElement(IHtmlGenerator generator) : base(generator)
 		{
 			Generator = (FastGenerator)generator;
 		}
