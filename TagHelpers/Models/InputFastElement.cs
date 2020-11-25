@@ -9,9 +9,20 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace CRM.TagHelpers.Models
 {
-	public class InputFastElement : InputTagHelper
+	/// <summary>
+	/// <see cref="InputTagHelper"/> implementation targeting &lt;fast-text-field&gt; elements with an <c>asp-for</c> attribute.
+	/// </summary>
+	public class TextFieldFastElement : InputTagHelper
 	{
 		protected const string ForAttributeName = "asp-for";
+
+		/// <summary>
+		/// The appearance of the FAST text-field element.
+		/// </summary>
+		/// <remarks>
+		/// Passed through to the generated HTML in all cases. Defaults to <c>outline</c>.
+		/// </remarks>
+		public TextFieldAppearance Appearance { get; set; }
 
 		// Mapping from datatype names and data annotation hints to values for the <fast-text-field/> element's "type" attribute.
 		protected static readonly Dictionary<string, string> defaultInputTypes = new(StringComparer.OrdinalIgnoreCase)
@@ -53,7 +64,7 @@ namespace CRM.TagHelpers.Models
 		};
 
 		/// <summary>
-		/// Gets the <see cref="FastGenerator"/> used to generate the <see cref="FastTextFieldTagHelper"/>'s output.
+		/// Gets the <see cref="FastGenerator"/> used to generate the <see cref="TagHelpers.Fast.FastTextFieldTagHelper"/>'s output.
 		/// </summary>
 		protected new FastGenerator Generator { get; }
 
@@ -62,11 +73,14 @@ namespace CRM.TagHelpers.Models
 		/// </summary>
 		public DesignSystem DesignSystem { get; set; }
 
+		/// <inheritdoc />
+		public override int Order => -1000;
+
 		/// <summary>
-		/// Creates a new instance of <see cref="InputFastElement"/>.
+		/// Creates a new instance of <see cref="TextFieldFastElement"/>.
 		/// </summary>
 		/// <param name="generator">The <see cref="FastGenerator"/>.</param>
-		public InputFastElement(IHtmlGenerator generator) : base(generator)
+		public TextFieldFastElement(IHtmlGenerator generator) : base(generator)
 		{
 			Generator = (FastGenerator)generator;
 		}
