@@ -1,0 +1,8 @@
+﻿fluent-select {
+	width: 300px;
+	display: inline-block;
+}
+
+fluent-select.input-validation-error {
+	border-color: red;
+}

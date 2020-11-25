@@ -30,8 +30,7 @@
 	</div>
 
 	<div class="form-line">
-		<label asp-for="Smtp.SecureSocket"></label>
-		<select asp-for="Smtp.SecureSocket" asp-items="Html.GetEnumSelectList<SecureSocket>()"></select>
+		<fluent-select asp-for="Smtp.SecureSocket" asp-items="Html.GetEnumSelectList<SecureSocket>()"></fluent-select>
 		<span asp-validation-for="Smtp.SecureSocket" class="text-danger"></span>
 	</div>
 
@@ -46,6 +45,6 @@
 	</div>
 
 	<div class="form-line">
-		<fluent-button appearance="Accent" style="margin: 0px 6px 6px 0px;">Save</fluent-button>
+		<fluent-button style="margin: 0px 6px 6px 0px;">Save</fluent-button>
 	</div>
 </form>
