@@ -100,7 +100,7 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 				url = urlHelper.RouteUrl(Route, routeValues, protocol: null, host: null, fragment: Fragment);
 			}
 
-			else
+			else if (actionLink)
 			{
 				url = urlHelper.Action(Action, Controller, routeValues, null, null, Fragment);
 			}
@@ -113,7 +113,7 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 			// Set the button appearance
 			output.Attributes.SetAttribute(nameof(Appearance), Appearance.ToString().ToLowerInvariant());
 			output.Attributes.SetAttribute("type", "submit");
-			output.Attributes.SetAttribute(formAction, url);
+			output.Attributes.SetAttribute(FormAction, url);
 		}
 
 		/// <summary>
