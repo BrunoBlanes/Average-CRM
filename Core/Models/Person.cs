@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
+
+using CRM.Core.Attributes;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -11,19 +12,13 @@ namespace CRM.Core.Models
 	[Index(nameof(CPF), IsUnique = true)]
 	public class Person : Contact
 	{
-		[Required]
-		[DataMember]
 		public string FirstName { get; set; }
-
-		[Required]
-		[DataMember]
 		public string LastName { get; set; }
 
-		[Required]
-		[DataMember]
+		[CpfValidation]
+		[Display(Prompt = "CPF")]
+		[StringLength(14, MinimumLength = 14)]
 		public string CPF { get; set; }
-
-		[DataMember]
 		public string? RG { get; set; }
 
 		public Person() : base()

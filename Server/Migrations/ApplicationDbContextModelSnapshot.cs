@@ -213,11 +213,6 @@ namespace CRM.Server.Migrations
                     b.Property<int?>("AddressId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CPF")
-                        .IsRequired()
-                        .HasMaxLength(14)
-                        .HasColumnType("nvarchar(14)");
-
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
@@ -231,9 +226,6 @@ namespace CRM.Server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId");
-
-                    b.HasIndex("CPF")
-                        .IsUnique();
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -683,6 +675,11 @@ namespace CRM.Server.Migrations
                 {
                     b.HasBaseType("CRM.Core.Models.Contact");
 
+                    b.Property<string>("CPF")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .HasColumnType("nvarchar(14)");
+
                     b.Property<int?>("CompanyId")
                         .HasColumnType("int");
 
@@ -696,6 +693,10 @@ namespace CRM.Server.Migrations
 
                     b.Property<string>("RG")
                         .HasColumnType("nvarchar(450)");
+
+                    b.HasIndex("CPF")
+                        .IsUnique()
+                        .HasFilter("[CPF] IS NOT NULL");
 
                     b.HasIndex("CompanyId");
 

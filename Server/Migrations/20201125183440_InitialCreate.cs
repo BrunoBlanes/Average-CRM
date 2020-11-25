@@ -176,7 +176,6 @@ namespace CRM.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CPF = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -457,6 +456,7 @@ namespace CRM.Server.Migrations
                     Id = table.Column<int>(type: "int", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CPF = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
                     RG = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CompanyId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -606,12 +606,6 @@ namespace CRM.Server.Migrations
                 column: "AddressId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Contacts_CPF",
-                table: "Contacts",
-                column: "CPF",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Contacts_Email",
                 table: "Contacts",
                 column: "Email",
@@ -632,6 +626,13 @@ namespace CRM.Server.Migrations
                 name: "IX_People_CompanyId",
                 table: "People",
                 column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_People_CPF",
+                table: "People",
+                column: "CPF",
+                unique: true,
+                filter: "[CPF] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_People_RG",
