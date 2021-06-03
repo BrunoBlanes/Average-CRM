@@ -3,7 +3,7 @@
 		<!-- Development settings -->
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<TargetFramework>net5.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 		<AnalysisLevel>preview</AnalysisLevel>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
@@ -11,11 +11,11 @@
 
 	<ItemGroup>
 		<!-- Package references -->
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="5.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-		<PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0-preview.4.21253.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.0-preview.4.21253.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0-preview.4.21253.5" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0-preview.4.21253.7" />
+		<PackageReference Include="System.Net.Http.Json" Version="6.0.0-preview.4.21253.7" />
 	</ItemGroup>
 
 	<ItemGroup>
