@@ -206,7 +206,7 @@ namespace CRM.TagHelpers.TagHelpers.Fast
 
 			else
 			{
-				url = urlHelper.Action(Action, Controller, routeValues, protocol: null, host: null, fragment: Fragment);
+				output.Attributes.SetAttribute(FormAction, url);
 			}
 
 			// Set the button appearance

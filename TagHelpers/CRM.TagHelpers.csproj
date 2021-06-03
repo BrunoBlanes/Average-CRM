@@ -3,7 +3,7 @@
 		<!-- Development settings -->
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<TargetFramework>net5.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 		<AnalysisLevel>preview</AnalysisLevel>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
