@@ -32,7 +32,7 @@ namespace CRM.Server.Areas.Setup.Pages
 			this.writableSmtp = writableSmtp;
 			this.writableApplication = writableApplication;
 			application = writableApplication.Value ?? new();
-			Smtp = writableSmtp.Value ??  new();
+			Smtp = writableSmtp.Value ?? new();
 			password = Smtp.Password;
 			Smtp.Password = string.Empty;
 		}
