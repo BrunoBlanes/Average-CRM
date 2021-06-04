@@ -47,11 +47,7 @@ namespace CRM.Server.Areas.Account.Pages
 				var userId = await userManager.GetUserIdAsync(user);
 				var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 				code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-				var callbackUrl = Url.Page(
-					"/Account/ConfirmEmail",
-					null,
-					new { userId, code },
-					Request.Scheme);
+				var callbackUrl = Url.Page("/ConfirmEmail", null, new { userId, code, }, Request.Scheme);
 
 				// Sends an email to the user with the account confirmation code
 				await smtpService.SendAccountConfirmationEmailAsync(callbackUrl, user);

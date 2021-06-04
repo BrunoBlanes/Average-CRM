@@ -8,31 +8,35 @@
 <div class="content">
 	<section class="form-section">
 		<form asp-route-returnUrl="@Model.ReturnUrl" method="post">
-			<h1>Create a new account.</h4>
+			<h1>Create a new account.</h1>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="AppUser.Email" />
+				<input asp-for="AppUser.Email" />
 				<span asp-validation-for="AppUser.Email" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="AppUser.CPF" onkeydown="Functions.FormatCPF(event)" />
+				<input asp-for="AppUser.CPF" onkeydown="Functions.FormatCPF(event)" />
 				<span asp-validation-for="AppUser.CPF" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="AppUser.Password" />
+				<input asp-for="AppUser.Password" />
 				<span asp-validation-for="AppUser.Password" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
-				<fluent-text-field asp-for="AppUser.ConfirmPassword" />
+				<input asp-for="AppUser.ConfirmPassword" />
 				<span asp-validation-for="AppUser.ConfirmPassword" class="text-danger"></span>
 			</div>
 
 			<div class="form-line">
-				<fluent-button appearance="Accent" type="submit">Register</fluent-button>
+				<button appearance="Accent" type="submit">Register</button>
 			</div>
 		</form>
 	</section>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

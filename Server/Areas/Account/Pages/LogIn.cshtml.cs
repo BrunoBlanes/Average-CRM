@@ -15,95 +15,87 @@ using Microsoft.Extensions.Logging;
 namespace CRM.Server.Areas.Account.Pages
 {
 	[AllowAnonymous]
-	public class LogInModel : PageModel
+	public class LoginModel : PageModel
 	{
+		private readonly UserManager<ApplicationUser> userManager;
 		private readonly SignInManager<ApplicationUser> signInManager;
-		private readonly ILogger<LogInModel> logger;
+		private readonly ILogger<LoginModel> logger;
 
-		[BindProperty]
-		public ICollection<AuthenticationScheme>? ExternalLogins { get; private set; }
-
-		[TempData]
-		public string? ErrorMessage { get; set; }
-		public string? ReturnUrl { get; set; }
-
-		[Required]
-		[EmailAddress]
-		[BindProperty]
-		[Display(Prompt = "Email")]
-		public string Email { get; set; }
-
-		[Required]
-		[BindProperty]
-		[DataType(DataType.Password)]
-		[Display(Prompt = "Password")]
-		[StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
-		public string Password { get; set; }
-
-		[BindProperty]
-		[Display(Name = "Remember me?")]
-		public bool RememberMe { get; set; }
-
-		public LogInModel(SignInManager<ApplicationUser> signInManager,
-			ILogger<LogInModel> logger)
+		public LoginModel(SignInManager<ApplicationUser> signInManager,
+			ILogger<LoginModel> logger,
+			UserManager<ApplicationUser> userManager)
 		{
-			Email = string.Empty;
-			this.logger = logger;
-			Password = string.Empty;
+			this.userManager = userManager;
 			this.signInManager = signInManager;
+			this.logger = logger;
 		}
 
-		public async Task<IActionResult> OnGetAsync(string? returnUrl = null)
+		[BindProperty]
+		public InputModel Input { get; set; }
+
+		public IList<AuthenticationScheme> ExternalLogins { get; set; }
+
+		public string ReturnUrl { get; set; }
+
+		[TempData]
+		public string ErrorMessage { get; set; }
+
+		public class InputModel
 		{
-			if (string.IsNullOrEmpty(ErrorMessage) is not true)
+			[Required]
+			[EmailAddress]
+			public string Email { get; set; }
+
+			[Required]
+			[DataType(DataType.Password)]
+			public string Password { get; set; }
+
+			[Display(Name = "Remember me?")]
+			public bool RememberMe { get; set; }
+		}
+
+		public async Task OnGetAsync(string returnUrl = null)
+		{
+			if (!string.IsNullOrEmpty(ErrorMessage))
 			{
-				ModelState.AddModelError(string.Empty, ErrorMessage ?? string.Empty);
+				ModelState.AddModelError(string.Empty, ErrorMessage);
 			}
 
 			returnUrl ??= Url.Content("~/");
 
 			// Clear the existing external cookie to ensure a clean login process
 			await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
 			ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
 			ReturnUrl = returnUrl;
-			return Page();
 		}
 
-		public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
+		public async Task<IActionResult> OnPostAsync(string returnUrl = null)
 		{
 			returnUrl ??= Url.Content("~/");
+
 			ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
 			if (ModelState.IsValid)
 			{
-				// Try to login
-				Microsoft.AspNetCore.Identity.SignInResult? result = await signInManager
-					.PasswordSignInAsync(
-						Email,
-						Password,
-						RememberMe,
-						true);
-
-				// Sucessful login
+				// This doesn't count login failures towards account lockout
+				// To enable password failures to trigger account lockout, set lockoutOnFailure: true
+				Microsoft.AspNetCore.Identity.SignInResult? result = await signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
 				if (result.Succeeded)
 				{
 					logger.LogInformation("User logged in.");
 					return LocalRedirect(returnUrl);
 				}
-
-				// Redirect to two factor auth
 				if (result.RequiresTwoFactor)
 				{
-					return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe });
+					return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
 				}
-
-				// Redirect to lockout
 				if (result.IsLockedOut)
 				{
 					logger.LogWarning("User account locked out.");
 					return RedirectToPage("./Lockout");
 				}
-
 				else
 				{
 					ModelState.AddModelError(string.Empty, "Invalid login attempt.");

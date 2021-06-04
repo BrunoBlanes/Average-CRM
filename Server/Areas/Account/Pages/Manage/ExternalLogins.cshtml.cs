@@ -17,12 +17,6 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly SignInManager<ApplicationUser> signInManager;
 
-		[TempData]
-		public string? StatusMessage { get; set; }
-		public bool ShowRemoveButton { get; set; }
-		public ICollection<UserLoginInfo>? CurrentLogins { get; private set; }
-		public ICollection<AuthenticationScheme>? OtherLogins { get; private set; }
-
 		public ExternalLoginsModel(
 			UserManager<ApplicationUser> userManager,
 			SignInManager<ApplicationUser> signInManager)
@@ -31,11 +25,19 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 			this.signInManager = signInManager;
 		}
 
+		public IList<UserLoginInfo> CurrentLogins { get; set; }
+
+		public IList<AuthenticationScheme> OtherLogins { get; set; }
+
+		public bool ShowRemoveButton { get; set; }
+
+		[TempData]
+		public string StatusMessage { get; set; }
+
 		public async Task<IActionResult> OnGetAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			
-			if (user is null)
+			if (user == null)
 			{
 				return NotFound($"Unable to load user with ID 'user.Id'.");
 			}
@@ -44,22 +46,20 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 			OtherLogins = (await signInManager.GetExternalAuthenticationSchemesAsync())
 				.Where(auth => CurrentLogins.All(ul => auth.Name != ul.LoginProvider))
 				.ToList();
-			ShowRemoveButton = user.PasswordHash is not null || CurrentLogins.Count > 1;
+			ShowRemoveButton = user.PasswordHash != null || CurrentLogins.Count > 1;
 			return Page();
 		}
 
 		public async Task<IActionResult> OnPostRemoveLoginAsync(string loginProvider, string providerKey)
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			
-			if (user is null)
+			if (user == null)
 			{
 				return NotFound($"Unable to load user with ID 'user.Id'.");
 			}
 
 			IdentityResult? result = await userManager.RemoveLoginAsync(user, loginProvider, providerKey);
-
-			if (result.Succeeded is not true)
+			if (!result.Succeeded)
 			{
 				StatusMessage = "The external login was not removed.";
 				return RedirectToPage();
@@ -77,32 +77,26 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 
 			// Request a redirect to the external login provider to link a login for the current user
 			var redirectUrl = Url.Page("./ExternalLogins", pageHandler: "LinkLoginCallback");
-			AuthenticationProperties? properties = signInManager.ConfigureExternalAuthenticationProperties(
-				provider,
-				redirectUrl,
-				userManager.GetUserId(User));
+			AuthenticationProperties? properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, userManager.GetUserId(User));
 			return new ChallengeResult(provider, properties);
 		}
 
 		public async Task<IActionResult> OnGetLinkLoginCallbackAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			
-			if (user is null)
+			if (user == null)
 			{
 				return NotFound($"Unable to load user with ID 'user.Id'.");
 			}
 
 			ExternalLoginInfo? info = await signInManager.GetExternalLoginInfoAsync(user.Id);
-			
-			if (info is null)
+			if (info == null)
 			{
 				throw new InvalidOperationException($"Unexpected error occurred loading external login info for user with ID '{user.Id}'.");
 			}
 
 			IdentityResult? result = await userManager.AddLoginAsync(user, info);
-
-			if (result.Succeeded is not true)
+			if (!result.Succeeded)
 			{
 				StatusMessage = "The external login was not added. External logins can only be associated with one account.";
 				return RedirectToPage();
@@ -110,6 +104,7 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 
 			// Clear the existing external cookie to ensure a clean login process
 			await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
 			StatusMessage = "The external login was added.";
 			return RedirectToPage();
 		}

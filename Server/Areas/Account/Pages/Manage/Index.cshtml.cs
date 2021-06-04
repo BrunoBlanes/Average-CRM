@@ -14,72 +14,82 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly SignInManager<ApplicationUser> signInManager;
 
-		[TempData]
-		public string? StatusMessage { get; set; }
-		public string? Username { get; set; }
-
-		[Phone]
-		[BindProperty]
-		[Display(Name = "Phone number")]
-		public string PhoneNumber { get; set; }
-
 		public IndexModel(
 			UserManager<ApplicationUser> userManager,
 			SignInManager<ApplicationUser> signInManager)
 		{
 			this.userManager = userManager;
 			this.signInManager = signInManager;
-			PhoneNumber = string.Empty;
+		}
+
+		public string Username { get; set; }
+
+		[TempData]
+		public string StatusMessage { get; set; }
+
+		[BindProperty]
+		public InputModel Input { get; set; }
+
+		public class InputModel
+		{
+			[Phone]
+			[Display(Name = "Phone number")]
+			public string PhoneNumber { get; set; }
 		}
 
 		private async Task LoadAsync(ApplicationUser user)
 		{
-			Username = await userManager.GetUserNameAsync(user);
-			PhoneNumber = await userManager.GetPhoneNumberAsync(user);
+			var userName = await userManager.GetUserNameAsync(user);
+			var phoneNumber = await userManager.GetPhoneNumberAsync(user);
+
+			Username = userName;
+
+			Input = new InputModel
+			{
+				PhoneNumber = phoneNumber
+			};
 		}
 
 		public async Task<IActionResult> OnGetAsync()
 		{
-			if (await userManager.GetUserAsync(User) is ApplicationUser user)
+			ApplicationUser? user = await userManager.GetUserAsync(User);
+			if (user == null)
 			{
-				await LoadAsync(user);
-				return Page();
+				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 			}
 
-			return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
+			await LoadAsync(user);
+			return Page();
 		}
 
 		public async Task<IActionResult> OnPostAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			
-			if (user is null)
+			if (user == null)
 			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 			}
 
-			if (ModelState.IsValid)
+			if (!ModelState.IsValid)
 			{
-				var phoneNumber = await userManager.GetPhoneNumberAsync(user);
-
-				if (PhoneNumber != phoneNumber)
-				{
-					IdentityResult? setPhoneResult = await userManager.SetPhoneNumberAsync(user, PhoneNumber);
-
-					if (setPhoneResult.Succeeded is false)
-					{
-						StatusMessage = "Unexpected error when trying to set phone number.";
-						return RedirectToPage();
-					}
-				}
-
-				await signInManager.RefreshSignInAsync(user);
-				StatusMessage = "Your profile has been updated";
-				return RedirectToPage();
+				await LoadAsync(user);
+				return Page();
 			}
 
-			await LoadAsync(user);
-			return Page();
+			var phoneNumber = await userManager.GetPhoneNumberAsync(user);
+			if (Input.PhoneNumber != phoneNumber)
+			{
+				IdentityResult? setPhoneResult = await userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+				if (!setPhoneResult.Succeeded)
+				{
+					StatusMessage = "Unexpected error when trying to set phone number.";
+					return RedirectToPage();
+				}
+			}
+
+			await signInManager.RefreshSignInAsync(user);
+			StatusMessage = "Your profile has been updated";
+			return RedirectToPage();
 		}
 	}
 }
