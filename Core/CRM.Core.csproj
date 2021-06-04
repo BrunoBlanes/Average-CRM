@@ -13,10 +13,10 @@
 		<!-- Package references -->
 		<PackageReference Include="MailKit" Version="2.12.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.0-preview.4.21253.5" />
-		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.3.2">
+		<!--<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.3.2">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
+		</PackageReference>-->
 	</ItemGroup>
 
 	<ItemGroup>
@@ -26,15 +26,9 @@
 		<TypeScriptCompile Remove="node_modules\**" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Content Include="tsconfig.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
-	<Target Name="PublishRunWebpack" AfterTargets="Build">
-		<!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+	<!--<Target Name="PublishRunWebpack" AfterTargets="Build">
+		--><!-- As part of publishing, ensure the JS resources are freshly built in production mode --><!--
 		<Exec WorkingDirectory="" Command="npm install" />
 		<Exec WorkingDirectory="" Command="npm run build" />
-	</Target>
+	</Target>-->
 </Project>
