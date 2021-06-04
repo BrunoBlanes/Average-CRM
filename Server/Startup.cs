@@ -9,7 +9,6 @@ using CRM.Server.Extensions;
 using CRM.Server.Interfaces;
 using CRM.Server.Models;
 using CRM.Server.Services;
-using CRM.TagHelpers.ViewFeatures;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -18,7 +17,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -78,10 +76,10 @@ namespace CRM.Server
 			services.AddMvc().AddJsonOptions(options =>
 			{
 				options.JsonSerializerOptions.WriteIndented = true;
-				options.JsonSerializerOptions.IgnoreNullValues = true;
 				options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 				options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 				options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+				options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 			}).AddRazorPagesOptions(options =>
 			{
 				options.Conventions.AuthorizeAreaPage("account", "/logout");
@@ -162,9 +160,6 @@ namespace CRM.Server
 			// Configure writable appsettings
 			services.ConfigureWritable<Smtp>(configuration.GetSection(Smtp.Section));
 			services.ConfigureWritable<Application>(configuration.GetSection(Application.Section));
-
-			// Adds the FAST based Fluent HTML generator
-			services.AddScoped<IHtmlGenerator, FastGenerator>();
 
 			// Sets the view
 			services.AddControllersWithViews();
