@@ -11,29 +11,33 @@ using Microsoft.Extensions.Logging;
 namespace CRM.Server.Areas.Account.Pages
 {
 	[AllowAnonymous]
-	public class LogOutModel : PageModel
+	public class LogoutModel : PageModel
 	{
 		private readonly SignInManager<ApplicationUser> signInManager;
-		private readonly ILogger<LogOutModel> logger;
+		private readonly ILogger<LogoutModel> logger;
 
-		public LogOutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogOutModel> logger)
+		public LogoutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger)
 		{
 			this.signInManager = signInManager;
 			this.logger = logger;
 		}
 
-		public static void OnGet()
+		public void OnGet()
 		{
-
 		}
 
-		public async Task<IActionResult> OnPost(string? returnUrl = null)
+		public async Task<IActionResult> OnPost(string returnUrl = null)
 		{
 			await signInManager.SignOutAsync();
 			logger.LogInformation("User logged out.");
-			return returnUrl is not null
-				? LocalRedirect(returnUrl)
-				: (IActionResult)RedirectToPage();
+			if (returnUrl != null)
+			{
+				return LocalRedirect(returnUrl);
+			}
+			else
+			{
+				return RedirectToPage();
+			}
 		}
 	}
 }

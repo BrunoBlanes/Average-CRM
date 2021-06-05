@@ -13,33 +13,36 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 {
 	public class DeletePersonalDataModel : PageModel
 	{
-		private readonly ILogger<DeletePersonalDataModel> logger;
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly SignInManager<ApplicationUser> signInManager;
-
-		public bool RequirePassword { get; set; }
-
-		[Required]
-		[BindProperty]
-		[DataType(DataType.Password)]
-		public string Password { get; set; }
+		private readonly ILogger<DeletePersonalDataModel> logger;
 
 		public DeletePersonalDataModel(
-			SignInManager<ApplicationUser> signInManager,
 			UserManager<ApplicationUser> userManager,
+			SignInManager<ApplicationUser> signInManager,
 			ILogger<DeletePersonalDataModel> logger)
 		{
-			this.logger = logger;
 			this.userManager = userManager;
 			this.signInManager = signInManager;
-			Password = string.Empty;
+			this.logger = logger;
 		}
+
+		[BindProperty]
+		public InputModel Input { get; set; }
+
+		public class InputModel
+		{
+			[Required]
+			[DataType(DataType.Password)]
+			public string Password { get; set; }
+		}
+
+		public bool RequirePassword { get; set; }
 
 		public async Task<IActionResult> OnGet()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			
-			if (user is null)
+			if (user == null)
 			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 			}
@@ -51,17 +54,15 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 		public async Task<IActionResult> OnPostAsync()
 		{
 			ApplicationUser? user = await userManager.GetUserAsync(User);
-			
-			if (user is null)
+			if (user == null)
 			{
 				return NotFound($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
 			}
 
 			RequirePassword = await userManager.HasPasswordAsync(user);
-
 			if (RequirePassword)
 			{
-				if (await userManager.CheckPasswordAsync(user, Password) is false)
+				if (!await userManager.CheckPasswordAsync(user, Input.Password))
 				{
 					ModelState.AddModelError(string.Empty, "Incorrect password.");
 					return Page();
@@ -70,14 +71,15 @@ namespace CRM.Server.Areas.Account.Pages.Manage
 
 			IdentityResult? result = await userManager.DeleteAsync(user);
 			var userId = await userManager.GetUserIdAsync(user);
-			
-			if (result.Succeeded is not true)
+			if (!result.Succeeded)
 			{
 				throw new InvalidOperationException($"Unexpected error occurred deleting user with ID '{userId}'.");
 			}
 
 			await signInManager.SignOutAsync();
+
 			logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
+
 			return Redirect("~/");
 		}
 	}

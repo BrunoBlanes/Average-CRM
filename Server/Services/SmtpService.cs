@@ -183,6 +183,43 @@ namespace CRM.Server.Services
 			}
 		}
 
+		/// <inheritdoc/>>
+		public async Task SendEmailAsync(string email, string subject, string body, CancellationToken token = default)
+		{
+			var message = new MimeMessage
+			{
+				Subject = subject,
+				Body = new TextPart("html") { Text = body },
+			};
+			message.To.Add(MailboxAddress.Parse(email));
+
+			for (var attempts = 0; attempts < 3; attempts++)
+			{
+				try
+				{
+					await SendEmailAsync(message, token);
+					break;
+				}
+
+				catch (AuthenticationException e)
+				{
+					logger.LogError(e, e.Message);
+					break;
+				}
+
+				catch (OperationCanceledException e)
+				{
+					logger.LogWarning(e.Message);
+					break;
+				}
+
+				catch (Exception e)
+				{
+					await LogAndTryAgainAsync(e, attempts, token);
+				}
+			}
+		}
+
 		/// <inheritdoc/>
 		public async Task SendAccountConfirmationEmailAsync(string callbackUrl, ApplicationUser user, CancellationToken token = default)
 		{

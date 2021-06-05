@@ -25,12 +25,15 @@ namespace CRM.Server.Areas.Account.Pages
 		private readonly ISmtpService smtpService;
 
 		public string? ReturnUrl { get; set; }
-		public ICollection<AuthenticationScheme>? ExternalLogins { get; private set; }
+		public IList<AuthenticationScheme>? ExternalLogins { get; private set; }
 
 		[BindProperty]
 		public ApplicationUser AppUser { get; set; }
 
-		public RegisterModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<RegisterModel> logger, ISmtpService smtpService)
+		public RegisterModel(SignInManager<ApplicationUser> signInManager,
+			UserManager<ApplicationUser> userManager,
+			ILogger<RegisterModel> logger,
+			ISmtpService smtpService)
 		{
 			this.logger = logger;
 			this.smtpService = smtpService;
@@ -39,37 +42,30 @@ namespace CRM.Server.Areas.Account.Pages
 			AppUser = new ApplicationUser();
 		}
 
-		// Page load
 		public async Task OnGetAsync(string? returnUrl = null)
 		{
 			ReturnUrl = returnUrl;
 			ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 		}
 
-		// Submit new user button click
 		public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
 		{
 			returnUrl ??= Url.Content("~/");
 			ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
 			if (ModelState.IsValid)
 			{
-				// Creates the new user and it's identity
 				AppUser.UserName = AppUser.Email;
 				IdentityResult result = await userManager.CreateAsync(AppUser, AppUser.Password);
-
 				if (result.Succeeded)
 				{
 					// Generates the user account confirmation code
 					logger.LogInformation($"User {AppUser.Email} created a new account with password.");
 					var code = await userManager.GenerateEmailConfirmationTokenAsync(AppUser);
 					code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-					var callbackUrl = Url.Page("/Account/ConfirmEmail", null, new
+					var callbackUrl = Url.Page("/ConfirmEmail", null, new
 					{
-						area = "Identity",
 						userId = AppUser.Id,
 						code,
-						returnUrl
 					}, Request.Scheme);
 
 					// Sends a confirmation email to the user

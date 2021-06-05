@@ -6,9 +6,8 @@ namespace CRM.Server.Areas.Account.Pages
 	[AllowAnonymous]
 	public class ForgotPasswordConfirmation : PageModel
 	{
-		public static void OnGet()
+		public void OnGet()
 		{
-
 		}
 	}
 }

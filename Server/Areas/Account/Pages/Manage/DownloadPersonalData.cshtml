@@ -1,8 +1,11 @@
 ﻿@page
 @model DownloadPersonalDataModel
-
 @{
-	ViewData["Title"] = "Download Your Data";
+    ViewData["Title"] = "Download Your Data";
 }
 
-<h4>@ViewData["Title"]</h4>
+<h3>@ViewData["Title"]</h3>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

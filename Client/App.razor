@@ -1,24 +1,26 @@
-<CascadingAuthenticationState>
-	<Router AppAssembly="@typeof(Program).Assembly">
-		<Found Context="routeData">
-			<AuthorizeRouteView RouteData="@routeData">
-				<NotAuthorized>
-					@if (context.User.Identity?.IsAuthenticated is not true)
-					{
-						<RedirectToLogin />
-					}
+<FluentDesignSystemProvider>
+	<CascadingAuthenticationState>
+		<Router AppAssembly="@typeof(Program).Assembly">
+			<Found Context="routeData">
+				<AuthorizeRouteView RouteData="@routeData">
+					<NotAuthorized>
+						@if (context.User.Identity?.IsAuthenticated is not true)
+						{
+							<RedirectToLogin />
+						}
 
-					else
-					{
-						<p>You are not authorized to access this resource.</p>
-					}
-				</NotAuthorized>
-			</AuthorizeRouteView>
-		</Found>
-		<NotFound>
-			<LayoutView>
-				<p>Sorry, there's nothing at this address.</p>
-			</LayoutView>
-		</NotFound>
-	</Router>
-</CascadingAuthenticationState>
+						else
+						{
+							<p>You are not authorized to access this resource.</p>
+						}
+					</NotAuthorized>
+				</AuthorizeRouteView>
+			</Found>
+			<NotFound>
+				<LayoutView>
+					<p>Sorry, there's nothing at this address.</p>
+				</LayoutView>
+			</NotFound>
+		</Router>
+	</CascadingAuthenticationState>
+</FluentDesignSystemProvider>

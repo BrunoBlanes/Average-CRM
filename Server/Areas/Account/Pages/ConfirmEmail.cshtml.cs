@@ -16,32 +16,31 @@ namespace CRM.Server.Areas.Account.Pages
 	{
 		private readonly UserManager<ApplicationUser> userManager;
 
-		[TempData]
-		public string? StatusMessage { get; set; }
-
 		public ConfirmEmailModel(UserManager<ApplicationUser> userManager)
 		{
 			this.userManager = userManager;
 		}
 
+		[TempData]
+		public string StatusMessage { get; set; }
+
 		public async Task<IActionResult> OnGetAsync(string userId, string code)
 		{
-			if (userId is not null && code is not null)
+			if (userId == null || code == null)
 			{
-				if (await userManager.FindByIdAsync(userId) is ApplicationUser user)
-				{
-					// Confirm the account
-					code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-					IdentityResult result = await userManager.ConfirmEmailAsync(user, code);
-					StatusMessage = result.Succeeded
-						? "Thank you for confirming your email."
-						: "Error confirming your email.";
-				}
+				return RedirectToPage("/Index");
+			}
 
+			ApplicationUser? user = await userManager.FindByIdAsync(userId);
+			if (user == null)
+			{
 				return NotFound($"Unable to load user with ID '{userId}'.");
 			}
 
-			return RedirectToPage("Manage/Index");
+			code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+			IdentityResult? result = await userManager.ConfirmEmailAsync(user, code);
+			StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+			return Page();
 		}
 	}
 }
